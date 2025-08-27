@@ -21,31 +21,36 @@ model Selections {
   selection_id  Int      @id @default(autoincrement())
   job_id        Int      @unique
   result        String   @db.VarChar
+  createAt     DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  job           Jobs @relation(fields: [job_id], references: [job_id])
+  job                 Jobs                 @relation(fields: [job_id], references: [job_id])
   selection_questions SelectionQuestions[]
 }
 
-
 model SelectionQuestions {
-  selection_question_id Int             @id @default(autoincrement())
+  selection_question_id Int               @id @default(autoincrement())
   selection_id          Int
-  question              String          @db.VarChar
-  option_A              String          @db.VarChar
-  option_B              String          @db.VarChar
-  option_C              String          @db.VarChar
-  option_D              String          @db.VarChar
+  question              String            @db.VarChar
+  option_A              String            @db.VarChar
+  option_B              String            @db.VarChar
+  option_C              String            @db.VarChar
+  option_D              String            @db.VarChar
   correct_option        CorrectOptionEnum
+  createAt              DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
 
-  selection             Selections @relation(fields: [selection_id], references: [selection_id])
+  selection Selections @relation(fields: [selection_id], references: [selection_id])
 }
 
 model Interviews {
-  interview_id     Int      @id @default(autoincrement())
-  application_id   Int
-  schedule         String   @db.VarChar
+  interview_id   Int      @id @default(autoincrement())
+  application_id Int
+  schedule       String   @db.VarChar
+  createAt       DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  application      Applications @relation(fields: [application_id], references: [application_id])
+  application Applications @relation(fields: [application_id], references: [application_id])
 }
 
 enum CorrectOptionEnum {
@@ -58,8 +63,260 @@ enum CorrectOptionEnum {
 // END RISAL
 
 // START FENDRI
+model Users {
+  user_id   Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role
+  isVerfied Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ///Relation
+  companies        Companies?
+  profiles         Profiles?
+  job_save         JobSave[]
+  applications     Applications[]
+  user_subcription UserSubscriptions[]
+  user_assessment  UserAssessments[]
+  user_Company     UserCompanies[]
+  selection        Selections[]
+}
+
+enum Role {
+  USER
+  COMPANY
+  DEVELOPER
+}
+
+model Companies {
+  company_id   Int             @id @default(autoincrement())
+  name         String          @unique
+  email        String
+  phone        String?
+  description  String?
+  website      String?
+  password     String
+  usersId      Int?
+  user_company UserCompanies[]
+  job          Jobs[]
+  Users        Users?          @relation(fields: [user_id], references: [user_id])
+
+  user_id Int @unique
+}
+
+model Profiles {
+  profile_id      Int       @id @default(autoincrement())
+  email           String    @unique
+  name            String
+  birthDate       DateTime?
+  gender          Gender?
+  address         String?
+  profile_picture String?
+
+  Users   Users? @relation(fields: [user_id], references: [user_id])
+  user_id Int?   @unique
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+model Jobs {
+  job_id            Int      @id @default(autoincrement())
+  title             String
+  description       String
+  category          Category
+  latitude          String
+  longtitude        String
+  location          String
+  salary            Int
+  job_type          JobType
+  preselection_test Boolean
+
+  expiredAt    DateTime
+  createAt     DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Companies    Companies?     @relation(fields: [company_id], references: [company_id])
+  company_id   Int?
+  job_save     JobSave[]
+  selection    Selections?
+  applications Applications[]
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  INTERNSHIP
+  FREELANCE
+  CONTRACT
+  TEMPORARY
+  REMOTE
+  HYBRID
+}
+
+enum Category {
+  SOFTWARE_ENGINEERING
+  DATA_SCIENCE
+  PRODUCT_MANAGEMENT
+  DESIGN
+  MARKETING
+  SALES
+  CUSTOMER_SERVICE
+  FINANCE
+  HUMAN_RESOURCES
+  OPERATIONS
+  EDUCATION
+  HEALTHCARE
+  MANUFACTURING
+  CONSTRUCTION
+  OTHERS
+}
+
+model JobSave {
+  job_save_id Int @id @default(autoincrement())
+
+  createdAd DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Users     Users?   @relation(fields: [user_id], references: [user_id])
+  user_id   Int?
+  Jobs      Jobs?    @relation(fields: [job_id], references: [job_id])
+  job_id    Int?
+}
+
+model Applications {
+  application_id  Int      @id @default(autoincrement())
+  expected_salary Int
+  cv              String
+  status          Status
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  Users   Users? @relation(fields: [user_id], references: [user_id])
+  user_id Int?
+  Jobs    Jobs?  @relation(fields: [job_id], references: [job_id])
+  job_id  Int?
+}
+
+enum Status {
+  SUBMITTED // baru daftar
+  IN_REVIEW // sedang diproses / screening
+  INTERVIEW // dijadwalkan interview
+  ACCEPTED // diterima
+  REJECTED // ditolak
+}
+
 // END FENDRI
 
 // START KAHFI
-// END KAHFI
+model UserAssessments {
+  user_assessment_id Int      @id @default(autoincrement())
+  assessment_id      Int
+  user_id            Int
+  score              Int
+  date_taken         DateTime @default(now())
+  createAt           DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
+  assessment SkillAssessments @relation(fields: [assessment_id], references: [assessment_id])
+  user       Users            @relation(fields: [user_id], references: [user_id])
+
+  assessment_certificates AssessmentCertificates[]
+}
+
+model SkillAssessments {
+  assessment_id Int      @id @default(autoincrement())
+  skill_name    String
+  createAt      DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  assessment_questions AssessmentQuestions[]
+  user_assessments     UserAssessments[]
+}
+
+model AssessmentCertificates {
+  assessment_certificate_id Int      @id @default(autoincrement())
+  user_assessment_id        Int
+  certificate_code          String
+  createAt                  DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  user_assessment UserAssessments @relation(fields: [user_assessment_id], references: [user_assessment_id])
+}
+
+model UserSubscriptions {
+  user_subscription_id Int      @id @default(autoincrement())
+  user_id              Int
+  subscription_id      Int
+  start_date           DateTime @default(now())
+  end_date             DateTime
+  createAt             DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  user         Users         @relation(fields: [user_id], references: [user_id])
+  subscription Subscriptions @relation(fields: [subscription_id], references: [subscription_id])
+}
+
+model Subscriptions {
+  subscription_id Int      @id @default(autoincrement())
+  name            String
+  price           Int
+  createAt        DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user_subscriptions UserSubscriptions[]
+}
+
+model Reviews {
+  review_id                Int      @id @default(autoincrement())
+  user_company_id          Int
+  salary_estimate          Int
+  rating_culture           Int
+  rating_work_life_balance Int
+  rating_facilities        Int
+  rating_career            Int
+  createAt                 DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  user_company UserCompanies @relation(fields: [user_company_id], references: [user_company_id])
+}
+
+model UserCompanies {
+  user_company_id Int      @id @default(autoincrement())
+  company_id      Int
+  user_id         Int
+  start_date      DateTime
+  end_date        DateTime
+  createAt        DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  company Companies @relation(fields: [company_id], references: [company_id])
+  user    Users     @relation(fields: [user_id], references: [user_id])
+  reviews Reviews[]
+}
+
+model AssessmentQuestions {
+  assessment_question_id Int           @id @default(autoincrement())
+  assessment_id          Int
+  question               String
+  option_a               String
+  option_b               String
+  option_c               String
+  option_d               String
+  correct_option         CorrectOption
+  createAt               DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+
+  assessment SkillAssessments @relation(fields: [assessment_id], references: [assessment_id])
+}
+
+enum CorrectOption {
+  a
+  b
+  c
+  d
+}
+
+// END KAHFI
