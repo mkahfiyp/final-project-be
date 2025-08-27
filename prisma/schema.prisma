@@ -18,9 +18,11 @@ datasource db {
 
 // START RISAL
 model Selections {
-  selection_id Int    @id @default(autoincrement())
+  selection_id Int      @id @default(autoincrement())
   job_id       Int
-  result       String @db.VarChar
+  result       String   @db.VarChar
+  createAt     DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   job                 Jobs                 @relation(fields: [job_id], references: [job_id])
   selection_questions SelectionQuestions[]
@@ -35,14 +37,18 @@ model SelectionQuestions {
   option_C              String            @db.VarChar
   option_D              String            @db.VarChar
   correct_option        CorrectOptionEnum
+  createAt              DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
 
   selection Selections @relation(fields: [selection_id], references: [selection_id])
 }
 
 model Interviews {
-  interview_id   Int    @id @default(autoincrement())
+  interview_id   Int      @id @default(autoincrement())
   application_id Int
-  schedule       String @db.VarChar
+  schedule       String   @db.VarChar
+  createAt       DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   application Applications @relation(fields: [application_id], references: [application_id])
 }
@@ -204,7 +210,9 @@ model UserAssessments {
   assessment_id      Int
   user_id            Int
   score              Int
-  date_taken         DateTime
+  date_taken         DateTime @default(now())
+  createAt           DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   assessment SkillAssessments @relation(fields: [assessment_id], references: [assessment_id])
   user       Users            @relation(fields: [user_id], references: [user_id])
@@ -213,17 +221,21 @@ model UserAssessments {
 }
 
 model SkillAssessments {
-  assessment_id Int    @id @default(autoincrement())
+  assessment_id Int      @id @default(autoincrement())
   skill_name    String
+  createAt      DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   assessment_questions AssessmentQuestions[]
   user_assessments     UserAssessments[]
 }
 
 model AssessmentCertificates {
-  assessment_certificate_id Int    @id @default(autoincrement())
+  assessment_certificate_id Int      @id @default(autoincrement())
   user_assessment_id        Int
   certificate_code          String
+  createAt                  DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
 
   user_assessment UserAssessments @relation(fields: [user_assessment_id], references: [user_assessment_id])
 }
@@ -232,29 +244,35 @@ model UserSubscriptions {
   user_subscription_id Int      @id @default(autoincrement())
   user_id              Int
   subscription_id      Int
-  start_date           DateTime
+  start_date           DateTime @default(now())
   end_date             DateTime
+  createAt             DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   user         Users         @relation(fields: [user_id], references: [user_id])
   subscription Subscriptions @relation(fields: [subscription_id], references: [subscription_id])
 }
 
 model Subscriptions {
-  subscription_id Int    @id @default(autoincrement())
+  subscription_id Int      @id @default(autoincrement())
   name            String
   price           Int
+  createAt        DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   user_subscriptions UserSubscriptions[]
 }
 
 model Reviews {
-  review_id                Int @id @default(autoincrement())
+  review_id                Int      @id @default(autoincrement())
   user_company_id          Int
   salary_estimate          Int
   rating_culture           Int
   rating_work_life_balance Int
   rating_facilities        Int
   rating_career            Int
+  createAt                 DateTime @default(now())
+  updatedAt                DateTime @updatedAt
 
   user_company UserCompanies @relation(fields: [user_company_id], references: [user_company_id])
 }
@@ -265,6 +283,8 @@ model UserCompanies {
   user_id         Int
   start_date      DateTime
   end_date        DateTime
+  createAt        DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   company Companies @relation(fields: [company_id], references: [company_id])
   user    Users     @relation(fields: [user_id], references: [user_id])
@@ -280,6 +300,8 @@ model AssessmentQuestions {
   option_c               String
   option_d               String
   correct_option         CorrectOption
+  createAt               DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
 
   assessment SkillAssessments @relation(fields: [assessment_id], references: [assessment_id])
 }
