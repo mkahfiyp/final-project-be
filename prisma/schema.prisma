@@ -31,9 +31,14 @@ model Users {
   updatedAt DateTime @updatedAt
 
   ///Relation
-  companies    Companies[]
-  profiles     Profiles[]
-  applications Aplications[]
+  companies        Companies?
+  profiles         Profiles?
+  job_save         JobSave[]
+  applications     Applications[]
+  user_subcription UserSubscriptions[]
+  user_assessment  UserAssessment[]
+  user_Company     UserCompanies[]
+  selection        Selections[]
 }
 
 enum Role {
@@ -43,18 +48,19 @@ enum Role {
 }
 
 model Companies {
-  company_id  Int     @id @default(autoincrement())
-  name        String  @unique
-  email       String
-  phone       String?
-  description String?
-  website     String?
-  password    String
-  usersId     Int?
+  company_id   Int             @id @default(autoincrement())
+  name         String          @unique
+  email        String
+  phone        String?
+  description  String?
+  website      String?
+  password     String
+  usersId      Int?
+  user_company UserCompanies[]
+  job          Jobs[]
+  Users        Users?          @relation(fields: [user_id], references: [user_id])
 
-  Users   Users? @relation(fields: [user_id], references: [user_id])
-  user_id Int?
-  job     Jobs[]
+  user_id Int @unique
 }
 
 model Profiles {
@@ -66,9 +72,8 @@ model Profiles {
   address         String?
   profile_picture String?
 
-  Users    Users?    @relation(fields: [user_id], references: [user_id])
-  user_id  Int?
-  job_save JobSave[]
+  Users   Users? @relation(fields: [user_id], references: [user_id])
+  user_id Int?   @unique
 }
 
 enum Gender {
@@ -88,13 +93,14 @@ model Jobs {
   job_type          JobType
   preselection_test Boolean
 
-  expiredAt   DateTime
-  createAt    DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  Companies   Companies?    @relation(fields: [company_id], references: [company_id])
-  company_id  Int?
-  job_save    JobSave[]
-  aplications Aplications[]
+  expiredAt    DateTime
+  createAt     DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Companies    Companies?     @relation(fields: [company_id], references: [company_id])
+  company_id   Int?
+  job_save     JobSave[]
+  selection    Selections?
+  applications Applications[]
 }
 
 enum JobType {
@@ -129,16 +135,16 @@ enum Category {
 model JobSave {
   job_save_id Int @id @default(autoincrement())
 
-  createdAd  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  Jobs       Jobs?     @relation(fields: [job_id], references: [job_id])
-  job_id     Int?
-  Profiles   Profiles? @relation(fields: [profile_id], references: [profile_id])
-  profile_id Int?
+  createdAd DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Users     Users?   @relation(fields: [user_id], references: [user_id])
+  user_id   Int?
+  Jobs      Jobs?    @relation(fields: [job_id], references: [job_id])
+  job_id    Int?
 }
 
-model Aplications {
-  aplication_id   Int      @id @default(autoincrement())
+model Applications {
+  application_id  Int      @id @default(autoincrement())
   expected_salary Int
   cv              String
   status          Status
