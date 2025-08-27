@@ -15,3 +15,12 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
+
+// START RISAL
+// END RISAL
+
+// START FENDRI
+// END FENDRI
+
+// START KAHFI
+// END KAHFI
