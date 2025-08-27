@@ -18,14 +18,16 @@ datasource db {
 
 // START RISAL
 model Selections {
-  selection_id  Int      @id @default(autoincrement())
-  job_id        Int      @unique
-  result        String   @db.VarChar
+  selection_id Int      @id @default(autoincrement())
+  job_id       Int      @unique
+  result       String   @db.VarChar
   createAt     DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   job                 Jobs                 @relation(fields: [job_id], references: [job_id])
   selection_questions SelectionQuestions[]
+  user                Users                @relation(fields: [user_id], references: [user_id])
+  user_id             Int
 }
 
 model SelectionQuestions {
@@ -45,7 +47,7 @@ model SelectionQuestions {
 
 model Interviews {
   interview_id   Int      @id @default(autoincrement())
-  application_id Int
+  application_id Int      @unique
   schedule       String   @db.VarChar
   createAt       DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -194,10 +196,11 @@ model Applications {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  Users   Users? @relation(fields: [user_id], references: [user_id])
-  user_id Int?
-  Jobs    Jobs?  @relation(fields: [job_id], references: [job_id])
-  job_id  Int?
+  Users     Users?      @relation(fields: [user_id], references: [user_id])
+  user_id   Int?
+  Jobs      Jobs?       @relation(fields: [job_id], references: [job_id])
+  job_id    Int?
+  interview Interviews?
 }
 
 enum Status {
