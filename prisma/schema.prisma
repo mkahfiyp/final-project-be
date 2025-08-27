@@ -18,9 +18,9 @@ datasource db {
 
 // START RISAL
 model Selections {
-  selection_id Int      @id @default(autoincrement())
-  job_id       Int
-  result       String   @db.VarChar
+  selection_id  Int      @id @default(autoincrement())
+  job_id        Int      @unique
+  result        String   @db.VarChar
   createAt     DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
