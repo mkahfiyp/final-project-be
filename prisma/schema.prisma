@@ -20,6 +20,145 @@ datasource db {
 // END RISAL
 
 // START FENDRI
+model Users {
+  user_id   Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role
+  isVerfied Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ///Relation
+  companies    Companies[]
+  profiles     Profiles[]
+  applications Aplications[]
+}
+
+enum Role {
+  USER
+  COMPANY
+  DEVELOPER
+}
+
+model Companies {
+  company_id  Int     @id @default(autoincrement())
+  name        String  @unique
+  email       String
+  phone       String?
+  description String?
+  website     String?
+  password    String
+  usersId     Int?
+
+  Users   Users? @relation(fields: [user_id], references: [user_id])
+  user_id Int?
+  job     Jobs[]
+}
+
+model Profiles {
+  profile_id      Int       @id @default(autoincrement())
+  email           String    @unique
+  name            String
+  birthDate       DateTime?
+  gender          Gender?
+  address         String?
+  profile_picture String?
+
+  Users    Users?    @relation(fields: [user_id], references: [user_id])
+  user_id  Int?
+  job_save JobSave[]
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+model Jobs {
+  job_id            Int      @id @default(autoincrement())
+  title             String
+  description       String
+  category          Category
+  latitude          String
+  longtitude        String
+  location          String
+  salary            Int
+  job_type          JobType
+  preselection_test Boolean
+
+  expiredAt   DateTime
+  createAt    DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Companies   Companies?    @relation(fields: [company_id], references: [company_id])
+  company_id  Int?
+  job_save    JobSave[]
+  aplications Aplications[]
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  INTERNSHIP
+  FREELANCE
+  CONTRACT
+  TEMPORARY
+  REMOTE
+  HYBRID
+}
+
+enum Category {
+  SOFTWARE_ENGINEERING
+  DATA_SCIENCE
+  PRODUCT_MANAGEMENT
+  DESIGN
+  MARKETING
+  SALES
+  CUSTOMER_SERVICE
+  FINANCE
+  HUMAN_RESOURCES
+  OPERATIONS
+  EDUCATION
+  HEALTHCARE
+  MANUFACTURING
+  CONSTRUCTION
+  OTHERS
+}
+
+model JobSave {
+  job_save_id Int @id @default(autoincrement())
+
+  createdAd  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  Jobs       Jobs?     @relation(fields: [job_id], references: [job_id])
+  job_id     Int?
+  Profiles   Profiles? @relation(fields: [profile_id], references: [profile_id])
+  profile_id Int?
+}
+
+model Aplications {
+  aplication_id   Int      @id @default(autoincrement())
+  expected_salary Int
+  cv              String
+  status          Status
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  Users   Users? @relation(fields: [user_id], references: [user_id])
+  user_id Int?
+  Jobs    Jobs?  @relation(fields: [job_id], references: [job_id])
+  job_id  Int?
+}
+
+enum Status {
+  SUBMITTED // baru daftar
+  IN_REVIEW // sedang diproses / screening
+  INTERVIEW // dijadwalkan interview
+  ACCEPTED // diterima
+  REJECTED // ditolak
+}
+
 // END FENDRI
 
 // START KAHFI
