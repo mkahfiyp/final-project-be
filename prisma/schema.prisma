@@ -23,4 +23,96 @@ datasource db {
 // END FENDRI
 
 // START KAHFI
+model UserAssessments {
+  user_assessment_id Int      @id @default(autoincrement())
+  assessment_id      Int
+  user_id            Int
+  score              Int
+  date_taken         DateTime
+
+  assessment SkillAssessments @relation(fields: [assessment_id], references: [assessment_id])
+  user       Users            @relation(fields: [user_id], references: [user_id])
+
+  assessment_certificates AssessmentCertificates[]
+}
+
+model SkillAssessments {
+  assessment_id Int    @id @default(autoincrement())
+  skill_name    String
+
+  assessment_questions AssessmentQuestions[]
+  user_assessments     UserAssessments[]
+}
+
+model AssessmentCertificates {
+  assessment_certificate_id Int    @id @default(autoincrement())
+  user_assessment_id        Int
+  certificate_code          String
+
+  user_assessment UserAssessments @relation(fields: [user_assessment_id], references: [user_assessment_id])
+}
+
+model UserSubscriptions {
+  user_subscription_id Int      @id @default(autoincrement())
+  user_id              Int
+  subscription_id      Int
+  start_date           DateTime
+  end_date             DateTime
+
+  user         Users         @relation(fields: [user_id], references: [user_id])
+  subscription Subscriptions @relation(fields: [subscription_id], references: [subscription_id])
+}
+
+model Subscriptions {
+  subscription_id Int    @id @default(autoincrement())
+  name            String
+  price           Int
+
+  user_subscriptions UserSubscriptions[]
+}
+
+model Reviews {
+  review_id                Int @id @default(autoincrement())
+  user_company_id          Int
+  salary_estimate          Int
+  rating_culture           Int
+  rating_work_life_balance Int
+  rating_facilities        Int
+  rating_career            Int
+
+  user_company UserCompanies @relation(fields: [user_company_id], references: [user_company_id])
+}
+
+model UserCompanies {
+  user_company_id Int      @id @default(autoincrement())
+  company_id      Int
+  user_id         Int
+  start_date      DateTime
+  end_date        DateTime
+
+  company Companies @relation(fields: [company_id], references: [company_id])
+  user    Users     @relation(fields: [user_id], references: [user_id])
+  reviews Reviews[]
+}
+
+model AssessmentQuestions {
+  assessment_question_id Int           @id @default(autoincrement())
+  assessment_id          Int
+  question               String
+  option_a               String
+  option_b               String
+  option_c               String
+  option_d               String
+  correct_option         CorrectOption
+
+  assessment SkillAssessments @relation(fields: [assessment_id], references: [assessment_id])
+}
+
+enum CorrectOption {
+  a
+  b
+  c
+  d
+}
+
 // END KAHFI
