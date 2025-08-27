@@ -79,7 +79,7 @@ model Users {
   job_save         JobSave[]
   applications     Applications[]
   user_subcription UserSubscriptions[]
-  user_assessment  UserAssessment[]
+  user_assessment  UserAssessments[]
   user_Company     UserCompanies[]
   selection        Selections[]
 }
