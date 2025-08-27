@@ -48,6 +48,12 @@ model Interviews {
   application      Applications @relation(fields: [application_id], references: [application_id])
 }
 
+enum CorrectOptionEnum {
+  A
+  B
+  C
+  D
+}
 
 // END RISAL
 
@@ -57,9 +63,3 @@ model Interviews {
 // START KAHFI
 // END KAHFI
 
-enum CorrectOptionEnum {
-  A
-  B
-  C
-  D
-}
