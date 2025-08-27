@@ -17,6 +17,44 @@ datasource db {
 }
 
 // START RISAL
+model Selections {
+  selection_id  Int      @id @default(autoincrement())
+  job_id        Int
+  result        String   @db.VarChar
+
+  job           Jobs @relation(fields: [job_id], references: [job_id])
+  selection_questions SelectionQuestions[]
+}
+
+
+model SelectionQuestions {
+  selection_question_id Int             @id @default(autoincrement())
+  selection_id          Int
+  question              String          @db.VarChar
+  option_A              String          @db.VarChar
+  option_B              String          @db.VarChar
+  option_C              String          @db.VarChar
+  option_D              String          @db.VarChar
+  correct_option        CorrectOptionEnum
+
+  selection             Selections @relation(fields: [selection_id], references: [selection_id])
+}
+
+model Interviews {
+  interview_id     Int      @id @default(autoincrement())
+  application_id   Int
+  schedule         String   @db.VarChar
+
+  application      Applications @relation(fields: [application_id], references: [application_id])
+}
+
+enum CorrectOptionEnum {
+  A
+  B
+  C
+  D
+}
+
 // END RISAL
 
 // START FENDRI
@@ -116,3 +154,4 @@ enum CorrectOption {
 }
 
 // END KAHFI
+
