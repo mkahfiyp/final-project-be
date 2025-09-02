@@ -303,7 +303,7 @@ export const regisMailTemplate = (username: string, urlToFE: string) => {
                                                   text-align: left;
                                                   background-color: inherit;
                                                 ">
-                                                <a href="#" style="
+                                                <a href="${urlToFE}" style="
                                                     background-color: #090909;
                                                     border: 1px solid #333;
                                                     border-radius: 12px;

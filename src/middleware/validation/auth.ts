@@ -21,11 +21,11 @@ export const schemaSignUp = z
     })
     .refine((data) => data.password === data.confirmPassword, {
         message: "Passwords do not match",
-        path: ["confirmPassword"], // kasih error ke field confirmPassword
+        path: ["confirmPassword"],
     });
 
 export const validateSignUp: RequestHandler = (req, res, next) => {
-    const result = schemaSignUp.safeParse(req.body.val);
+    const result = schemaSignUp.safeParse(req.body.data);
     if (!result.success) {
         return res.status(400).json({ errors: result.error.issues });
     }
