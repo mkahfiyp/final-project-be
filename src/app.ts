@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
 import express, { Application, Request, Response } from "express";
+import AuthRouter from "./routers/auth.router";
 const PORT: string = process.env.PORT || "8181";
 class App {
     public app: Application;
@@ -18,9 +19,12 @@ class App {
     }
 
     private route(): void {
+        const authRouter: AuthRouter = new AuthRouter();
+        
         this.app.get("/", (req: Request, res: Response) => {
             res.status(200).send("<h1>Classbase API</h1>");
         });
+        this.app.use("/auth", authRouter.getRouter());
     }
 
     public start(): void {
