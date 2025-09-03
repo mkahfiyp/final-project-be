@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import z from "zod";
+import { Role } from "../../../prisma/generated/client";
 
 const passwordSchema = z
   .string()
@@ -13,24 +14,11 @@ const passwordSchema = z
 export const schemaSignUp = z
   .object({
     name: z.string().nonempty("Name required"),
-    role: z.enum(["USER", "COMPANY"], "Invalid Role"),
+    username: z.string().nonempty("Username required"),
+    role: z.enum(Role, "Invalid Role"),
     email: z.email("Invalid email address"),
     password: passwordSchema,
-    confirmPassword: z.string().nonempty("Confirm Password required"),
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"], // kasih error ke field confirmPassword
-  });
-
-export const validateSignUp: RequestHandler = (req, res, next) => {
-  const result = schemaSignUp.safeParse(req.body.val);
-  if (!result.success) {
-    return res.status(400).json({ errors: result.error.issues });
-  }
-  req.body = result.data;
-  next();
-};
 
 export const schemaSignIn = z.object({
   email: z.email("Invalid email"),

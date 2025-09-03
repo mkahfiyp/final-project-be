@@ -1,28 +1,35 @@
 import { compare } from "bcrypt";
 import { transport } from "../config/nodemailer";
-import { SignInDTO } from "../dto/auth.dto";
+import { SignInDTO, SignUpDTO } from "../dto/auth.dto";
 import AppError from "../errors/appError";
-import { FindUser, createAccount } from "../repositories/auth.repository";
+import { FindUser, createAccount, findUsername } from "../repositories/auth.repository";
 import { regisMailTemplate } from "../templates/regist.template";
 import { createToken } from "../utils/createToken";
 
-export const regisService = async (data: any) => {
-    const newUser = await createAccount(data);
+export const regisService = async (data: SignUpDTO) => {
+  let user = await FindUser(data.email);
+  if (user && user.isVerfied) {
+    throw new AppError("Account sudah terdaftar", 409);
+  }
 
-    //  Create token for verify
-    const token = createToken(newUser, "15m");
+  if (!user) {
+    user = await createAccount(data);
+  }
 
-    // Define url to front end verify page
-    const urlToFE = `${process.env.FE_URL}/verify/${token}`;
-    
-    await transport.sendMail({
-        from: process.env.MAILSENDER,
-        to: data.email,
-        subject: "Verifikasi email",
-        html: regisMailTemplate(data.username, urlToFE),
-    });
+  //  Create token for verify
+  const token = createToken(user, "15m");
 
-    return newUser;
+  // Define url to front end verify page
+  const urlToFE = `${process.env.FE_URL}/verify/${token}`;
+
+  await transport.sendMail({
+    from: process.env.MAILSENDER,
+    to: data.email,
+    subject: "Verifikasi email",
+    html: regisMailTemplate(data.username, urlToFE),
+  });
+
+  return user;
 };
 
 export const SignInService = async (data: SignInDTO) => {
@@ -36,6 +43,6 @@ export const SignInService = async (data: SignInDTO) => {
   if (!comparePassword) {
     throw new AppError("Invalid Password", 400);
   }
-  
+
   return user;
 };

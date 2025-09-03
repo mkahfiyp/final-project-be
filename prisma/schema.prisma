@@ -101,7 +101,7 @@ model Companies {
   phone        String?
   description  String?
   website      String?
-  password     String
+  // password     String
   usersId      Int?
   user_company UserCompanies[]
   job          Jobs[]
@@ -114,7 +114,7 @@ model Profiles {
   profile_id      Int       @id @default(autoincrement())
   email           String    @unique
   name            String
-  education       String
+  education       String?
   birthDate       DateTime?
   gender          Gender?
   address         String?
