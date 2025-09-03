@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { regisService } from "../services/auth.services";
+import { regisService, SignInService } from "../services/auth.services";
 import { prisma } from "../config/prisma";
 
 class AuthController {
@@ -9,15 +9,24 @@ class AuthController {
             const newUser = await regisService(payload);
 
             res.status(201).send({
-                success: true,
-                message: "Add Data Success",
-                data: newUser,
+              success: true,
+              message: "Add Data Success",
+              data: newUser,
             });
         } catch (error) {
-            next(error);
+          next(error);
         }
-    }
-
+    };
+  
+    SignIn = async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const result = await SignInService(req.body);
+        res.status(200).json(result);
+      } catch (error) {
+        next(error);
+      }
+    };
+  
     public async verifyAccount(req: Request, res: Response, next: NextFunction) {
         try {
             const account = await prisma.users.update({
