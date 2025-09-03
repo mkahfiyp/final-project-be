@@ -14,7 +14,6 @@ export const schemaSignUp = z
   .object({
     name: z.string().nonempty("Name required"),
     role: z.enum(["USER", "COMPANY"], "Invalid Role"),
-
     email: z.email("Invalid email address"),
     password: passwordSchema,
     confirmPassword: z.string().nonempty("Confirm Password required"),
