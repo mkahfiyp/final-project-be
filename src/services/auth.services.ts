@@ -2,7 +2,11 @@ import { compare } from "bcrypt";
 import { transport } from "../config/nodemailer";
 import { SignInDTO, SignUpDTO } from "../dto/auth.dto";
 import AppError from "../errors/appError";
-import { FindUser, createAccount, findUsername } from "../repositories/auth.repository";
+import {
+  FindUser,
+  createAccount,
+  findUsername,
+} from "../repositories/auth.repository";
 import { regisMailTemplate } from "../templates/regist.template";
 import { createToken } from "../utils/createToken";
 
@@ -17,7 +21,10 @@ export const regisService = async (data: SignUpDTO) => {
   }
 
   //  Create token for verify
-  const token = createToken(user, "15m");
+  const token = createToken(
+    { id: user.user_id, isVerified: user.isVerfied, role: user.role },
+    "15m"
+  );
 
   // Define url to front end verify page
   const urlToFE = `${process.env.FE_URL}/verify/${token}`;
@@ -35,13 +42,19 @@ export const regisService = async (data: SignUpDTO) => {
 export const SignInService = async (data: SignInDTO) => {
   const { email, password } = data;
   const user = await FindUser(email);
+
   if (!user) {
-    throw new AppError("Account not exist", 400);
+    throw new AppError("email or password invalid", 402);
   }
 
+  if (!user.isVerfied) {
+    throw new AppError("Account Not Verified", 402);
+  }
+  console.log(user);
   const comparePassword = await compare(password, user.password);
+
   if (!comparePassword) {
-    throw new AppError("Invalid Password", 400);
+    throw new AppError("email or password invalid", 400);
   }
 
   return user;

@@ -15,11 +15,21 @@ class AuthRouter {
   }
 
   private initializeRoutes(): void {
-      this.route.post("/signup", validator(schemaSignUp), this.authController.register);
-      this.route.post("/sign-in", validator(schemaSignIn), this.authController.SignIn);
+    this.route.post(
+      "/signup",
+      validator(schemaSignUp),
+      this.authController.register
+    );
+    this.route.post(
+      "/sign-in",
+      validator(schemaSignIn),
+      this.authController.SignIn
+    );
 
-      this.route.use(verifyToken);
-      this.route.get("/verify", this.authController.verifyAccount);
+    this.route.use(verifyToken);
+    this.route.get("/verify", this.authController.verifyAccount);
+    this.route.get("/keep-login", this.authController.keepLogin);
+    this.route.get("/logout", this.authController.logOut);
   }
 
   public getRouter(): Router {
