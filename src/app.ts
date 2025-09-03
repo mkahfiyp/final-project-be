@@ -4,6 +4,7 @@ import cors from "cors";
 import express, { Application, NextFunction, Request, Response } from "express";
 import AuthRouter from "./routers/auth.router";
 import { erorrCallback } from "./errors/errorCallback";
+import cookieParser from "cookie-parser";
 const PORT: string = process.env.PORT || "8181";
 class App {
   public app: Application;
@@ -16,7 +17,13 @@ class App {
   }
 
   private configure(): void {
-    this.app.use(cors());
+    this.app.use(
+      cors({
+        origin: process.env.FE_URL, // frontend
+        credentials: true,
+      })
+    );
+    this.app.use(cookieParser());
     this.app.use(express.json());
   }
 
