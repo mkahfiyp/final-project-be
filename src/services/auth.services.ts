@@ -7,24 +7,22 @@ import { regisMailTemplate } from "../templates/regist.template";
 import { createToken } from "../utils/createToken";
 
 export const regisService = async (data: SignUpDTO) => {
-  const isEmailExist = await FindUserByEmail(data.email);
-  if (isEmailExist) {
-    throw new AppError("Email Already Exist", 404);
-  }
+  let user = await FindUser(data.email);
 
-  if (user && !user.isVerfied) {
-    user = await updateAccountRegis(data);
+  if (user && user.isVerfied) {
+    throw new AppError("the account is already registered!", 409)
   }
 
   if (!user) {
     user = await createAccount(data);
   }
-  const user = await createAccount(data);
+
+  await updateAccountRegis(data);
 
   //  Create token for verify
   const token = createToken(
     {
-      id: user.user_id,
+      id: user?.user_id,
       email: user.email,
       isVerified: user.isVerfied,
       role: user.role,
@@ -49,7 +47,7 @@ export const regisService = async (data: SignUpDTO) => {
 
 export const SignInService = async (data: SignInDTO) => {
   const { email, password } = data;
-  const user = await FindUserByEmail(email);
+  const user = await FindUser(email);
   if (!user) {
     throw new AppError("email or password invalid", 402);
   }
