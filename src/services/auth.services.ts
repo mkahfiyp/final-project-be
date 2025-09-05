@@ -2,11 +2,7 @@ import { compare } from "bcrypt";
 import { transport } from "../config/nodemailer";
 import { SignInDTO, SignUpDTO } from "../dto/auth.dto";
 import AppError from "../errors/appError";
-import {
-  FindUser,
-  createAccount,
-  findUsername,
-} from "../repositories/auth.repository";
+import { FindUser, createAccount, updateAccountRegis } from "../repositories/auth.repository";
 import { regisMailTemplate } from "../templates/regist.template";
 import { createToken } from "../utils/createToken";
 
@@ -14,6 +10,10 @@ export const regisService = async (data: SignUpDTO) => {
   let user = await FindUser(data.email);
   if (user && user.isVerfied) {
     throw new AppError("Account sudah terdaftar", 409);
+  }
+
+  if (user && !user.isVerfied) {
+    user = await updateAccountRegis(data);
   }
 
   if (!user) {
