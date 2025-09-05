@@ -3,29 +3,37 @@ import { transport } from "../config/nodemailer";
 import { SignInDTO, SignUpDTO } from "../dto/auth.dto";
 import AppError from "../errors/appError";
 import {
-  FindUser,
   createAccount,
-  findUsername,
+  FindUserByEmail,
+  findUserByUsername,
 } from "../repositories/auth.repository";
 import { regisMailTemplate } from "../templates/regist.template";
 import { createToken } from "../utils/createToken";
 
 export const regisService = async (data: SignUpDTO) => {
-  let user = await FindUser(data.email);
-  if (user && user.isVerfied) {
-    throw new AppError("Account sudah terdaftar", 409);
+  const isEmailExist = await FindUserByEmail(data.email);
+  if (isEmailExist) {
+    throw new AppError("Email Already Exist", 404);
   }
-
-  if (!user) {
-    user = await createAccount(data);
+  const isUsernameExist = await findUserByUsername(data.username);
+  if (isUsernameExist) {
+    throw new AppError("Username Already Exist", 404);
   }
+  const user = await createAccount(data);
 
   //  Create token for verify
   const token = createToken(
-    { id: user.user_id, isVerified: user.isVerfied, role: user.role },
+    {
+      id: user.user_id,
+      email: user.email,
+      isVerified: user.isVerfied,
+      role: user.role,
+    },
     "15m"
   );
-
+  if (!token) {
+    throw new AppError("server faild create token", 500);
+  }
   // Define url to front end verify page
   const urlToFE = `${process.env.FE_URL}/verify/${token}`;
 
@@ -36,26 +44,18 @@ export const regisService = async (data: SignUpDTO) => {
     html: regisMailTemplate(data.username, urlToFE),
   });
 
-  return user;
+  return token;
 };
 
 export const SignInService = async (data: SignInDTO) => {
   const { email, password } = data;
-  const user = await FindUser(email);
-
+  const user = await FindUserByEmail(email);
   if (!user) {
     throw new AppError("email or password invalid", 402);
   }
-
-  if (!user.isVerfied) {
-    throw new AppError("Account Not Verified", 402);
-  }
-  console.log(user);
   const comparePassword = await compare(password, user.password);
-
   if (!comparePassword) {
     throw new AppError("email or password invalid", 400);
   }
-
   return user;
 };

@@ -5,6 +5,8 @@ import express, { Application, NextFunction, Request, Response } from "express";
 import AuthRouter from "./routers/auth.router";
 import { erorrCallback } from "./errors/errorCallback";
 import cookieParser from "cookie-parser";
+import { unknown } from "zod";
+import AppError from "./errors/appError";
 const PORT: string = process.env.PORT || "8181";
 class App {
   public app: Application;
@@ -34,6 +36,9 @@ class App {
       res.status(200).send("<h1>Classbase API</h1>");
     });
     this.app.use("/auth", authRouter.getRouter());
+    this.app.use((req: Request, res: Response, next: NextFunction) => {
+      throw new AppError("Route Not Found", 404);
+    });
   }
 
   private errorHandler = (): void => {

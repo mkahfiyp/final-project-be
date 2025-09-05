@@ -4,75 +4,70 @@ import { prisma } from "../config/prisma";
 import { createToken } from "../utils/createToken";
 import AppError from "../errors/appError";
 import { sendResponse } from "../utils/sendResponse";
+import { SignInMap } from "../mappers/auth.mappers";
 
 class AuthController {
-  public async register(req: Request, res: Response, next: NextFunction) {
+  register = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { confirmPassword, ...data } = req.body;
-      const newUser = await regisService(data);
-
-      res.status(201).send({
-        success: true,
-        message: "Add Data Success",
-        data: newUser,
-      });
+      await regisService(req.body);
+      sendResponse(res, "Registration success", 200);
     } catch (error) {
       next(error);
     }
-  }
-
+  };
   SignIn = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await SignInService(req.body);
-
+      const { remember, ...data } = req.body;
+      const result = await SignInService(data);
       const token = createToken(
-        { id: result.user_id, isVerified: result.isVerfied, role: result.role },
-        "30d"
+        {
+          id: result.user_id,
+          email: result.email,
+          isVerified: result.isVerfied,
+          role: result.role,
+        },
+        remember ? "30d" : "1d"
       );
 
       res.cookie("token", token, {
-        httpOnly: true, // tidak bisa diakses JS frontend (lebih aman)
-        secure: process.env.NODE_ENV === "production", // hanya https kalau production
+        httpOnly: true,
+        secure: true,
         sameSite: "strict", // cegah CSRF
-        maxAge: 24 * 60 * 60 * 1000, // 1 hari
+        maxAge: remember
+          ? 30 * 24 * 60 * 60 * 1000 // 30 hari
+          : 24 * 60 * 60 * 1000, // 1 hari
       });
-      res.status(200).json({
-        success: true,
-      });
+
+      const payload = SignInMap(result);
+      sendResponse(res, `Hello ${result.username}`, 200, payload);
     } catch (error) {
       next(error);
     }
   };
-
-  public async verifyAccount(req: Request, res: Response, next: NextFunction) {
+  verifyAccount = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const account = await prisma.users.update({
+      await prisma.users.update({
         where: {
-          user_id: parseInt(res.locals.decript.id),
+          user_id: res.locals.decript.id,
         },
         data: { isVerfied: true },
       });
-      res.status(200).send({
-        success: true,
-        message: "Verification success",
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  keepLogin = (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const id = res.locals.decript.id;
-      if (!id) {
-        throw new AppError("Unauthorized", 402);
-      }
-      sendResponse(res, "keep login", 200);
+      sendResponse(res, "verification success", 200);
     } catch (error) {
       next(error);
     }
   };
-
+  keepLogin = (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email, role } = res.locals.decript;
+      if (!email) {
+        throw new AppError("Unauthorized", 402);
+      }
+      sendResponse(res, "keep login", 200, { email, role });
+    } catch (error) {
+      next(error);
+    }
+  };
   logOut = (req: Request, res: Response, next: NextFunction) => {
     try {
       res.clearCookie("token");
@@ -82,5 +77,4 @@ class AuthController {
     }
   };
 }
-
 export default AuthController;

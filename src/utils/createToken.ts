@@ -5,11 +5,17 @@ interface ICreateToken {
   id: number;
   isVerified: boolean;
   role: Role;
+  email: string;
 }
 
 export const createToken = (user: ICreateToken, expiresIn: any) => {
   const token = sign(
-    { id: user.id, isVerified: user.isVerified, role: user.role },
+    {
+      id: user.id,
+      email: user.email,
+      isVerified: user.isVerified,
+      role: user.role,
+    },
     process.env.TOKEN_KEY || "secret",
     { expiresIn }
   );
