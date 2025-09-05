@@ -6,5 +6,5 @@ export const sendResponse = <T>(
   statusCode: number,
   data?: T
 ) => {
-  return res.status(statusCode).json({ success: true, message, data });
+  return res.status(statusCode).json({ success: true, message, ...data });
 };

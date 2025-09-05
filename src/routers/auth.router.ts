@@ -2,7 +2,7 @@ import { Router } from "express";
 import AuthController from "../controllers/auth.controller";
 import { schemaSignIn, schemaSignUp } from "../middleware/validation/auth";
 import { validator } from "../middleware/validation/validator";
-import { verifyToken } from "../middleware/verifyToken";
+import { verifyToken, verifyTokenEmail } from "../middleware/verifyToken";
 
 class AuthRouter {
   private route: Router;
@@ -25,9 +25,12 @@ class AuthRouter {
       validator(schemaSignIn),
       this.authController.SignIn
     );
-
+    this.route.get(
+      "/verify",
+      verifyTokenEmail,
+      this.authController.verifyAccount
+    );
     this.route.use(verifyToken);
-    this.route.get("/verify", this.authController.verifyAccount);
     this.route.get("/keep-login", this.authController.keepLogin);
     this.route.get("/logout", this.authController.logOut);
   }
