@@ -3,34 +3,21 @@ import { SignUpDTO } from "../dto/auth.dto";
 import { hashPassword } from "../utils/hash";
 
 export const createAccount = async (data: SignUpDTO) => {
-  return await prisma.$transaction(async (tx) => {
-    const user = await tx.users.create({
-      data: {
-        ...data, password: await hashPassword(data.password),
-      },
-    });
-
-    if (data.role === "COMPANY") {
-      await tx.companies.create({
-        data: {
-          name: data.name,
-          email: data.email,
-          user_id: user.user_id
-        }
-      })
-    } else {
-      await tx.profiles.create({
-        data: {
-          name: data.name,
-          email: data.email,
-          user_id: user.user_id
-        }
-      })
+  const user = await prisma.users.create({
+    data: {
+      ...data, password: await hashPassword(data.password)
     }
-
-    return user;
   });
+
+  return user;
 };
+
+export const updateAccountRegis = async (data: SignUpDTO) => {
+  return await prisma.users.update({
+    where: { email: data.email },
+    data: { ...data, password: await hashPassword(data.password) }
+  })
+}
 
 export const FindUser = async (email: string) => {
   return await prisma.users.findUnique({
