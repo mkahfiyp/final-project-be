@@ -13,11 +13,13 @@ export const regisService = async (data: SignUpDTO) => {
     throw new AppError("the account is already registered!", 409)
   }
 
+  if (user && !user.isVerfied) {
+    await updateAccountRegis(data);
+  }
+
   if (!user) {
     user = await createAccount(data);
   }
-
-  await updateAccountRegis(data);
 
   //  Create token for verify
   const token = createToken(
