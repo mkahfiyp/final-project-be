@@ -2,11 +2,7 @@ import { compare } from "bcrypt";
 import { transport } from "../config/nodemailer";
 import { SignInDTO, SignUpDTO } from "../dto/auth.dto";
 import AppError from "../errors/appError";
-import {
-  createAccount,
-  FindUserByEmail,
-  findUserByUsername,
-} from "../repositories/auth.repository";
+import { FindUser, createAccount, updateAccountRegis } from "../repositories/auth.repository";
 import { regisMailTemplate } from "../templates/regist.template";
 import { createToken } from "../utils/createToken";
 
@@ -15,9 +11,13 @@ export const regisService = async (data: SignUpDTO) => {
   if (isEmailExist) {
     throw new AppError("Email Already Exist", 404);
   }
-  const isUsernameExist = await findUserByUsername(data.username);
-  if (isUsernameExist) {
-    throw new AppError("Username Already Exist", 404);
+
+  if (user && !user.isVerfied) {
+    user = await updateAccountRegis(data);
+  }
+
+  if (!user) {
+    user = await createAccount(data);
   }
   const user = await createAccount(data);
 
