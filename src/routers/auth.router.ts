@@ -1,6 +1,11 @@
 import { Router } from "express";
 import AuthController from "../controllers/auth.controller";
-import { schemaSignIn, schemaSignUp } from "../middleware/validation/auth";
+import {
+  schemaForgetPassword,
+  schemaResetPassword,
+  schemaSignIn,
+  schemaSignUp,
+} from "../middleware/validation/auth";
 import { validator } from "../middleware/validation/validator";
 import { verifyToken, verifyTokenEmail } from "../middleware/verifyToken";
 
@@ -29,6 +34,17 @@ class AuthRouter {
       "/verify",
       verifyTokenEmail,
       this.authController.verifyAccount
+    );
+    this.route.post(
+      "/forget-password",
+      validator(schemaForgetPassword),
+      this.authController.requestForgetPassword
+    );
+    this.route.post(
+      "/reset-password",
+      validator(schemaResetPassword),
+      verifyTokenEmail,
+      this.authController.resetPassword
     );
     this.route.use(verifyToken);
     this.route.get("/keep-login", this.authController.keepLogin);

@@ -71,3 +71,10 @@ export const createRoleUserCompany = async (id: number) => {
     return userCompany;
   });
 };
+
+export const resetPassword = async (id: number, password: string) => {
+  return await prisma.users.update({
+    where: { user_id: id },
+    data: { password: await hashPassword(password) },
+  });
+};

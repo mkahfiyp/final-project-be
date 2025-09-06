@@ -23,3 +23,9 @@ export const schemaSignIn = z.object({
   password: z.string().nonempty("Password required"),
   remember: z.boolean(),
 });
+export const schemaForgetPassword = z.object({
+  email: z.email("Invalid email"),
+});
+export const schemaResetPassword = z.object({
+  newPassword: z.string().nonempty("password required"),
+});
