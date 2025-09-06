@@ -327,18 +327,11 @@ model AssessmentQuestions {
   option_b               String
   option_c               String
   option_d               String
-  correct_option         CorrectOption
+  correct_option         CorrectOptionEnum
   createAt               DateTime      @default(now())
   updatedAt              DateTime      @updatedAt
 
   assessment SkillAssessments @relation(fields: [assessment_id], references: [assessment_id])
-}
-
-enum CorrectOption {
-  a
-  b
-  c
-  d
 }
 
 // END KAHFI

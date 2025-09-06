@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import { unknown } from "zod";
 import AppError from "./errors/appError";
 import SkillRouter from "./routers/skill.router";
+import QuestionRouter from "./routers/question.router";
 const PORT: string = process.env.PORT || "8181";
 class App {
   public app: Application;
@@ -33,12 +34,14 @@ class App {
   private route(): void {
     const authRouter: AuthRouter = new AuthRouter();
     const skillRouter: SkillRouter = new SkillRouter();
+    const questionRouter: QuestionRouter = new QuestionRouter();
 
     this.app.get("/", (req: Request, res: Response, next: NextFunction) => {
       res.status(200).send("<h1>Classbase API</h1>");
     });
     this.app.use("/auth", authRouter.getRouter());
     this.app.use("/skillAssessments", skillRouter.getRouter());
+    this.app.use("/questions", questionRouter.getRouter());
     this.app.use((req: Request, res: Response, next: NextFunction) => {
       throw new AppError("Route Not Found", 404);
     });
