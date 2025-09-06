@@ -1,5 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { regisService, SignInService } from "../services/auth.services";
+import {
+  regisService,
+  SignInService,
+  VerifyEmailService,
+} from "../services/auth.services";
 import { prisma } from "../config/prisma";
 import { createToken } from "../utils/createToken";
 import AppError from "../errors/appError";
@@ -46,12 +50,11 @@ class AuthController {
   };
   verifyAccount = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await prisma.users.update({
-        where: {
-          user_id: res.locals.decript.id,
-        },
-        data: { isVerfied: true },
-      });
+      const { id, role } = res.locals.decript;
+      const user = await VerifyEmailService(id, role);
+      if (!user) {
+        throw new AppError("Faild Verify Account", 500);
+      }
       sendResponse(res, "verification success", 200);
     } catch (error) {
       next(error);
