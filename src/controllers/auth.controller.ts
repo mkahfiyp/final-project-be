@@ -1,6 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import { regisService, SignInService } from "../services/auth.services";
-import { prisma } from "../config/prisma";
+import {
+  regisService,
+  requestForgetPasswordService,
+  resetPasswordService,
+  SignInService,
+  verifyEmailService,
+} from "../services/auth.services";
 import { createToken } from "../utils/createToken";
 import AppError from "../errors/appError";
 import { sendResponse } from "../utils/sendResponse";
@@ -46,12 +51,11 @@ class AuthController {
   };
   verifyAccount = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await prisma.users.update({
-        where: {
-          user_id: res.locals.decript.id,
-        },
-        data: { isVerfied: true },
-      });
+      const { id, role } = res.locals.decript;
+      const user = await verifyEmailService(id, role);
+      if (!user) {
+        throw new AppError("Faild Verify Account", 500);
+      }
       sendResponse(res, "verification success", 200);
     } catch (error) {
       next(error);
@@ -72,6 +76,30 @@ class AuthController {
     try {
       res.clearCookie("token");
       sendResponse(res, "log out success", 200);
+    } catch (error) {
+      next(error);
+    }
+  };
+  requestForgetPassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const user = await requestForgetPasswordService(req.body.email);
+      if (user) {
+        sendResponse(res, "success send request", 200);
+      }
+    } catch (error) {
+      next(error);
+    }
+  };
+  resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = res.locals.decript.id;
+      const password = req.body.newPassword;
+      await resetPasswordService(id, password);
+      sendResponse(res, "success reset password", 200);
     } catch (error) {
       next(error);
     }
