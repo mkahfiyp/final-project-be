@@ -46,6 +46,22 @@ class AccountRepository {
       return user;
     });
   };
-  createEducation = async (data: CreateEducationDTO, id: number) => {};
+  createEducation = async (data: CreateEducationDTO, id: number) => {
+    return await prisma.education.create({
+      data: { ...data, user_id: id },
+    });
+  };
+  getEducationList = async (id: number) => {
+    return await prisma.education.findMany({
+      where: { user_id: id },
+      omit: { user_id: true },
+    });
+  };
+  getEducationById = async (education_id: number) => {
+    return await prisma.education.findUnique({
+      where: { education_id },
+      omit: { user_id: true },
+    });
+  };
 }
 export default AccountRepository;

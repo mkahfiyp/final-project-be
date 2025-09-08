@@ -49,6 +49,38 @@ class AccountController {
   };
   createEducation = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const { id } = res.locals.decript;
+      await this.accountService.createEducation(req.body, id);
+      sendResponse(res, "success created", 200);
+    } catch (error) {
+      next(error);
+    }
+  };
+  getEducationList = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const id = res.locals.decript.id;
+      const data = await this.accountService.getEducationList(id);
+      sendResponse(res, "success get education list", 200, data);
+    } catch (error) {
+      next(error);
+    }
+  };
+  getEducationDetail = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const education_id = Number(req.params.education_id);
+      if (!education_id) {
+        throw new AppError("incorect req params", 400);
+      }
+      const data = await this.accountService.getDetailEducation(education_id);
+      sendResponse(res, "success get education detail", 200, data);
     } catch (error) {
       next(error);
     }
