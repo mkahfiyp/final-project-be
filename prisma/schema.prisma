@@ -70,7 +70,8 @@ model Users {
   user_id   Int      @id @default(autoincrement())
   username  String   @unique
   email     String   @unique
-  password  String
+  googleId  String?  @unique
+  password  String?
   name      String
   role      Role
   isVerfied Boolean  @default(false)
@@ -80,6 +81,8 @@ model Users {
   ///Relation
   companies        Companies?
   profiles         Profiles?
+  education        Education[]
+  experience       Experience[]
   job_save         JobSave[]
   applications     Applications[]
   user_subcription UserSubscriptions[]
@@ -95,17 +98,18 @@ enum Role {
 }
 
 model Companies {
-  company_id   Int             @id @default(autoincrement())
-  name         String
-  email        String          @unique
-  phone        String?
-  description  String?
-  website      String?
+  company_id      Int             @id @default(autoincrement())
+  name            String
+  email           String          @unique
+  phone           String?
+  description     String?
+  website         String?
+  profile_picture String?
   // password     String
-  usersId      Int?
-  user_company UserCompanies[]
-  job          Jobs[]
-  Users        Users?          @relation(fields: [user_id], references: [user_id])
+  usersId         Int?
+  user_company    UserCompanies[]
+  job             Jobs[]
+  Users           Users?          @relation(fields: [user_id], references: [user_id])
 
   user_id Int @unique
 }
@@ -115,6 +119,7 @@ model Profiles {
   email           String    @unique
   name            String
   education       String?
+  phone           String?
   birthDate       DateTime?
   gender          Gender?
   address         String?
@@ -122,6 +127,28 @@ model Profiles {
 
   Users   Users? @relation(fields: [user_id], references: [user_id])
   user_id Int?   @unique
+}
+
+model Education {
+  education_id Int       @id @default(autoincrement())
+  degree       String
+  fieldOfStudy String
+  starDate     DateTime?
+  endDate      DateTime
+  description  String?
+  Users        Users?    @relation(fields: [user_id], references: [user_id])
+  user_id      Int?
+}
+
+model Experience {
+  experience_id Int       @id @default(autoincrement())
+  name          String
+  position      String
+  startDate     DateTime?
+  endDate       DateTime
+  description   String?
+  Users         Users?    @relation(fields: [user_id], references: [user_id])
+  user_id       Int?
 }
 
 enum Gender {
@@ -320,7 +347,7 @@ model UserCompanies {
 }
 
 model AssessmentQuestions {
-  assessment_question_id Int           @id @default(autoincrement())
+  assessment_question_id Int               @id @default(autoincrement())
   assessment_id          Int
   question               String
   option_a               String
@@ -328,8 +355,8 @@ model AssessmentQuestions {
   option_c               String
   option_d               String
   correct_option         CorrectOptionEnum
-  createAt               DateTime      @default(now())
-  updatedAt              DateTime      @updatedAt
+  createAt               DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
 
   assessment SkillAssessments @relation(fields: [assessment_id], references: [assessment_id])
 }

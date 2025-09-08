@@ -12,3 +12,10 @@ export interface SignUpDTO {
   role: Role;
   password: string;
 }
+export interface SignUpGoogleDTO {
+  name: string;
+  email: string;
+  profile_picture: string | null;
+  role: Role;
+  googleId: string;
+}
