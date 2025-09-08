@@ -105,8 +105,6 @@ model Companies {
   description     String?
   website         String?
   profile_picture String?
-  // password     String
-  usersId         Int?
   user_company    UserCompanies[]
   job             Jobs[]
   Users           Users?          @relation(fields: [user_id], references: [user_id])
@@ -133,8 +131,8 @@ model Education {
   education_id Int       @id @default(autoincrement())
   degree       String
   fieldOfStudy String
-  starDate     DateTime?
-  endDate      DateTime
+  starDate     DateTime //ini nanti dibalikan
+  endDate      DateTime?
   description  String?
   Users        Users?    @relation(fields: [user_id], references: [user_id])
   user_id      Int?
@@ -144,8 +142,8 @@ model Experience {
   experience_id Int       @id @default(autoincrement())
   name          String
   position      String
-  startDate     DateTime?
-  endDate       DateTime
+  startDate     DateTime //ini nanti dibalikan
+  endDate       DateTime?
   description   String?
   Users         Users?    @relation(fields: [user_id], references: [user_id])
   user_id       Int?

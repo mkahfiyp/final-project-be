@@ -87,6 +87,10 @@ export const createAccountWithGoogle = async (data: SignUpGoogleDTO) => {
         googleId: data.googleId,
         isVerfied: true,
       },
+      include: {
+        profiles: true,
+        companies: true,
+      },
     });
     if (newUser.role === Role.USER) {
       await tx.profiles.create({
@@ -107,16 +111,48 @@ export const createAccountWithGoogle = async (data: SignUpGoogleDTO) => {
         },
       });
     }
-    return newUser;
+
+    const userWithRelation = await tx.users.findUnique({
+      where: { user_id: newUser.user_id },
+      include: { profiles: true, companies: true },
+    });
+
+    return userWithRelation;
   });
 };
 export const findUserByGoogleId = async (googleId: string) => {
   return await prisma.users.findUnique({
     where: { googleId },
+    include: { profiles: true, companies: true },
   });
 };
 export const findUserById = async (id: number) => {
   return await prisma.users.findUnique({
     where: { user_id: id },
+  });
+};
+export const getProfile = async (id: number) => {
+  return await prisma.profiles.findUnique({
+    where: {
+      user_id: id,
+    },
+  });
+};
+export const getCompanyProfile = async (id: number) => {
+  return await prisma.companies.findUnique({
+    where: {
+      user_id: id,
+    },
+  });
+};
+export const FinWithGetDataUser = async (email: string) => {
+  return await prisma.users.findUnique({
+    where: {
+      email: email,
+    },
+    include: {
+      profiles: true,
+      companies: true,
+    },
   });
 };

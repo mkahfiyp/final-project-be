@@ -8,3 +8,12 @@ export interface UpdateProfileRoleUserDto {
   profile_picture: string;
   address: string;
 }
+
+export interface CreateEducationDTO {
+  university: string;
+  degree: string;
+  fieldOfStudy: string;
+  startDate: Date;
+  endDate: Date;
+  description: string | undefined;
+}

@@ -25,7 +25,6 @@ class AccountController {
       next(error);
     }
   };
-
   updateProfileRoleUser = async (
     req: Request,
     res: Response,
@@ -44,6 +43,12 @@ class AccountController {
       if (user) {
         sendResponse(res, "update success", 200);
       }
+    } catch (error) {
+      next(error);
+    }
+  };
+  createEducation = async (req: Request, res: Response, next: NextFunction) => {
+    try {
     } catch (error) {
       next(error);
     }

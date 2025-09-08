@@ -13,7 +13,11 @@ import AppError from "../errors/appError";
 import { sendResponse } from "../utils/sendResponse";
 import { SignInMap } from "../mappers/auth.mappers";
 import { getDataFromGoogle } from "../utils/getPaylodGoogle";
-import { findUserByGoogleId } from "../repositories/auth.repository";
+import {
+  findUserByGoogleId,
+  FinWithGetDataUser,
+} from "../repositories/auth.repository";
+import { Role } from "../../prisma/generated/client";
 
 class AuthController {
   register = async (req: Request, res: Response, next: NextFunction) => {
@@ -68,10 +72,19 @@ class AuthController {
   keepLogin = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, role } = res.locals.decript;
-      if (!email) {
+      const user = await FinWithGetDataUser(email);
+      if (!user) {
         throw new AppError("Unauthorized", 402);
       }
-      sendResponse(res, "keep login", 200, { email, role });
+      const payload = {
+        email,
+        role,
+        profile_picture:
+          user.role === Role.COMPANY
+            ? user.companies?.profile_picture
+            : user.profiles?.profile_picture,
+      };
+      sendResponse(res, "keep login", 200, payload);
     } catch (error) {
       next(error);
     }
@@ -147,6 +160,7 @@ class AuthController {
       if (!result) {
         throw new AppError("user not register", 400);
       }
+      console.log(result.companies?.profile_picture);
       const token = createToken(
         {
           id: result.user_id,
