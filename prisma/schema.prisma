@@ -129,9 +129,10 @@ model Profiles {
 
 model Education {
   education_id Int       @id @default(autoincrement())
+  university   String
   degree       String
   fieldOfStudy String
-  starDate     DateTime //ini nanti dibalikan
+  startDate    DateTime //ini nanti dibalikan
   endDate      DateTime?
   description  String?
   Users        Users?    @relation(fields: [user_id], references: [user_id])

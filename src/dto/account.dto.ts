@@ -14,6 +14,6 @@ export interface CreateEducationDTO {
   degree: string;
   fieldOfStudy: string;
   startDate: Date;
-  endDate: Date;
-  description: string | undefined;
+  endDate?: Date;
+  description?: string;
 }

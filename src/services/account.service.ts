@@ -1,3 +1,4 @@
+import { id } from "zod/v4/locales/index.cjs";
 import {
   CreateEducationDTO,
   UpdateProfileRoleUserDto,
@@ -25,7 +26,27 @@ class AccountService {
     }
     return result;
   };
-  createEducation = async (data: CreateEducationDTO) => {};
+  createEducation = async (data: CreateEducationDTO, id: number) => {
+    const result = await this.accountRepository.createEducation(data, id);
+    if (!result) {
+      throw new AppError("faild create", 500);
+    }
+    return result;
+  };
+  getEducationList = async (id: number) => {
+    const result = await this.accountRepository.getEducationList(id);
+    if (!result) {
+      throw new AppError("faild get education list", 500);
+    }
+    return result;
+  };
+  getDetailEducation = async (education_id: number) => {
+    const result = await this.accountRepository.getEducationById(education_id);
+    if (!result) {
+      throw new AppError("data not found", 400);
+    }
+    return result;
+  };
 }
 
 export default AccountService;
