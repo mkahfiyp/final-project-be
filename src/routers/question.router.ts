@@ -13,7 +13,9 @@ class QuestionRouter {
 
     private initializeRoutes(): void {
         this.route.get("/:id", this.questionController.getDataByAssessmentId);
-        this.route.post("/:id", this.questionController.createForAssessment);
+        this.route.post("/:id", this.questionController.createQuestionsForAssessment);
+        this.route.delete("/:id", this.questionController.deleteAllQuestionsByAssessmentId);
+        this.route.put("/:id", this.questionController.updateAssessmentQuestions);
     }
 
     public getRouter(): Router {

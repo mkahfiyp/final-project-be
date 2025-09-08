@@ -1,11 +1,16 @@
-import { CorrectOption } from "../../prisma/generated/client";
+import z from "zod";
+import { CorrectOptionEnum } from "../../prisma/generated/client";
 
-export interface CreateQuestionDTO {
-    // assessment_id: number;
-    question: string;
-    option_a: string;
-    option_b: string;
-    option_c: string;
-    option_d: string;
-    correct_option: CorrectOption;
-}
+const AssessmentQuestionDto = z.object({
+    assessment_question_id: z.number().optional(),
+    question: z.string().min(1, "Question is required"),
+    option_a: z.string().min(1),
+    option_b: z.string().min(1),
+    option_c: z.string().min(1),
+    option_d: z.string().min(1),
+    correct_option: z.nativeEnum(CorrectOptionEnum),
+});
+
+export const AssessmentQuestionsDto = z.array(AssessmentQuestionDto);
+
+export type AssessmentQuestionInput = z.infer<typeof AssessmentQuestionDto>;
