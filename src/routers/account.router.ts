@@ -1,0 +1,41 @@
+import { Router } from "express";
+import AccountController from "../controllers/account.controller";
+import { verifyToken } from "../middleware/verifyToken";
+import { validatorRole } from "../middleware/validatorRole";
+import { Role } from "../../prisma/generated/client";
+import { uploadMemory } from "../middleware/uploader";
+import { validator } from "../middleware/validation/validator";
+import { schemaUpdateProfileRoleUser } from "../middleware/validation/account.validation";
+
+class AccountRouter {
+  private route: Router;
+  private accountController: AccountController;
+
+  constructor() {
+    this.route = Router();
+    this.accountController = new AccountController();
+    this.initializeRoutes();
+  }
+
+  private initializeRoutes(): void {
+    this.route.use(verifyToken);
+    this.route.get(
+      "/get-data/user",
+      validatorRole(Role.USER),
+      this.accountController.getProfileRoleUser
+    );
+    this.route.patch(
+      "/update-profile/user",
+      validatorRole(Role.USER),
+      uploadMemory().single("profile_picture"),
+      validator(schemaUpdateProfileRoleUser),
+      this.accountController.updateProfileRoleUser
+    );
+  }
+
+  public getRouter(): Router {
+    return this.route;
+  }
+}
+
+export default AccountRouter;

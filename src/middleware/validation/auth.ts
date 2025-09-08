@@ -27,5 +27,27 @@ export const schemaForgetPassword = z.object({
   email: z.email("Invalid email"),
 });
 export const schemaResetPassword = z.object({
-  newPassword: z.string().nonempty("password required"),
+  newPassword: passwordSchema,
+});
+export const schemaGoogleAuth = z.object({
+  access_token: z.string().nonempty("access_token required"),
+  role: z.enum(["USER", "COMPANY"]),
+});
+
+export const schemaDataGoogle = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.email("Invalid email"),
+  profile_picture: z.url().optional(), // karena Google selalu ada, tapi opsional jika nanti ada fallback
+  role: z.enum(["USER", "COMPANY"]), // atau z.string() jika bebas
+  googleId: z.string().min(1, "Google ID is required"),
+});
+
+export const schemaSignGoogle = z.object({
+  access_token: z.string().nonempty("access_token required"),
+  remember: z.boolean(),
+});
+
+export const schemaChangePassword = z.object({
+  currentPassword: z.string().nonempty("Password required"),
+  newPassword: passwordSchema,
 });

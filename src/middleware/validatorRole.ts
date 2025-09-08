@@ -5,10 +5,10 @@ import AppError from "../errors/appError";
 export const validatorRole =
   (role: Role) => (req: Request, res: Response, next: NextFunction) => {
     try {
-      if (role === res.locals.decript.role) {
-        next();
+      if (role !== res.locals.decript.role) {
+        throw new AppError("Unauthorized", 401);
       }
-      throw new AppError("Unauthorized", 401);
+      next();
     } catch (error) {
       next(error);
     }

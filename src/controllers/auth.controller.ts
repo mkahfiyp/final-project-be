@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import {
+  changePasswordService,
   regisService,
+  registerGoogleService,
   requestForgetPasswordService,
   resetPasswordService,
   SignInService,
@@ -10,6 +12,8 @@ import { createToken } from "../utils/createToken";
 import AppError from "../errors/appError";
 import { sendResponse } from "../utils/sendResponse";
 import { SignInMap } from "../mappers/auth.mappers";
+import { getDataFromGoogle } from "../utils/getPaylodGoogle";
+import { findUserByGoogleId } from "../repositories/auth.repository";
 
 class AuthController {
   register = async (req: Request, res: Response, next: NextFunction) => {
@@ -61,7 +65,7 @@ class AuthController {
       next(error);
     }
   };
-  keepLogin = (req: Request, res: Response, next: NextFunction) => {
+  keepLogin = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, role } = res.locals.decript;
       if (!email) {
@@ -72,7 +76,7 @@ class AuthController {
       next(error);
     }
   };
-  logOut = (req: Request, res: Response, next: NextFunction) => {
+  logOut = async (req: Request, res: Response, next: NextFunction) => {
     try {
       res.clearCookie("token");
       sendResponse(res, "log out success", 200);
@@ -100,6 +104,78 @@ class AuthController {
       const password = req.body.newPassword;
       await resetPasswordService(id, password);
       sendResponse(res, "success reset password", 200);
+    } catch (error) {
+      next(error);
+    }
+  };
+  registerGoogle = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const payload = await getDataFromGoogle(req.body.access_token);
+      const role = req.body.role;
+      if (!payload) {
+        throw new AppError("server cannot get payload from google", 500);
+      }
+      const result = await registerGoogleService(payload, role);
+      const token = createToken(
+        {
+          id: result.user_id,
+          email: result.email,
+          isVerified: result.isVerfied,
+          role: result.role,
+        },
+        "1d"
+      );
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict", // cegah CSRF
+        maxAge: 24 * 60 * 60 * 1000, // 1 hari
+      });
+      sendResponse(res, `Hello ${result.username}`, 200, SignInMap(result));
+    } catch (error) {
+      next(error);
+    }
+  };
+  signInWithGoole = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const payload = await getDataFromGoogle(req.body.access_token);
+      const { remember } = req.body;
+      if (!payload) {
+        throw new AppError("server cannot get payload from google", 500);
+      }
+      const result = await findUserByGoogleId(payload.sub);
+      if (!result) {
+        throw new AppError("user not register", 400);
+      }
+      const token = createToken(
+        {
+          id: result.user_id,
+          email: result.email,
+          isVerified: result.isVerfied,
+          role: result.role,
+        },
+        remember ? "30d" : "1d"
+      );
+
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict", // cegah CSRF
+        maxAge: remember
+          ? 30 * 24 * 60 * 60 * 1000 // 30 hari
+          : 24 * 60 * 60 * 1000, // 1 hari
+      });
+      sendResponse(res, `Hello ${result.username}`, 200, SignInMap(result));
+    } catch (error) {
+      next(error);
+    }
+  };
+  changePassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = res.locals.decript.id;
+      const { newPassword, currentPassword } = req.body;
+      await changePasswordService(currentPassword, newPassword, id);
+      sendResponse(res, "success", 200);
     } catch (error) {
       next(error);
     }
