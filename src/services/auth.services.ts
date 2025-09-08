@@ -12,6 +12,7 @@ import {
   createAccountWithGoogle,
   findUserByGoogleId,
   findUserById,
+  FinWithGetDataUser,
 } from "../repositories/auth.repository";
 import { regisMailTemplate } from "../templates/regist.template";
 import { createToken } from "../utils/createToken";
@@ -67,7 +68,7 @@ export const regisService = async (data: SignUpDTO) => {
 };
 export const SignInService = async (data: SignInDTO) => {
   const { email, password } = data;
-  const user = await findUser(email);
+  const user = await FinWithGetDataUser(email);
   if (!user?.isVerfied || !user) {
     throw new AppError("account not register", 402);
   }
@@ -131,21 +132,21 @@ export const resetPasswordService = async (id: number, password: string) => {
 };
 export const registerGoogleService = async (data: TokenPayload, role: Role) => {
   const isExist = await findUserByGoogleId(data.sub);
+
   if (isExist) {
     return isExist;
   }
   const dataUser = registerGoogleMap(data, role);
   const isValid = schemaDataGoogle.safeParse(dataUser);
-  console.log(isValid);
+
   if (!isValid.success) {
-    console.log("run1");
     const message = isValid.error.issues[0].message;
     throw new AppError(message, 400);
   }
-  console.log("run");
+
   const result = await createAccountWithGoogle(dataUser as SignUpGoogleDTO);
   if (!result) {
-    throw new AppError("faild create account", 5000);
+    throw new AppError("faild create account", 500);
   }
   return result;
 };

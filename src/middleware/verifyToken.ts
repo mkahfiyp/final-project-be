@@ -17,7 +17,7 @@ export const verifyToken = (
       throw new AppError("server missing secret key", 500);
     }
     const checkToken = verify(token, process.env.TOKEN_KEY);
-
+    console.log("check", checkToken);
     res.locals.decript = checkToken;
     next();
   } catch (error) {

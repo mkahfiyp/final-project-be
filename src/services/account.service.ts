@@ -1,4 +1,7 @@
-import { UpdateProfileRoleUserDto } from "../dto/account.dto";
+import {
+  CreateEducationDTO,
+  UpdateProfileRoleUserDto,
+} from "../dto/account.dto";
 import AppError from "../errors/appError";
 import AccountRepository from "../repositories/account.repository";
 
@@ -22,6 +25,7 @@ class AccountService {
     }
     return result;
   };
+  createEducation = async (data: CreateEducationDTO) => {};
 }
 
 export default AccountService;
