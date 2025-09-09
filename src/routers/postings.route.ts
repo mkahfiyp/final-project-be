@@ -32,6 +32,11 @@ class PostingsRouter {
       validator(schemaJobsInput),
       this.postingsController.createJobPosting
     );
+    this.route.post(
+      "/get-my-job",
+      validatorRole(Role.COMPANY),
+      this.postingsController.getMyJobList
+    );
   }
   public getRouter(): Router {
     return this.route;
