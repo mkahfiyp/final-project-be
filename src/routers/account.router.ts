@@ -13,13 +13,11 @@ import {
 class AccountRouter {
   private route: Router;
   private accountController: AccountController;
-
   constructor() {
     this.route = Router();
     this.accountController = new AccountController();
     this.initializeRoutes();
   }
-
   private initializeRoutes(): void {
     this.route.use(verifyToken);
     this.route.get(
@@ -50,8 +48,17 @@ class AccountRouter {
       validatorRole(Role.USER),
       this.accountController.getEducationDetail
     );
+    this.route.patch(
+      "/education/edit/:education_id",
+      validatorRole(Role.USER),
+      this.accountController.editEducation
+    );
+    this.route.delete(
+      "/education/delete/:education_id",
+      validatorRole(Role.USER),
+      this.accountController.deleteEducation
+    );
   }
-
   public getRouter(): Router {
     return this.route;
   }

@@ -5,6 +5,7 @@ import { sendResponse } from "../utils/sendResponse";
 import { dataRoleUserMap } from "../mappers/account.mappers";
 import { UploadApiResponse } from "cloudinary";
 import { cloudinaryUpload } from "../config/coudinary";
+import { prisma } from "../config/prisma";
 
 class AccountController {
   private accountService = new AccountService();
@@ -83,6 +84,35 @@ class AccountController {
       sendResponse(res, "success get education detail", 200, data);
     } catch (error) {
       next(error);
+    }
+  };
+  editEducation = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const education_id = Number(req.params.education_id);
+      if (!education_id) {
+        throw new AppError("incorect req params", 400);
+      }
+      await this.accountService.editEducation(req.body, education_id);
+      sendResponse(res, "success", 200);
+    } catch (error) {
+      next(error);
+    }
+  };
+  deleteEducation = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const education_id = Number(req.params.education_id);
+      if (!education_id) {
+        throw new AppError("incorect req params", 400);
+      }
+      const result = await prisma.education.delete({
+        where: { education_id },
+      });
+      if (!result) {
+        throw new AppError("failed delete", 400);
+      }
+      sendResponse(res, "success", 200);
+    } catch (error) {
+      console.log(error);
     }
   };
 }

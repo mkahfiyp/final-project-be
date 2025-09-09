@@ -1,8 +1,5 @@
 import { prisma } from "../config/prisma";
-import {
-  CreateEducationDTO,
-  UpdateProfileRoleUserDto,
-} from "../dto/account.dto";
+import { EducationDTO, UpdateProfileRoleUserDto } from "../dto/account.dto";
 
 class AccountRepository {
   getDataRoleUser = async (id: number) => {
@@ -10,14 +7,6 @@ class AccountRepository {
       where: { user_id: id },
       include: {
         profiles: true,
-      },
-    });
-  };
-  getDataRoleCompany = async (id: number) => {
-    return await prisma.users.findUnique({
-      where: { user_id: id },
-      include: {
-        companies: true,
       },
     });
   };
@@ -46,7 +35,7 @@ class AccountRepository {
       return user;
     });
   };
-  createEducation = async (data: CreateEducationDTO, id: number) => {
+  createEducation = async (data: EducationDTO, id: number) => {
     return await prisma.education.create({
       data: { ...data, user_id: id },
     });
@@ -61,6 +50,14 @@ class AccountRepository {
     return await prisma.education.findUnique({
       where: { education_id },
       omit: { user_id: true },
+    });
+  };
+  editEducation = async (data: EducationDTO, education_id: number) => {
+    return await prisma.education.update({
+      where: { education_id },
+      data: {
+        ...data,
+      },
     });
   };
 }

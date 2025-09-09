@@ -1,8 +1,4 @@
-import { id } from "zod/v4/locales/index.cjs";
-import {
-  CreateEducationDTO,
-  UpdateProfileRoleUserDto,
-} from "../dto/account.dto";
+import { EducationDTO, UpdateProfileRoleUserDto } from "../dto/account.dto";
 import AppError from "../errors/appError";
 import AccountRepository from "../repositories/account.repository";
 
@@ -26,7 +22,7 @@ class AccountService {
     }
     return result;
   };
-  createEducation = async (data: CreateEducationDTO, id: number) => {
+  createEducation = async (data: EducationDTO, id: number) => {
     const result = await this.accountRepository.createEducation(data, id);
     if (!result) {
       throw new AppError("faild create", 500);
@@ -44,6 +40,16 @@ class AccountService {
     const result = await this.accountRepository.getEducationById(education_id);
     if (!result) {
       throw new AppError("data not found", 400);
+    }
+    return result;
+  };
+  editEducation = async (data: EducationDTO, education_id: number) => {
+    const result = await this.accountRepository.editEducation(
+      data,
+      education_id
+    );
+    if (!result) {
+      throw new AppError("faild edit education", 500);
     }
     return result;
   };
