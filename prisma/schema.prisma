@@ -158,26 +158,33 @@ enum Gender {
 model Jobs {
   job_id            Int          @id @default(autoincrement())
   title             String
+  slug              String       @unique
   description       String
   category          Category
   latitude          String
-  longtitude        String
+  longitude         String
   location          String
   salary            Int
   periodSalary      PeriodSalary
   currency          Currency
   job_type          JobType
-  requiredSkill     String
-  preselection_test Boolean
+  preselection_test Boolean      @default(false)
 
   expiredAt    DateTime
-  createAt     DateTime       @default(now())
+  createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   Companies    Companies?     @relation(fields: [company_id], references: [company_id])
   company_id   Int?
   job_save     JobSave[]
   selection    Selections?
   applications Applications[]
+  skills       Skills[]       @relation("JobSkills")
+}
+
+model Skills {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  jobs Jobs[] @relation("JobSkills")
 }
 
 enum PeriodSalary {

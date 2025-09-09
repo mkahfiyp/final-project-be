@@ -5,11 +5,13 @@ import express, { Application, NextFunction, Request, Response } from "express";
 import AuthRouter from "./routers/auth.router";
 import { erorrCallback } from "./errors/errorCallback";
 import cookieParser from "cookie-parser";
-import { unknown } from "zod";
 import AppError from "./errors/appError";
 import SkillRouter from "./routers/skill.router";
 import QuestionRouter from "./routers/question.router";
 import AccountRouter from "./routers/account.router";
+
+import PostingsRouter from "./routers/postings.route";
+import CompanyRouter from "./routers/company.route";
 const PORT: string = process.env.PORT || "8181";
 class App {
   public app: Application;
@@ -37,6 +39,8 @@ class App {
     const authRouter: AuthRouter = new AuthRouter();
     const skillRouter: SkillRouter = new SkillRouter();
     const questionRouter: QuestionRouter = new QuestionRouter();
+    const companyRouter: CompanyRouter = new CompanyRouter();
+    const postingsRoter: PostingsRouter = new PostingsRouter();
 
     this.app.get("/", (req: Request, res: Response, next: NextFunction) => {
       res.status(200).send("<h1>Classbase API</h1>");
@@ -45,6 +49,8 @@ class App {
     this.app.use("/account", accountRouter.getRouter());
     this.app.use("/skillAssessments", skillRouter.getRouter());
     this.app.use("/questions", questionRouter.getRouter());
+    this.app.use("/company", companyRouter.getRouter());
+    this.app.use("/postings", postingsRoter.getRouter());
     this.app.use((req: Request, res: Response, next: NextFunction) => {
       throw new AppError("Route Not Found", 404);
     });

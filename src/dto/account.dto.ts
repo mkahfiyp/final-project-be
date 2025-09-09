@@ -9,7 +9,7 @@ export interface UpdateProfileRoleUserDto {
   address: string;
 }
 
-export interface CreateEducationDTO {
+export interface EducationDTO {
   university: string;
   degree: string;
   fieldOfStudy: string;
