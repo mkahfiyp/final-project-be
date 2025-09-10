@@ -287,6 +287,7 @@ model SkillAssessments {
   skill_name    String
   createAt      DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
 
   assessment_questions AssessmentQuestions[]
   user_assessments     UserAssessments[]
