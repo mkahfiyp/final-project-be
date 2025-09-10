@@ -15,6 +15,10 @@ class PostingsRouter {
     this.initializeRoutes();
   }
   private initializeRoutes(): void {
+    // Public routes (no authentication required)
+    this.route.get("/", this.postingsController.getAllJobPostings);
+    
+    // Protected routes (authentication required)
     this.route.use(verifyToken);
     this.route.use(validatorRole(Role.COMPANY));
     this.route.get("/get-general-data", this.postingsController.getGenralData);

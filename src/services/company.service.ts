@@ -26,6 +26,27 @@ class CompanyService {
     }
     return result;
   };
+
+  getAllCompanies = async (filters: {
+    page: number;
+    limit: number;
+    search: string;
+  }) => {
+    const result = await this.companyRepository.getAllCompanies(filters);
+    const totalPage = Math.ceil(result.totalCompanies / filters.limit);
+
+    return {
+      data: result.data,
+      totalCompanies: result.totalCompanies,
+      totalPage,
+      currentPage: filters.page,
+    };
+  };
+
+  getCompanyById = async (companyId: number) => {
+    const result = await this.companyRepository.getCompanyById(companyId);
+    return result;
+  };
 }
 
 export default CompanyService;
