@@ -42,5 +42,45 @@ class CompanyController {
       next(error);
     }
   };
+
+  // Public endpoint to get all companies
+  getAllCompanies = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const search = (req.query.search as string) || "";
+
+      const result = await this.companyService.getAllCompanies({
+        page,
+        limit,
+        search,
+      });
+
+      sendResponse(res, "success get all companies", 200, result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // Public endpoint to get company by ID
+  getCompanyById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const companyId = parseInt(req.params.id);
+      
+      if (!companyId || isNaN(companyId)) {
+        return sendResponse(res, "Invalid company ID", 400);
+      }
+
+      const result = await this.companyService.getCompanyById(companyId);
+      
+      if (!result) {
+        return sendResponse(res, "Company not found", 404);
+      }
+
+      sendResponse(res, "success get company detail", 200, result);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 export default CompanyController;

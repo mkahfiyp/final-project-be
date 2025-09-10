@@ -89,6 +89,7 @@ model Users {
   user_assessment  UserAssessments[]
   user_Company     UserCompanies[]
   selection        Selections[]
+  blogs            Blog[]
 }
 
 enum Role {
@@ -367,6 +368,24 @@ model AssessmentQuestions {
   updatedAt              DateTime          @updatedAt
 
   assessment SkillAssessments @relation(fields: [assessment_id], references: [assessment_id])
+}
+
+// Blog model
+model Blog {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  content       String   @db.Text
+  excerpt       String?  @db.Text
+  featured_image String?
+  author_id     Int
+  published     Boolean  @default(false)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  author        Users    @relation(fields: [author_id], references: [user_id], onDelete: Cascade)
+
+  @@map("blogs")
 }
 
 // END KAHFI
