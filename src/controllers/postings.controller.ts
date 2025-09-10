@@ -8,6 +8,7 @@ import {
 import { prisma } from "../config/prisma";
 import { sendResponse } from "../utils/sendResponse";
 import PostingsService from "../services/postings.service";
+import AppError from "../errors/appError";
 
 class PostingsController {
   private postingsService = new PostingsService();
@@ -39,12 +40,13 @@ class PostingsController {
           },
         },
         select: {
-          name: true,
+          id: true, // ambil id juga
+          name: true, // ambil name
         },
         take: 20,
       });
-      const skillNames = skills.map((s) => s.name);
-      sendResponse(res, "success get skill list", 200, { skillNames });
+
+      sendResponse(res, "success get skill list", 200, { skills });
     } catch (error) {
       next(error);
     }
@@ -68,15 +70,69 @@ class PostingsController {
       const user_id = res.locals.decript.id;
       const search = (req.query.search as string) || "";
       const sort = (req.query.sort as string) || "";
-      const category = (req.query.category as string).toLocaleUpperCase() || "";
+      const category = (
+        (req.query.category as string) || ""
+      ).toLocaleUpperCase();
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 10;
 
       const myJobs = await this.postingsService.getMyJobList(
         search,
         sort,
         category,
-        user_id
+        user_id,
+        page,
+        limit
       );
       sendResponse(res, "success", 200, myJobs);
+    } catch (error) {
+      next(error);
+    }
+  };
+  getDetailJobPostingForEdit = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const result = await this.postingsService.getDetailJobPostingForEdit(
+        req.params.slug
+      );
+      console.log(result);
+      sendResponse(res, "success", 200, result);
+    } catch (error) {
+      next(error);
+    }
+  };
+  updateJobPostring = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const slug = req.params.slug;
+      const data = res.locals.data;
+      if (!slug) {
+        throw new AppError("slug required", 400);
+      }
+      await this.postingsService.updateJobPostring(slug, data);
+      sendResponse(res, "success update job", 200);
+    } catch (error) {
+      next(error);
+    }
+  };
+  deleteJobPostring = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const slug = req.params.slug;
+      if (!slug) {
+        throw new AppError("slug required", 400);
+      }
+      await this.postingsService.deleteJobPostring(slug);
+      sendResponse(res, "success delete job", 200);
     } catch (error) {
       next(error);
     }

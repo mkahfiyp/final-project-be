@@ -168,6 +168,7 @@ model Jobs {
   periodSalary      PeriodSalary
   currency          Currency
   job_type          JobType
+  deletedAt         DateTime?
   preselection_test Boolean      @default(false)
 
   expiredAt    DateTime

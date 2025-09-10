@@ -10,6 +10,7 @@ export const verifyToken = (
   try {
     const token = req.cookies.token;
     if (!token) {
+      res.clearCookie("token");
       throw new AppError("Token Not Found", 402);
     }
 

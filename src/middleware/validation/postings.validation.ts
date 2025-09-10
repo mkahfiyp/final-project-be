@@ -11,7 +11,6 @@ const periodValues = Object.values(PeriodSalary) as [string, ...string[]];
 const currencyValues = Object.values(Currency) as [string, ...string[]];
 const jobTypeValues = Object.values(JobType) as [string, ...string[]];
 const categoryValues = Object.values(Category) as [string, ...string[]];
-
 // Schema backend (frontend kirim string, di-transform ke enum Prisma)
 export const schemaJobsInput = z.object({
   title: z.string().min(3, "Job title must be at least 3 characters"),
@@ -24,7 +23,14 @@ export const schemaJobsInput = z.object({
     .enum(jobTypeValues)
     .transform((val) => JobType[val as keyof typeof JobType]),
 
-  skills: z.array(z.string()).min(1, "At least one skill is required"),
+  skills: z
+    .array(
+      z.object({
+        id: z.any(),
+        name: z.string().min(1, "Skill name is required"),
+      })
+    )
+    .min(1, "At least one skill is required"),
 
   salary: z.number().positive("Salary must be positive"),
 

@@ -19,15 +19,18 @@ class PostingsRepository {
       const job = await tx.jobs.create({
         data: {
           ...jobData,
-          slug: await createSlug(jobData.title),
+          slug: await createSlug(
+            jobData.title,
+            jobData.category,
+            jobData.job_type
+          ),
           company_id: company.company_id,
           expiredAt: new Date(data.expiredAt),
           latitude: data.latitude.toString(),
           longitude: data.longitude.toString(),
           skills: {
-            connectOrCreate: skills.map((name) => ({
-              where: { name },
-              create: { name },
+            connect: skills.map((skill) => ({
+              id: skill.id,
             })),
           },
         },
@@ -45,18 +48,95 @@ class PostingsRepository {
     search: string,
     sort: string,
     category: any,
-    company_id: number
+    company_id: number,
+    page: number = 1,
+    limit: number = 6
   ) => {
-    return await prisma.jobs.findMany({
+    const skip = (page - 1) * limit;
+    const categoryFilter: Category | undefined =
+      category && category.toLowerCase() !== "all"
+        ? (category.toUpperCase() as Category)
+        : undefined;
+
+    const data = await prisma.jobs.findMany({
       where: {
         company_id,
         title: { contains: search, mode: "insensitive" },
-        category: category && category !== "all" ? category : undefined, // kalau category kosong, abaikan filter
+        category: categoryFilter,
+        deletedAt: null,
       },
       orderBy: sort === "asc" ? { createdAt: "asc" } : { createdAt: "desc" },
+      skip,
+      take: limit,
       omit: {
         job_id: true,
       },
+    });
+    const totalJobs = await prisma.jobs.count({
+      where: {
+        company_id,
+        title: { contains: search, mode: "insensitive" },
+        category: categoryFilter,
+        deletedAt: null,
+      },
+    });
+    return { data, totalJobs };
+  };
+  getJobCategories = async (company_id: number) => {
+    const categories = await prisma.jobs.findMany({
+      where: { company_id, deletedAt: null },
+      select: { category: true },
+      distinct: ["category"], // ambil yang unik aja
+    });
+    return categories.map((c) => c.category);
+  };
+  getDetailJobPosting = async (slug: string) => {
+    return await prisma.jobs.findUnique({
+      where: { slug, deletedAt: null },
+      select: {
+        job_id: true,
+        title: true,
+        slug: true,
+        description: true,
+        location: true,
+        salary: true,
+        periodSalary: true,
+        currency: true,
+        expiredAt: true,
+        createdAt: true,
+        updatedAt: true,
+        category: true,
+        latitude: true,
+        longitude: true,
+        job_type: true,
+        skills: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+  };
+  updateJobPosting = async (slug: string, data: SchemaJobsInput) => {
+    const { skills, ...jobData } = data;
+    return await prisma.jobs.update({
+      where: { slug, deletedAt: null },
+      data: {
+        ...jobData,
+        expiredAt: new Date(jobData.expiredAt),
+        latitude: jobData.latitude.toString(),
+        longitude: jobData.longitude.toString(),
+        skills: {
+          set: skills.map((skill) => ({ id: skill.id })), //set sama seperti reset relasi lama ganti ke yang baru
+        },
+      },
+    });
+  };
+  deleteJobPosting = async (slug: string) => {
+    return await prisma.jobs.update({
+      where: { slug },
+      data: { deletedAt: new Date() },
     });
   };
 }

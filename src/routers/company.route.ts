@@ -17,15 +17,14 @@ class CompanyRouter {
   }
   private initializeRoutes(): void {
     this.route.use(verifyToken);
+    this.route.use(validatorRole(Role.COMPANY));
     this.route.get(
       "/get-data-profile",
-      validatorRole(Role.COMPANY),
       this.companyController.getCompanyProfile
     );
     this.route.patch(
       "/update-profile",
       uploadMemory().single("profile_picture"),
-      validatorRole(Role.COMPANY),
       validator(schemaUpdateCompanyProfile),
       this.companyController.updateCompanyProfile
     );
