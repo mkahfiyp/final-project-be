@@ -83,6 +83,7 @@ class AuthController {
           user.role === Role.COMPANY
             ? user.companies?.profile_picture
             : user.profiles?.profile_picture,
+        isVerified: user.isVerfied,
       };
       sendResponse(res, "keep login", 200, payload);
     } catch (error) {

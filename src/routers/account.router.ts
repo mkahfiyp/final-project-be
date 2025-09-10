@@ -20,42 +20,30 @@ class AccountRouter {
   }
   private initializeRoutes(): void {
     this.route.use(verifyToken);
-    this.route.get(
-      "/get-data/user",
-      validatorRole(Role.USER),
-      this.accountController.getProfileRoleUser
-    );
+    this.route.use(validatorRole(Role.USER));
+    this.route.get("/get-data/user", this.accountController.getProfileRoleUser);
     this.route.patch(
       "/update-profile/user",
-      validatorRole(Role.USER),
       uploadMemory().single("profile_picture"),
       validator(schemaUpdateProfileRoleUser),
       this.accountController.updateProfileRoleUser
     );
     this.route.post(
       "/education/create",
-      validatorRole(Role.USER),
       validator(schemaCreateEducation),
       this.accountController.createEducation
     );
-    this.route.get(
-      "/education/list",
-      validatorRole(Role.USER),
-      this.accountController.getEducationList
-    );
+    this.route.get("/education/list", this.accountController.getEducationList);
     this.route.get(
       "/education/detail/:education_id",
-      validatorRole(Role.USER),
       this.accountController.getEducationDetail
     );
     this.route.patch(
       "/education/edit/:education_id",
-      validatorRole(Role.USER),
       this.accountController.editEducation
     );
     this.route.delete(
       "/education/delete/:education_id",
-      validatorRole(Role.USER),
       this.accountController.deleteEducation
     );
   }

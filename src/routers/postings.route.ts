@@ -16,26 +16,27 @@ class PostingsRouter {
   }
   private initializeRoutes(): void {
     this.route.use(verifyToken);
-    this.route.get(
-      "/get-general-data",
-      validatorRole(Role.COMPANY),
-      this.postingsController.getGenralData
-    );
-    this.route.get(
-      "/get-skill-list",
-      validatorRole(Role.COMPANY),
-      this.postingsController.getSkillList
-    );
+    this.route.use(validatorRole(Role.COMPANY));
+    this.route.get("/get-general-data", this.postingsController.getGenralData);
+    this.route.get("/get-skill-list", this.postingsController.getSkillList);
     this.route.post(
       "/create",
-      validatorRole(Role.COMPANY),
       validator(schemaJobsInput),
       this.postingsController.createJobPosting
     );
-    this.route.post(
-      "/get-my-job",
-      validatorRole(Role.COMPANY),
-      this.postingsController.getMyJobList
+    this.route.get("/get", this.postingsController.getMyJobList);
+    this.route.get(
+      "/get-detail/:slug",
+      this.postingsController.getDetailJobPostingForEdit
+    );
+    this.route.patch(
+      "/update/:slug",
+      validator(schemaJobsInput),
+      this.postingsController.updateJobPostring
+    );
+    this.route.delete(
+      "/delete/:slug",
+      this.postingsController.deleteJobPostring
     );
   }
   public getRouter(): Router {
