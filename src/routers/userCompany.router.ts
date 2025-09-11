@@ -15,25 +15,13 @@ class UserCompanyRouter {
     private initializeRoutes(): void {
         this.router.use(verifyToken);
 
-        this.router.post(
-            "/",
-            this.userCompanyController.createUserCompany
-        );
+        this.router.post("/", this.userCompanyController.createUserCompany);
 
-        this.router.get(
-            "/",
-            this.userCompanyController.getUserCompanies
-        );
+        this.router.get("/", this.userCompanyController.getUserCompanies);
 
-        this.router.patch(
-            "/:id",
-            this.userCompanyController.updateUserCompany
-        );
+        this.router.patch("/:id", this.userCompanyController.updateUserCompany);
 
-        this.router.delete(
-            "/:id",
-            this.userCompanyController.deleteUserCompany
-        );
+        this.router.delete("/:id", this.userCompanyController.deleteUserCompany);
     }
 
     getRouter(): Router {
