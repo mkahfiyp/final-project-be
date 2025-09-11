@@ -109,6 +109,7 @@ class PostingsRepository {
         latitude: true,
         longitude: true,
         job_type: true,
+        preselection_test: true,
         skills: {
           select: {
             id: true,
@@ -150,7 +151,16 @@ class PostingsRepository {
     salary_min?: number;
     salary_max?: number;
   }) => {
-    const { page, limit, search, category, location, job_type, salary_min, salary_max } = filters;
+    const {
+      page,
+      limit,
+      search,
+      category,
+      location,
+      job_type,
+      salary_min,
+      salary_max,
+    } = filters;
     const skip = (page - 1) * limit;
 
     // Build where clause
@@ -164,14 +174,14 @@ class PostingsRepository {
     // Add search filter
     if (search) {
       where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-        { location: { contains: search, mode: 'insensitive' } },
+        { title: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
+        { location: { contains: search, mode: "insensitive" } },
         {
           Companies: {
-            name: { contains: search, mode: 'insensitive' }
-          }
-        }
+            name: { contains: search, mode: "insensitive" },
+          },
+        },
       ];
     }
 
@@ -182,7 +192,7 @@ class PostingsRepository {
 
     // Add location filter
     if (location) {
-      where.location = { contains: location, mode: 'insensitive' };
+      where.location = { contains: location, mode: "insensitive" };
     }
 
     // Add job_type filter
@@ -222,7 +232,7 @@ class PostingsRepository {
           },
         },
         orderBy: {
-          createdAt: 'desc',
+          createdAt: "desc",
         },
         skip,
         take: limit,

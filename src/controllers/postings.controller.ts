@@ -9,6 +9,7 @@ import { prisma } from "../config/prisma";
 import { sendResponse } from "../utils/sendResponse";
 import PostingsService from "../services/postings.service";
 import AppError from "../errors/appError";
+import { getMyJobListMap } from "../mappers/potings.mappers";
 
 class PostingsController {
   private postingsService = new PostingsService();
@@ -84,7 +85,7 @@ class PostingsController {
         page,
         limit
       );
-      sendResponse(res, "success", 200, myJobs);
+      sendResponse(res, "success", 200, getMyJobListMap(myJobs));
     } catch (error) {
       next(error);
     }
@@ -139,7 +140,11 @@ class PostingsController {
   };
 
   // Public endpoint to get all job postings
-  getAllJobPostings = async (req: Request, res: Response, next: NextFunction) => {
+  getAllJobPostings = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
@@ -147,8 +152,12 @@ class PostingsController {
       const category = req.query.category as string;
       const location = req.query.location as string;
       const job_type = req.query.job_type as string;
-      const salary_min = req.query.salary_min ? parseInt(req.query.salary_min as string) : undefined;
-      const salary_max = req.query.salary_max ? parseInt(req.query.salary_max as string) : undefined;
+      const salary_min = req.query.salary_min
+        ? parseInt(req.query.salary_min as string)
+        : undefined;
+      const salary_max = req.query.salary_max
+        ? parseInt(req.query.salary_max as string)
+        : undefined;
 
       const result = await this.postingsService.getAllJobPostings({
         page,

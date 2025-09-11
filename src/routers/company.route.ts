@@ -19,7 +19,7 @@ class CompanyRouter {
     // Public routes (no authentication required)
     this.route.get("/", this.companyController.getAllCompanies);
     this.route.get("/:id", this.companyController.getCompanyById);
-    
+
     // Protected routes (authentication required)
     this.route.use(verifyToken);
     this.route.use(validatorRole(Role.COMPANY));
