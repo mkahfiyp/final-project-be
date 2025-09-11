@@ -37,11 +37,21 @@ class PreselectionTestRepository {
   getSelectionId = async (job_id: number) => {
     return await prisma.selections.findUnique({
       where: { job_id },
+      include: { selection_questions: true },
     });
   };
   getDetailPreselectionTest = async (selection_id: number) => {
     return await prisma.selectionQuestions.findMany({
       where: { selection_id },
+    });
+  };
+  updatePreselectionTest = async (selection_id: number) => {
+    return await prisma.$transaction(async (tx) => {
+      const result = await tx.selectionQuestions.deleteMany({
+        where: {
+          selection_id,
+        },
+      });
     });
   };
 }
