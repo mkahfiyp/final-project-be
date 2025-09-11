@@ -11,7 +11,7 @@ const periodValues = Object.values(PeriodSalary) as [string, ...string[]];
 const currencyValues = Object.values(Currency) as [string, ...string[]];
 const jobTypeValues = Object.values(JobType) as [string, ...string[]];
 const categoryValues = Object.values(Category) as [string, ...string[]];
-// Schema backend (frontend kirim string, di-transform ke enum Prisma)
+
 export const schemaJobsInput = z.object({
   title: z.string().min(3, "Job title must be at least 3 characters"),
 
@@ -61,7 +61,7 @@ export const schemaJobsInput = z.object({
   description: z
     .string()
     .min(10, "Job description must be at least 10 characters")
-    .max(10000, "Job description too long"),
+    .max(20000, "Job description too long"),
 });
 
 // auto type (hasil transform siap dipakai di Prisma)

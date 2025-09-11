@@ -19,6 +19,7 @@ import { blogRouter } from "./routers/blog.router";
 import PostingsRouter from "./routers/postings.route";
 import CompanyRouter from "./routers/company.route";
 import UserAssessmentRouter from "./routers/userAssessment.router";
+import PreselectionRouter from "./routers/preselection.router";
 const PORT: string = process.env.PORT || "8181";
 class App {
   public app: Application;
@@ -54,6 +55,7 @@ class App {
     const jobSaveRouter: JobSaveRouter = new JobSaveRouter();
     const applicationRouter: ApplicationRouter = new ApplicationRouter();
     const interviewRouter: InterviewRouter = new InterviewRouter();
+    const preselection: PreselectionRouter = new PreselectionRouter();
 
     this.app.get("/", (req: Request, res: Response, next: NextFunction) => {
       res.status(200).send("<h1>Job Portal API</h1>");
@@ -94,6 +96,7 @@ class App {
     this.app.use("/postings", postingsRoter.getRouter());
     this.app.use("/userAssessments", userAssessmentRouter.getRouter());
 
+    this.app.use("/preselection", preselection.getRouter());
     this.app.use((req: Request, res: Response, next: NextFunction) => {
       throw new AppError("Route Not Found", 404);
     });

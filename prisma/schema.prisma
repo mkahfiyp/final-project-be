@@ -18,17 +18,18 @@ datasource db {
 
 // START RISAL
 model Selections {
-  selection_id Int      @id @default(autoincrement())
-  job_id       Int      @unique
-  passingScore Int?
-  result       String   @db.VarChar
-  createAt     DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  selection_id Int       @id @default(autoincrement())
+  job_id       Int       @unique
+  passingScore Int
+  result       String?   @db.VarChar
+  createAt     DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
 
   job                 Jobs                 @relation(fields: [job_id], references: [job_id])
   selection_questions SelectionQuestions[]
-  user                Users                @relation(fields: [user_id], references: [user_id])
-  user_id             Int
+  user                Users?               @relation(fields: [user_id], references: [user_id])
+  user_id             Int?
 }
 
 model SelectionQuestions {
@@ -284,10 +285,10 @@ model UserAssessments {
 }
 
 model SkillAssessments {
-  assessment_id Int      @id @default(autoincrement())
+  assessment_id Int       @id @default(autoincrement())
   skill_name    String
-  createAt      DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createAt      DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   deletedAt     DateTime?
 
   assessment_questions AssessmentQuestions[]
@@ -372,18 +373,18 @@ model AssessmentQuestions {
 
 // Blog model
 model Blog {
-  id            String   @id @default(cuid())
-  title         String
-  slug          String   @unique
-  content       String   @db.Text
-  excerpt       String?  @db.Text
+  id             String   @id @default(cuid())
+  title          String
+  slug           String   @unique
+  content        String   @db.Text
+  excerpt        String?  @db.Text
   featured_image String?
-  author_id     Int
-  published     Boolean  @default(false)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  author_id      Int
+  published      Boolean  @default(false)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 
-  author        Users    @relation(fields: [author_id], references: [user_id], onDelete: Cascade)
+  author Users @relation(fields: [author_id], references: [user_id], onDelete: Cascade)
 
   @@map("blogs")
 }
