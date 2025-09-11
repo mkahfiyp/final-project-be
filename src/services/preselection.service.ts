@@ -28,6 +28,30 @@ class PreselectionService {
 
     return selection;
   };
+  updatePreselectionTest = async (
+    selection_id: number,
+    data: PreselectionInput
+  ) => {
+    const result = await this.preselectionTestRepository.updatePreselectionTest(
+      selection_id,
+      data
+    );
+    if (!data) {
+      throw new AppError("faild update preselection test", 500);
+    }
+    return result;
+  };
+  deactivePreselectionTest = async (slug: string) => {
+    if (!slug) {
+      throw new AppError("slug required", 400);
+    }
+    const result =
+      await this.preselectionTestRepository.deactivePreselectionTest(slug);
+    if (!result) {
+      throw new AppError("faild deactive", 500);
+    }
+    return result;
+  };
 }
 
 export default PreselectionService;

@@ -42,6 +42,41 @@ class PreselectionController {
       next(error);
     }
   };
+  updatePreselectionTest = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const selection_id = Number(req.params.selection_id);
+      if (isNaN(selection_id)) {
+        throw new AppError(
+          "selection id required or selection id not a number",
+          400
+        );
+      }
+      await this.preselectionService.updatePreselectionTest(
+        selection_id,
+        res.locals.data
+      );
+      sendResponse(res, "success update preselection test", 200);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  deactivePreselectionTest = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const slug = req.params.slug;
+      await this.preselectionService.deactivePreselectionTest(slug);
+      sendResponse(res, "success", 200);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 }
 
 export default PreselectionController;
