@@ -22,6 +22,10 @@ class PreselectionRouter {
       validator(schemaPreselectionInput),
       this.preselectionController.createPreselectionTest
     );
+    this.route.get(
+      "/detail/:slug",
+      this.preselectionController.getDetailPreselectionTest
+    );
   }
   public getRouter(): Router {
     return this.route;

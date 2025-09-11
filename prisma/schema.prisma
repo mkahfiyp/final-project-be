@@ -21,21 +21,20 @@ model Selections {
   selection_id Int       @id @default(autoincrement())
   job_id       Int       @unique
   passingScore Int
-  result       String?   @db.VarChar
   createAt     DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   deletedAt    DateTime?
 
+  // Relasi
   job                 Jobs                 @relation(fields: [job_id], references: [job_id])
   selection_questions SelectionQuestions[]
-  user                Users?               @relation(fields: [user_id], references: [user_id])
-  user_id             Int?
+  userSelections      UserSelection[]
 }
 
 model SelectionQuestions {
   selection_question_id Int               @id @default(autoincrement())
   selection_id          Int
-  question              String            @db.VarChar
+  question              String
   option_A              String            @db.VarChar
   option_B              String            @db.VarChar
   option_C              String            @db.VarChar
@@ -44,6 +43,20 @@ model SelectionQuestions {
   createAt              DateTime          @default(now())
   updatedAt             DateTime          @updatedAt
 
+  // Relasi
+  selection Selections @relation(fields: [selection_id], references: [selection_id])
+}
+
+model UserSelection {
+  user_selection_id Int       @id @default(autoincrement())
+  user_id           Int
+  selection_id      Int
+  score             Float? // nullable kalau belum selesai
+  startedAt         DateTime  @default(now())
+  completedAt       DateTime?
+
+  // Relasi
+  user      Users      @relation(fields: [user_id], references: [user_id])
   selection Selections @relation(fields: [selection_id], references: [selection_id])
 }
 
@@ -89,7 +102,7 @@ model Users {
   user_subcription UserSubscriptions[]
   user_assessment  UserAssessments[]
   user_Company     UserCompanies[]
-  selection        Selections[]
+  user_selection   UserSelection[]
   blogs            Blog[]
 }
 
