@@ -25,14 +25,8 @@ class PreselectionService {
     if (!selection) {
       throw new AppError("cannot find selection id", 400);
     }
-    const result =
-      await this.preselectionTestRepository.getDetailPreselectionTest(
-        selection.selection_id
-      );
-    if (!result) {
-      throw new AppError("cannot find selection question", 400);
-    }
-    return result;
+
+    return selection;
   };
 }
 
