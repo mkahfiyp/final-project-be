@@ -12,6 +12,7 @@ import AccountRouter from "./routers/account.router";
 
 import PostingsRouter from "./routers/postings.route";
 import CompanyRouter from "./routers/company.route";
+import UserAssessmentRouter from "./routers/userAssessment.router";
 const PORT: string = process.env.PORT || "8181";
 class App {
   public app: Application;
@@ -41,6 +42,7 @@ class App {
     const questionRouter: QuestionRouter = new QuestionRouter();
     const companyRouter: CompanyRouter = new CompanyRouter();
     const postingsRoter: PostingsRouter = new PostingsRouter();
+    const userAssessmentRouter: UserAssessmentRouter = new UserAssessmentRouter();
 
     this.app.get("/", (req: Request, res: Response, next: NextFunction) => {
       res.status(200).send("<h1>Classbase API</h1>");
@@ -51,6 +53,8 @@ class App {
     this.app.use("/questions", questionRouter.getRouter());
     this.app.use("/company", companyRouter.getRouter());
     this.app.use("/postings", postingsRoter.getRouter());
+    this.app.use("/userAssessments", userAssessmentRouter.getRouter());
+    
     this.app.use((req: Request, res: Response, next: NextFunction) => {
       throw new AppError("Route Not Found", 404);
     });
