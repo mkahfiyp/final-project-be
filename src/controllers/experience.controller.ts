@@ -10,7 +10,7 @@ class ExperienceController {
      */
     getExperiences = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const userId = res.locals.decrypt.id;
+            const userId = Number(res.locals.decript.id);
             const experiences = await this.experienceService.getExperiences(userId);
 
             res.status(200).json({
@@ -28,7 +28,7 @@ class ExperienceController {
      */
     createExperience = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const userId = res.locals.decrypt.id;
+            const userId = res.locals.decript.id;
             const experienceData = req.body;
 
             const experience = await this.experienceService.createExperience(
@@ -51,7 +51,7 @@ class ExperienceController {
      */
     updateExperience = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const userId = res.locals.decrypt.id;
+            const userId = res.locals.decript.id;
             const experienceId = parseInt(req.params.id);
             const updateData = req.body;
 
@@ -80,7 +80,7 @@ class ExperienceController {
      */
     deleteExperience = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const userId = res.locals.decrypt.id;
+            const userId = res.locals.decript.id;
             const experienceId = parseInt(req.params.id);
 
             if (isNaN(experienceId)) {

@@ -16,6 +16,7 @@ class CompanyController {
       const result = await this.companyService.getCompanyProfile(
         res.locals.decript.id
       );
+      console.log(result);
       sendResponse(res, "success", 200, companyProfileMap(result));
     } catch (error) {
       next(error);

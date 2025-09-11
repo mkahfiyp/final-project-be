@@ -330,7 +330,7 @@ model Subscriptions {
 
 model Reviews {
   review_id                Int      @id @default(autoincrement())
-  user_company_id          Int
+  user_company_id          Int      @unique
   salary_estimate          Int
   rating_culture           Int
   rating_work_life_balance Int
@@ -343,17 +343,17 @@ model Reviews {
 }
 
 model UserCompanies {
-  user_company_id Int      @id @default(autoincrement())
+  user_company_id Int       @id @default(autoincrement())
   company_id      Int
   user_id         Int
   start_date      DateTime
-  end_date        DateTime
-  createAt        DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  end_date        DateTime?
+  createAt        DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   company Companies @relation(fields: [company_id], references: [company_id])
   user    Users     @relation(fields: [user_id], references: [user_id])
-  reviews Reviews[]
+  reviews Reviews?
 }
 
 model AssessmentQuestions {

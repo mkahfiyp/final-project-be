@@ -12,9 +12,6 @@ interface ExperienceData {
 class ExperienceService {
   private experienceRepository = new ExperienceRepository();
 
-  /**
-   * Get all experiences for a user
-   */
   async getExperiences(userId: number) {
     try {
       return await this.experienceRepository.getExperiencesByUserId(userId);
@@ -23,16 +20,11 @@ class ExperienceService {
     }
   }
 
-  /**
-   * Create new experience
-   */
   async createExperience(data: ExperienceData, userId: number) {
-    // Validate required fields
     if (!data.name || !data.position || !data.startDate) {
       throw new AppError("Missing required fields: name, position, startDate", 400);
     }
 
-    // Validate dates
     const startDate = new Date(data.startDate);
     if (isNaN(startDate.getTime())) {
       throw new AppError("Invalid start date format", 400);
@@ -55,25 +47,7 @@ class ExperienceService {
     }
   }
 
-  /**
-   * Update experience
-   */
   async updateExperience(experienceId: number, data: Partial<ExperienceData>, userId: number) {
-    // Validate dates if provided
-    if (data.startDate) {
-      const startDate = new Date(data.startDate);
-      if (isNaN(startDate.getTime())) {
-        throw new AppError("Invalid start date format", 400);
-      }
-    }
-
-    if (data.endDate) {
-      const endDate = new Date(data.endDate);
-      if (isNaN(endDate.getTime())) {
-        throw new AppError("Invalid end date format", 400);
-      }
-    }
-
     if (data.startDate && data.endDate) {
       if (new Date(data.endDate) < new Date(data.startDate)) {
         throw new AppError("End date cannot be before start date", 400);
@@ -90,9 +64,6 @@ class ExperienceService {
     }
   }
 
-  /**
-   * Delete experience
-   */
   async deleteExperience(experienceId: number, userId: number) {
     try {
       return await this.experienceRepository.deleteExperience(experienceId, userId);

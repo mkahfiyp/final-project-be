@@ -9,6 +9,7 @@ class CompanyService {
     if (!result) {
       throw new AppError("faild get data", 500);
     }
+    console.log(result);
     return result;
   };
   updateCompanyProfile = async (
