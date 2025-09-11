@@ -18,12 +18,11 @@ datasource db {
 
 // START RISAL
 model Selections {
-  selection_id Int       @id @default(autoincrement())
-  job_id       Int       @unique
+  selection_id Int      @id @default(autoincrement())
+  job_id       Int      @unique
   passingScore Int
-  createAt     DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  deletedAt    DateTime?
+  createAt     DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   // Relasi
   job                 Jobs                 @relation(fields: [job_id], references: [job_id])

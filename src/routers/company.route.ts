@@ -24,7 +24,7 @@ class CompanyRouter {
     this.route.use(verifyToken);
     this.route.use(validatorRole(Role.COMPANY));
     this.route.get(
-      "/get-data-profile",
+      "/get/my-data-profile",
       this.companyController.getCompanyProfile
     );
     this.route.patch(

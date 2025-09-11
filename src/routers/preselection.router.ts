@@ -26,6 +26,15 @@ class PreselectionRouter {
       "/detail/:slug",
       this.preselectionController.getDetailPreselectionTest
     );
+    this.route.patch(
+      "/edit/:selection_id",
+      validator(schemaPreselectionInput),
+      this.preselectionController.updatePreselectionTest
+    );
+    this.route.patch(
+      "/deactive/:slug",
+      this.preselectionController.deactivePreselectionTest
+    );
   }
   public getRouter(): Router {
     return this.route;
