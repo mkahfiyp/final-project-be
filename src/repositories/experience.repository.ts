@@ -10,9 +10,6 @@ interface ExperienceData {
 }
 
 class ExperienceRepository {
-  /**
-   * Get all experiences for a user
-   */
   async getExperiencesByUserId(userId: number) {
     return await prisma.experience.findMany({
       where: {
@@ -24,9 +21,6 @@ class ExperienceRepository {
     });
   }
 
-  /**
-   * Create new experience
-   */
   async createExperience(data: ExperienceData, userId: number) {
     return await prisma.experience.create({
       data: {
@@ -40,9 +34,6 @@ class ExperienceRepository {
     });
   }
 
-  /**
-   * Get experience by ID and user ID
-   */
   async getExperienceById(experienceId: number, userId: number) {
     return await prisma.experience.findFirst({
       where: {
@@ -52,11 +43,7 @@ class ExperienceRepository {
     });
   }
 
-  /**
-   * Update experience
-   */
   async updateExperience(experienceId: number, data: Partial<ExperienceData>, userId: number) {
-    // Check if experience exists and belongs to user
     const existingExperience = await this.getExperienceById(experienceId, userId);
     if (!existingExperience) {
       throw new AppError("Experience not found", 404);
@@ -69,18 +56,19 @@ class ExperienceRepository {
       data: {
         ...(data.name && { name: data.name }),
         ...(data.position && { position: data.position }),
-        ...(data.startDate && { startDate: new Date(data.startDate) }),
-        ...(data.endDate && { endDate: new Date(data.endDate) }),
+        ...(data.startDate && { startDate: this.parseLocalDate(data.startDate) }),
+        ...(data.endDate && { endDate: this.parseLocalDate(data.endDate) }),
         ...(data.description !== undefined && { description: data.description }),
       },
     });
   }
 
-  /**
-   * Delete experience
-   */
+  parseLocalDate(dateStr: string) {
+    const [year, month, day] = dateStr.split(" ")[0].split("-").map(Number);
+    return new Date(Date.UTC(year, month - 1, day, 0, 0, 0));
+  }
+
   async deleteExperience(experienceId: number, userId: number) {
-    // Check if experience exists and belongs to user
     const existingExperience = await this.getExperienceById(experienceId, userId);
     if (!existingExperience) {
       throw new AppError("Experience not found", 404);

@@ -6,6 +6,9 @@ class SkillRepository {
         return await prisma.skillAssessments.findMany({
             orderBy: {
                 createAt: "desc"
+            },
+            where: {
+                deletedAt: null
             }
         });
     };
@@ -15,7 +18,8 @@ class SkillRepository {
     };
 
     deleteSkill = async (id: number) => {
-        return await prisma.skillAssessments.delete({ where: { assessment_id: id } })
+        // return await prisma.skillAssessments.delete({ where: { assessment_id: id } })
+        return await prisma.skillAssessments.update({ where: { assessment_id: id }, data: { deletedAt: new Date() } })
     };
 
     updateSkill = async (id: number, data: SkillCreateDTO) => {
