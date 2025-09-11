@@ -9,6 +9,12 @@ import AppError from "./errors/appError";
 import SkillRouter from "./routers/skill.router";
 import QuestionRouter from "./routers/question.router";
 import AccountRouter from "./routers/account.router";
+import EducationRouter from "./routers/education.router";
+import ExperienceRouter from "./routers/experience.router";
+import JobSaveRouter from "./routers/jobSave.router";
+import ApplicationRouter from "./routers/application.router";
+import InterviewRouter from "./routers/interview.router";
+import { blogRouter } from "./routers/blog.router";
 
 import PostingsRouter from "./routers/postings.route";
 import CompanyRouter from "./routers/company.route";
@@ -43,12 +49,45 @@ class App {
     const companyRouter: CompanyRouter = new CompanyRouter();
     const postingsRoter: PostingsRouter = new PostingsRouter();
     const userAssessmentRouter: UserAssessmentRouter = new UserAssessmentRouter();
+    const educationRouter: EducationRouter = new EducationRouter();
+    const experienceRouter: ExperienceRouter = new ExperienceRouter();
+    const jobSaveRouter: JobSaveRouter = new JobSaveRouter();
+    const applicationRouter: ApplicationRouter = new ApplicationRouter();
+    const interviewRouter: InterviewRouter = new InterviewRouter();
 
     this.app.get("/", (req: Request, res: Response, next: NextFunction) => {
-      res.status(200).send("<h1>Classbase API</h1>");
+      res.status(200).send("<h1>Job Portal API</h1>");
     });
+    
+    // Authentication routes
     this.app.use("/auth", authRouter.getRouter());
+    
+    // User profile routes
     this.app.use("/account", accountRouter.getRouter());
+    
+    // Company routes
+    this.app.use("/company", companyRouter.getRouter());
+    
+    // Job posting routes
+    this.app.use("/postings", postingsRoter.getRouter());
+    
+    // Education & Experience routes
+    this.app.use("/educations", educationRouter.getRouter());
+    this.app.use("/experiences", experienceRouter.getRouter());
+    
+    // Job save routes
+    this.app.use("/job-saves", jobSaveRouter.getRouter());
+    
+    // Application routes
+    this.app.use("/applications", applicationRouter.getRouter());
+    
+    // Interview routes
+    this.app.use("/interviews", interviewRouter.getRouter());
+    
+    // Blog routes
+    this.app.use("/blog", blogRouter);
+    
+    // Skill assessment routes
     this.app.use("/skillAssessments", skillRouter.getRouter());
     this.app.use("/questions", questionRouter.getRouter());
     this.app.use("/company", companyRouter.getRouter());

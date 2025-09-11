@@ -75,6 +75,32 @@ class PostingsService {
     }
     return result;
   };
+
+  getAllJobPostings = async (filters: {
+    page: number;
+    limit: number;
+    search?: string;
+    category?: string;
+    location?: string;
+    job_type?: string;
+    salary_min?: number;
+    salary_max?: number;
+  }) => {
+    const result = await this.postingsRepository.getAllJobPostings(filters);
+    const totalPage = Math.ceil(result.totalJobs / filters.limit);
+    
+    const dataWithReq = result.data.map((job) => ({
+      ...job,
+      requirements: parseRequirements(job.description, 3),
+    }));
+
+    return {
+      data: dataWithReq,
+      totalJobs: result.totalJobs,
+      totalPage,
+      currentPage: filters.page,
+    };
+  };
 }
 
 export default PostingsService;

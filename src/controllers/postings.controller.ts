@@ -137,5 +137,34 @@ class PostingsController {
       next(error);
     }
   };
+
+  // Public endpoint to get all job postings
+  getAllJobPostings = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const search = (req.query.search as string) || "";
+      const category = req.query.category as string;
+      const location = req.query.location as string;
+      const job_type = req.query.job_type as string;
+      const salary_min = req.query.salary_min ? parseInt(req.query.salary_min as string) : undefined;
+      const salary_max = req.query.salary_max ? parseInt(req.query.salary_max as string) : undefined;
+
+      const result = await this.postingsService.getAllJobPostings({
+        page,
+        limit,
+        search,
+        category,
+        location,
+        job_type,
+        salary_min,
+        salary_max,
+      });
+
+      sendResponse(res, "success get all job postings", 200, result);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 export default PostingsController;

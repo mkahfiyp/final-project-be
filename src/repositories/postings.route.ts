@@ -139,5 +139,101 @@ class PostingsRepository {
       data: { deletedAt: new Date() },
     });
   };
+
+  getAllJobPostings = async (filters: {
+    page: number;
+    limit: number;
+    search?: string;
+    category?: string;
+    location?: string;
+    job_type?: string;
+    salary_min?: number;
+    salary_max?: number;
+  }) => {
+    const { page, limit, search, category, location, job_type, salary_min, salary_max } = filters;
+    const skip = (page - 1) * limit;
+
+    // Build where clause
+    const where: any = {
+      deletedAt: null,
+      expiredAt: {
+        gte: new Date(), // Only show jobs that haven't expired
+      },
+    };
+
+    // Add search filter
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { location: { contains: search, mode: 'insensitive' } },
+        {
+          Companies: {
+            name: { contains: search, mode: 'insensitive' }
+          }
+        }
+      ];
+    }
+
+    // Add category filter
+    if (category) {
+      where.category = category;
+    }
+
+    // Add location filter
+    if (location) {
+      where.location = { contains: location, mode: 'insensitive' };
+    }
+
+    // Add job_type filter
+    if (job_type) {
+      where.job_type = job_type;
+    }
+
+    // Add salary range filter
+    if (salary_min !== undefined || salary_max !== undefined) {
+      where.salary = {};
+      if (salary_min !== undefined) {
+        where.salary.gte = salary_min;
+      }
+      if (salary_max !== undefined) {
+        where.salary.lte = salary_max;
+      }
+    }
+
+    // Get jobs with count
+    const [jobs, totalJobs] = await Promise.all([
+      prisma.jobs.findMany({
+        where,
+        include: {
+          Companies: {
+            select: {
+              company_id: true,
+              name: true,
+              profile_picture: true,
+              website: true,
+            },
+          },
+          skills: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        skip,
+        take: limit,
+      }),
+      prisma.jobs.count({ where }),
+    ]);
+
+    return {
+      data: jobs,
+      totalJobs,
+    };
+  };
 }
 export default PostingsRepository;
