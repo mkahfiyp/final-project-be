@@ -1,9 +1,10 @@
 import EducationRepository from "../repositories/education.repository";
 import AppError from "../errors/appError";
+import { DegreeLevel } from "../../prisma/generated/client";
 
 interface EducationData {
   university: string;
-  degree: string;
+  degree: DegreeLevel;
   fieldOfStudy: string;
   startDate: string;
   endDate?: string;
@@ -29,8 +30,16 @@ class EducationService {
    */
   async createEducation(data: EducationData, userId: number) {
     // Validate required fields
-    if (!data.university || !data.degree || !data.fieldOfStudy || !data.startDate) {
-      throw new AppError("Missing required fields: university, degree, fieldOfStudy, startDate", 400);
+    if (
+      !data.university ||
+      !data.degree ||
+      !data.fieldOfStudy ||
+      !data.startDate
+    ) {
+      throw new AppError(
+        "Missing required fields: university, degree, fieldOfStudy, startDate",
+        400
+      );
     }
 
     // Validate dates
@@ -59,7 +68,11 @@ class EducationService {
   /**
    * Update education
    */
-  async updateEducation(educationId: number, data: Partial<EducationData>, userId: number) {
+  async updateEducation(
+    educationId: number,
+    data: Partial<EducationData>,
+    userId: number
+  ) {
     // Validate dates if provided
     if (data.startDate) {
       const startDate = new Date(data.startDate);
@@ -82,7 +95,11 @@ class EducationService {
     }
 
     try {
-      return await this.educationRepository.updateEducation(educationId, data, userId);
+      return await this.educationRepository.updateEducation(
+        educationId,
+        data,
+        userId
+      );
     } catch (error) {
       if (error instanceof AppError) {
         throw error;
@@ -96,7 +113,10 @@ class EducationService {
    */
   async deleteEducation(educationId: number, userId: number) {
     try {
-      return await this.educationRepository.deleteEducation(educationId, userId);
+      return await this.educationRepository.deleteEducation(
+        educationId,
+        userId
+      );
     } catch (error) {
       if (error instanceof AppError) {
         throw error;

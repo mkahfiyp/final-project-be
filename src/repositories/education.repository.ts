@@ -1,9 +1,10 @@
+import { DegreeLevel } from "../../prisma/generated/client";
 import { prisma } from "../config/prisma";
 import AppError from "../errors/appError";
 
 interface EducationData {
   university: string;
-  degree: string;
+  degree: DegreeLevel;
   fieldOfStudy: string;
   startDate: string;
   endDate?: string;
@@ -20,7 +21,7 @@ class EducationRepository {
         user_id: userId,
       },
       orderBy: {
-        startDate: 'desc',
+        startDate: "desc",
       },
     });
   }
@@ -57,7 +58,11 @@ class EducationRepository {
   /**
    * Update education
    */
-  async updateEducation(educationId: number, data: Partial<EducationData>, userId: number) {
+  async updateEducation(
+    educationId: number,
+    data: Partial<EducationData>,
+    userId: number
+  ) {
     // Check if education exists and belongs to user
     const existingEducation = await this.getEducationById(educationId, userId);
     if (!existingEducation) {
@@ -74,7 +79,9 @@ class EducationRepository {
         ...(data.fieldOfStudy && { fieldOfStudy: data.fieldOfStudy }),
         ...(data.startDate && { startDate: new Date(data.startDate) }),
         ...(data.endDate && { endDate: new Date(data.endDate) }),
-        ...(data.description !== undefined && { description: data.description }),
+        ...(data.description !== undefined && {
+          description: data.description,
+        }),
       },
     });
   }
