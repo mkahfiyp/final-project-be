@@ -1,5 +1,5 @@
 import { prisma } from "../config/prisma";
-import { UserAssessmentCreateDTO } from "../dto/userAssessment.dto";
+import { UserAssessmentCreateDTO, UserAssessmentUpdateDTO } from "../dto/userAssessment.dto";
 
 class UserAssessmentRepository {
     getUserAssessment = async (user_id: number) => {
@@ -18,8 +18,18 @@ class UserAssessmentRepository {
         })
     }
 
+    getTime = async () => {
+        return await prisma.userAssessments.findFirst({where: {
+            
+        }})
+    }
+
     createUserAssessment = async (data: UserAssessmentCreateDTO) => {
         return await prisma.userAssessments.create({ data })
+    }
+
+    updateUserAssessment = async (data: UserAssessmentUpdateDTO) => {
+        return await prisma.userAssessments.update({ where: { user_assessment_id: data.user_assessment_id }, data });
     }
 }
 
