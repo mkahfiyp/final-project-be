@@ -24,7 +24,7 @@ class ApplicationRouter {
 
     // Get company applications (for companies)
     this.router.get(
-      "/company",
+      "/company/list/:slug",
       verifyToken,
       validatorRole(Role.COMPANY),
       this.applicationController.getJobApplicantList

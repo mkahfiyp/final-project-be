@@ -3,6 +3,7 @@ import ApplicationService from "../services/application.service";
 import AppError from "../errors/appError";
 import { sendResponse } from "../utils/sendResponse";
 import { getJobApplicantListMap } from "../mappers/applicantion.mappers";
+import { FilterApplicant } from "../dto/application.dto";
 
 class ApplicationController {
   private applicationService = new ApplicationService();
@@ -45,9 +46,27 @@ class ApplicationController {
     next: NextFunction
   ) => {
     try {
+      // Ambil filters dari query params
+      const filters: FilterApplicant = {
+        minAge: req.query.minAge ? Number(req.query.minAge) : undefined,
+        maxAge: req.query.maxAge ? Number(req.query.maxAge) : undefined,
+        minSalary: req.query.minSalary
+          ? Number(req.query.minSalary)
+          : undefined,
+        maxSalary: req.query.maxSalary
+          ? Number(req.query.maxSalary)
+          : undefined,
+        education: req.query.education as string,
+        status: req.query.status as string,
+        sortBy: (req.query.sortBy as any) || "createdAt",
+        sortOrder: (req.query.sortOrder as any) || "asc",
+      };
+
       const data = await this.applicationService.getCompanyApplicant(
-        req.params.slug
+        req.params.slug,
+        filters
       );
+
       sendResponse(res, "success", 200, getJobApplicantListMap(data));
     } catch (error) {
       next(error);

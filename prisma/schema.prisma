@@ -144,7 +144,7 @@ model Profiles {
   profile_id      Int       @id @default(autoincrement())
   email           String    @unique
   name            String
-  education       String?
+  // education       String?
   phone           String?
   birthDate       DateTime?
   gender          Gender?

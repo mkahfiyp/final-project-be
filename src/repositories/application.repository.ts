@@ -66,6 +66,8 @@ class ApplicationRepository {
             name: true,
             email: true,
             profiles: true,
+            user_selection: true,
+            education: true,
           },
         },
       },
