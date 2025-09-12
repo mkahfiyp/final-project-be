@@ -16,6 +16,7 @@ class UserAssessmentRouter {
         this.router.use(verifyToken);
         this.router.post("/", this.userAssessmentController.createUserAssessment);
         this.router.get("/", this.userAssessmentController.getUserAssessment);
+        this.router.get("/takeAssessment", this.userAssessmentController.createUserAssessment);
     }
 
     public getRouter(): Router {
