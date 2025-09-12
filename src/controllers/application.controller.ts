@@ -1,140 +1,147 @@
 import { NextFunction, Request, Response } from "express";
 import ApplicationService from "../services/application.service";
 import AppError from "../errors/appError";
+import { sendResponse } from "../utils/sendResponse";
+import { getJobApplicantListMap } from "../mappers/applicantion.mappers";
 
 class ApplicationController {
-    private applicationService = new ApplicationService();
+  private applicationService = new ApplicationService();
 
-    /**
-     * Get applications for authenticated user
-     */
-    getMyApplications = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const userId = res.locals.decrypt.id;
-            const page = parseInt(req.query.page as string) || 1;
-            const limit = parseInt(req.query.limit as string) || 10;
-            const status = req.query.status as string;
+  /**
+   * Get applications for authenticated user
+   */
+  getMyApplications = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const userId = res.locals.decrypt.id;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const status = req.query.status as string;
 
-            const result = await this.applicationService.getMyApplications(userId, page, limit, status);
+      const result = await this.applicationService.getMyApplications(
+        userId,
+        page,
+        limit,
+        status
+      );
 
-            res.status(200).json({
-                success: true,
-                message: "Applications retrieved successfully",
-                data: result.data,
-                pagination: result.pagination,
-            });
-        } catch (error) {
-            next(error);
-        }
-    };
+      res.status(200).json({
+        success: true,
+        message: "Applications retrieved successfully",
+        data: result.data,
+        pagination: result.pagination,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 
-    /**
-     * Get applications for company
-     */
-    getCompanyApplications = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const userId = res.locals.decrypt.id;
-            const page = parseInt(req.query.page as string) || 1;
-            const limit = parseInt(req.query.limit as string) || 10;
-            const jobId = req.query.jobId ? parseInt(req.query.jobId as string) : undefined;
-            const status = req.query.status as string;
+  getJobApplicantList = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const data = await this.applicationService.getCompanyApplicant(
+        req.params.slug
+      );
+      sendResponse(res, "success", 200, getJobApplicantListMap(data));
+    } catch (error) {
+      next(error);
+    }
+  };
 
-            const result = await this.applicationService.getCompanyApplications(
-                userId,
-                page,
-                limit,
-                jobId,
-                status
-            );
+  /**
+   * Get application detail by ID
+   */
+  getApplicationDetail = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const applicationId = parseInt(req.params.id);
+      const userId = res.locals.decrypt.id;
 
-            res.status(200).json({
-                success: true,
-                message: "Company applications retrieved successfully",
-                data: result.data,
-                pagination: result.pagination,
-            });
-        } catch (error) {
-            next(error);
-        }
-    };
+      if (isNaN(applicationId)) {
+        throw new AppError("Invalid application ID", 400);
+      }
 
-    /**
-     * Get application detail by ID
-     */
-    getApplicationDetail = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const applicationId = parseInt(req.params.id);
-            const userId = res.locals.decrypt.id;
+      const application = await this.applicationService.getApplicationDetail(
+        applicationId,
+        userId
+      );
 
-            if (isNaN(applicationId)) {
-                throw new AppError("Invalid application ID", 400);
-            }
+      res.status(200).json({
+        success: true,
+        message: "Application detail retrieved successfully",
+        data: application,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 
-            const application = await this.applicationService.getApplicationDetail(applicationId, userId);
+  /**
+   * Apply for a job
+   */
+  applyForJob = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = res.locals.decrypt.id;
+      const { job_id, expected_salary, cv } = req.body;
 
-            res.status(200).json({
-                success: true,
-                message: "Application detail retrieved successfully",
-                data: application,
-            });
-        } catch (error) {
-            next(error);
-        }
-    };
+      const application = await this.applicationService.applyForJob(
+        userId,
+        job_id,
+        expected_salary,
+        cv
+      );
 
-    /**
-     * Apply for a job
-     */
-    applyForJob = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const userId = res.locals.decrypt.id;
-            const { job_id, expected_salary, cv } = req.body;
+      res.status(201).json({
+        success: true,
+        message: "Application submitted successfully",
+        data: application,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 
-            const application = await this.applicationService.applyForJob(
-                userId,
-                job_id,
-                expected_salary,
-                cv
-            );
+  /**
+   * Update application status (company only)
+   */
+  updateApplicationStatus = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const applicationId = parseInt(req.params.id);
+      const userId = res.locals.decrypt.id;
+      const { status } = req.body;
 
-            res.status(201).json({
-                success: true,
-                message: "Application submitted successfully",
-                data: application,
-            });
-        } catch (error) {
-            next(error);
-        }
-    };
+      if (isNaN(applicationId)) {
+        throw new AppError("Invalid application ID", 400);
+      }
 
-    /**
-     * Update application status (company only)
-     */
-    updateApplicationStatus = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const applicationId = parseInt(req.params.id);
-            const userId = res.locals.decrypt.id;
-            const { status } = req.body;
+      const application = await this.applicationService.updateApplicationStatus(
+        applicationId,
+        status,
+        userId
+      );
 
-            if (isNaN(applicationId)) {
-                throw new AppError("Invalid application ID", 400);
-            }
-
-            const application = await this.applicationService.updateApplicationStatus(
-                applicationId,
-                status,
-                userId
-            );
-
-            res.status(200).json({
-                success: true,
-                message: "Application status updated successfully",
-                data: application,
-            });
-        } catch (error) {
-            next(error);
-        }
-    };
+      res.status(200).json({
+        success: true,
+        message: "Application status updated successfully",
+        data: application,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export default ApplicationController;

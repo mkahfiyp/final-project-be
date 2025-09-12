@@ -6,9 +6,14 @@ class ApplicationRepository {
   /**
    * Get applications for a user
    */
-  async getApplicationsByUserId(userId: number, page: number, limit: number, status?: string) {
+  async getApplicationsByUserId(
+    userId: number,
+    page: number,
+    limit: number,
+    status?: string
+  ) {
     const offset = (page - 1) * limit;
-    
+
     const where: any = {
       user_id: userId,
     };
@@ -33,7 +38,7 @@ class ApplicationRepository {
           },
         },
         orderBy: {
-          createdAt: 'desc',
+          createdAt: "desc",
         },
         skip: offset,
         take: limit,
@@ -52,74 +57,25 @@ class ApplicationRepository {
     };
   }
 
-  /**
-   * Get applications for company
-   */
-  async getApplicationsForCompany(
-    companyId: number, 
-    page: number, 
-    limit: number, 
-    jobId?: number, 
-    status?: string
-  ) {
-    const offset = (page - 1) * limit;
-    
-    const where: any = {
-      Jobs: {
-        company_id: companyId,
+  getApplicantListByJobId = async (job_id: number) => {
+    return await prisma.applications.findMany({
+      where: { job_id },
+      include: {
+        Users: {
+          select: {
+            name: true,
+            email: true,
+            profiles: true,
+          },
+        },
       },
-    };
-
-    if (jobId) {
-      where.job_id = jobId;
-    }
-
-    if (status) {
-      where.status = status as Status;
-    }
-
-    const [applications, total] = await Promise.all([
-      prisma.applications.findMany({
-        where,
-        include: {
-          Users: {
-            select: {
-              name: true,
-              email: true,
-              profiles: {
-                select: {
-                  profile_picture: true,
-                  phone: true,
-                },
-              },
-            },
-          },
-          Jobs: {
-            select: {
-              title: true,
-              job_id: true,
-            },
-          },
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-        skip: offset,
-        take: limit,
-      }),
-      prisma.applications.count({
-        where,
-      }),
-    ]);
-
-    return {
-      data: applications,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    };
-  }
+    });
+  };
+  getJobId = async (slug: string) => {
+    return await prisma.jobs.findUnique({
+      where: { slug },
+    });
+  };
 
   /**
    * Get application by ID
@@ -157,7 +113,12 @@ class ApplicationRepository {
   /**
    * Create new application
    */
-  async createApplication(userId: number, jobId: number, expectedSalary: number, cv: string) {
+  async createApplication(
+    userId: number,
+    jobId: number,
+    expectedSalary: number,
+    cv: string
+  ) {
     // Check if user already applied for this job
     const existingApplication = await prisma.applications.findFirst({
       where: {
