@@ -307,7 +307,7 @@ model UserAssessments {
   user_assessment_id Int      @id @default(autoincrement())
   assessment_id      Int
   user_id            Int
-  score              Int
+  score              Int?
   date_taken         DateTime @default(now())
   createAt           DateTime @default(now())
   updatedAt          DateTime @updatedAt
