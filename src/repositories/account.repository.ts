@@ -1,3 +1,4 @@
+import { DegreeLevel } from "../../prisma/generated/client";
 import { prisma } from "../config/prisma";
 import { EducationDTO, UpdateProfileRoleUserDto } from "../dto/account.dto";
 
@@ -37,7 +38,7 @@ class AccountRepository {
   };
   createEducation = async (data: EducationDTO, id: number) => {
     return await prisma.education.create({
-      data: { ...data, user_id: id },
+      data: { ...data, user_id: id, degree: data.degree as DegreeLevel },
     });
   };
   getEducationList = async (id: number) => {
@@ -57,6 +58,7 @@ class AccountRepository {
       where: { education_id },
       data: {
         ...data,
+        degree: data.degree as DegreeLevel,
       },
     });
   };

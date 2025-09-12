@@ -109,6 +109,7 @@ class PostingsRepository {
         latitude: true,
         longitude: true,
         job_type: true,
+        deletedAt: true,
         preselection_test: true,
         skills: {
           select: {

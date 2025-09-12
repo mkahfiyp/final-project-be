@@ -43,7 +43,8 @@ model SelectionQuestions {
   updatedAt             DateTime          @updatedAt
 
   // Relasi
-  selection Selections @relation(fields: [selection_id], references: [selection_id])
+  selection   Selections   @relation(fields: [selection_id], references: [selection_id])
+  userAnswers UserAnswer[]
 }
 
 model UserSelection {
@@ -55,8 +56,21 @@ model UserSelection {
   completedAt       DateTime?
 
   // Relasi
-  user      Users      @relation(fields: [user_id], references: [user_id])
-  selection Selections @relation(fields: [selection_id], references: [selection_id])
+  user        Users        @relation(fields: [user_id], references: [user_id])
+  selection   Selections   @relation(fields: [selection_id], references: [selection_id])
+  userAnswers UserAnswer[]
+}
+
+model UserAnswer {
+  user_answer_id        Int      @id @default(autoincrement())
+  user_selection_id     Int
+  selection_question_id Int
+  answer                String
+  isCorrect             Boolean?
+
+  // Relasi
+  userSelection     UserSelection      @relation(fields: [user_selection_id], references: [user_selection_id])
+  selectionQuestion SelectionQuestions @relation(fields: [selection_question_id], references: [selection_question_id])
 }
 
 model Interviews {
@@ -141,15 +155,23 @@ model Profiles {
   user_id Int?   @unique
 }
 
+enum DegreeLevel {
+  HIGH_SCHOOL
+  DIPLOMA
+  BACHELOR
+  MASTER
+  DOCTORATE
+}
+
 model Education {
-  education_id Int       @id @default(autoincrement())
+  education_id Int         @id @default(autoincrement())
   university   String
-  degree       String
+  degree       DegreeLevel // tetap ada, user bebas nulis detail
   fieldOfStudy String
-  startDate    DateTime //ini nanti dibalikan
+  startDate    DateTime
   endDate      DateTime?
   description  String?
-  Users        Users?    @relation(fields: [user_id], references: [user_id])
+  Users        Users?      @relation(fields: [user_id], references: [user_id])
   user_id      Int?
 }
 

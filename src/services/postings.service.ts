@@ -56,7 +56,7 @@ class PostingsService {
   };
   getDetailJobPostingForEdit = async (slug: string) => {
     const result = await this.postingsRepository.getDetailJobPosting(slug);
-    if (!result) {
+    if (!result || result.deletedAt) {
       throw new AppError("job not found", 400);
     }
     return result;
@@ -88,7 +88,7 @@ class PostingsService {
   }) => {
     const result = await this.postingsRepository.getAllJobPostings(filters);
     const totalPage = Math.ceil(result.totalJobs / filters.limit);
-    
+
     const dataWithReq = result.data.map((job) => ({
       ...job,
       requirements: parseRequirements(job.description, 3),

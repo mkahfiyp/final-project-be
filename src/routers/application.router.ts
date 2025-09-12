@@ -1,6 +1,8 @@
 import { Router } from "express";
 import ApplicationController from "../controllers/application.controller";
 import { verifyToken } from "../middleware/verifyToken";
+import { validatorRole } from "../middleware/validatorRole";
+import { Role } from "../../prisma/generated/client";
 
 class ApplicationRouter {
   private router: Router;
@@ -14,19 +16,36 @@ class ApplicationRouter {
 
   private initializeRoutes(): void {
     // Get my applications (for users)
-    this.router.get("/my", verifyToken, this.applicationController.getMyApplications);
+    this.router.get(
+      "/my",
+      verifyToken,
+      this.applicationController.getMyApplications
+    );
 
     // Get company applications (for companies)
-    this.router.get("/company", verifyToken, this.applicationController.getCompanyApplications);
+    this.router.get(
+      "/company",
+      verifyToken,
+      validatorRole(Role.COMPANY),
+      this.applicationController.getJobApplicantList
+    );
 
     // Get application detail by ID
-    this.router.get("/:id", verifyToken, this.applicationController.getApplicationDetail);
+    this.router.get(
+      "/:id",
+      verifyToken,
+      this.applicationController.getApplicationDetail
+    );
 
     // Apply for a job
     this.router.post("/", verifyToken, this.applicationController.applyForJob);
 
     // Update application status (company only)
-    this.router.put("/:id/status", verifyToken, this.applicationController.updateApplicationStatus);
+    this.router.put(
+      "/:id/status",
+      verifyToken,
+      this.applicationController.updateApplicationStatus
+    );
   }
 
   getRouter(): Router {
