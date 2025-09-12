@@ -77,7 +77,7 @@ class ApplicationService {
         return false;
 
       // education
-      if (filters.education && user.profiles?.education !== filters.education)
+      if (filters.education && user.education[0].degree !== filters.education)
         return false;
 
       return true;

@@ -9,7 +9,6 @@ type UserWithProfile = {
   isVerfied: boolean;
   profiles: {
     profile_id: number;
-    education: string | null;
     birthDate: Date | null;
     gender: Gender | null;
     address: string | null;

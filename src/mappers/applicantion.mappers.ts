@@ -6,7 +6,6 @@ export type ApplicantProfile = {
   user_id: number | null;
   name: string;
   email: string;
-  education: string | null;
   phone: string | null;
   profile_picture: string | null;
   birthDate: Date | null;
@@ -14,19 +13,35 @@ export type ApplicantProfile = {
   address: string | null;
 };
 
+// Type untuk pendidikan user
+export type ApplicantEducation = {
+  user_id: number | null;
+  education_id: number;
+  description: string | null;
+  university: string;
+  degree: string; // $Enums.DegreeLevel
+  fieldOfStudy: string;
+  startDate: Date;
+  endDate: Date | null;
+};
+
+// Type untuk user selection
+export type UserSelection = {
+  user_id: number;
+  score: number | null;
+  user_selection_id: number;
+  selection_id: number;
+  startedAt: Date;
+  completedAt: Date | null;
+};
+
 // Type untuk user
 export type ApplicantUser = {
   name: string;
   email: string;
   profiles: ApplicantProfile | null;
-  user_selection: {
-    user_id: number;
-    score: number | null;
-    user_selection_id: number;
-    selection_id: number;
-    startedAt: Date;
-    completedAt: Date | null;
-  }[];
+  education: ApplicantEducation[];
+  user_selection: UserSelection[];
 };
 
 // Type raw dari database
@@ -60,15 +75,21 @@ export type ApplicantFrontend = {
   cvUrl: string;
 };
 
+// Mapping function
 export const getJobApplicantListMap = (
   data: ApplicantList
 ): ApplicantFrontend[] => {
   return data.map((d) => {
-    const userSelection = d.Users?.user_selection ?? [];
-    const latestScore =
-      userSelection.length > 0 ? userSelection[0].score : null;
+    const user = d.Users;
 
-    const birthDate = d.Users?.profiles?.birthDate;
+    // Ambil latest score
+    const latestScore =
+      user?.user_selection && user.user_selection.length > 0
+        ? user.user_selection[0].score
+        : null;
+
+    // Hitung umur
+    const birthDate = user?.profiles?.birthDate;
     const age = birthDate
       ? Math.floor(
           (new Date().getTime() - new Date(birthDate).getTime()) /
@@ -76,16 +97,26 @@ export const getJobApplicantListMap = (
         )
       : null;
 
+    // Ambil pendidikan terakhir (urut berdasarkan endDate paling baru)
+    const lastEducation =
+      user?.education && user.education.length > 0
+        ? user.education
+            .filter((e) => e.endDate)
+            .sort((a, b) => b.endDate!.getTime() - a.endDate!.getTime())[0]
+        : null;
+
     return {
       application_id: d.application_id,
-      name: d.Users?.name,
-      email: d.Users?.email,
+      name: user?.name,
+      email: user?.email,
       appliedOn: d.createdAt,
-      profile_picture: d.Users?.profiles?.profile_picture ?? null,
+      profile_picture: user?.profiles?.profile_picture ?? null,
       score: latestScore,
       status: d.status,
       expected_salary: d.expected_salary,
-      education: d.Users?.profiles?.education ?? null,
+      education: lastEducation
+        ? `${lastEducation.degree} - ${lastEducation.university}`
+        : null,
       age,
       cvUrl: d.cv,
     };
