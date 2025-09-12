@@ -1,4 +1,4 @@
-import { UserAssessmentCreateDTO } from "../dto/userAssessment.dto";
+import { UserAssessmentCreateDTO, UserAssessmentUpdateDTO } from "../dto/userAssessment.dto";
 import UserAssessmentRepository from "../repositories/userAssessment.repository";
 
 class UserAssessmentService {
@@ -10,6 +10,10 @@ class UserAssessmentService {
 
     createUserAssessment = async (data: UserAssessmentCreateDTO) => {
         return await this.UserAssessmentRepo.createUserAssessment(data);
+    }
+
+    updateUserAssessment = async (data: UserAssessmentUpdateDTO) => {
+        return await this.UserAssessmentRepo.updateUserAssessment(data);
     }
 }
 

@@ -7,3 +7,10 @@ export const UserAssessmentCreateSchema = z.object({
 });
 
 export type UserAssessmentCreateDTO = z.infer<typeof UserAssessmentCreateSchema>;
+
+export const UserAssessmentUpdateSchema = z.object({
+    user_assessment_id: z.number(),
+    score: z.number(),
+});
+
+export type UserAssessmentUpdateDTO = z.infer<typeof UserAssessmentUpdateSchema>;
