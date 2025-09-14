@@ -49,8 +49,8 @@ class UserCompanyService {
         return await this.userCompanyRepository.updateUserCompany(userCompanyId, userId, data);
     }
 
-    async deleteUserCompany(userCompanyId: number, userId: number) {
-        return await this.userCompanyRepository.deleteUserCompany(userCompanyId, userId);
+    async deleteUserCompany(user_company_id: number) {
+        return await this.userCompanyRepository.deleteUserCompany(user_company_id);
     }
 }
 

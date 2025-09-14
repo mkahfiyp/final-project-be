@@ -1,4 +1,4 @@
-import { SkillCreateDTO } from "../dto/skill.dto";
+import { SkillAssessmentDTO, SkillCreateDTO } from "../dto/skill.dto";
 import SkillRepository from "../repositories/skill.repository";
 
 class SkillService {
@@ -7,6 +7,11 @@ class SkillService {
     getAllData = async () => {
         return await this.skillRepo.getAllData();
     };
+
+    getDataById = async (assessment_id: number) => {
+        const data: SkillAssessmentDTO[] = await this.skillRepo.getDataById(assessment_id);
+        return data;
+    }
 
     createSkill = async (data: SkillCreateDTO) => {
         return await this.skillRepo.createSkill(data);

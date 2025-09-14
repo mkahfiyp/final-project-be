@@ -5,6 +5,10 @@ import QuestionRepository from "../repositories/question.repository";
 class QuestionService {
     private QuestionRepo = new QuestionRepository();
 
+    getDataAssessment = async () => {
+        return await this.QuestionRepo.getDataAssessment();
+    }
+
     getDataByAssessmentId = async (assessment_id: number) => {
         return await this.QuestionRepo.getDataByAssessmentId(assessment_id);
     }

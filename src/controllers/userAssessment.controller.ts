@@ -18,7 +18,8 @@ class UserAssessmentController {
 
     getTime = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            
+            const time = await this.UserAssessmentService.getTime();
+            return sendResponse(res, "Get time", 200, time);
         } catch (error) {
             next(error);
         }

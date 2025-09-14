@@ -19,9 +19,14 @@ class UserAssessmentRepository {
     }
 
     getTime = async () => {
-        return await prisma.userAssessments.findFirst({where: {
-            
-        }})
+        return await prisma.userAssessments.findFirst({
+            where: {
+                score: null,
+            },
+            select: {
+                createAt: true,
+            },
+        });
     }
 
     createUserAssessment = async (data: UserAssessmentCreateDTO) => {

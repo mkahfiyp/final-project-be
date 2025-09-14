@@ -1,5 +1,5 @@
 import { prisma } from "../config/prisma";
-import { SkillCreateDTO } from "../dto/skill.dto";
+import { SkillAssessmentDTO, SkillCreateDTO } from "../dto/skill.dto";
 
 class SkillRepository {
     getAllData = async () => {
@@ -12,6 +12,17 @@ class SkillRepository {
             }
         });
     };
+
+    getDataById = async (assessment_id: number) => {
+        const data: SkillAssessmentDTO[] = await prisma.skillAssessments.findMany({
+            where: {
+                assessment_id,
+                deletedAt: null,
+            }
+        });
+
+        return data;
+    }
 
     createSkill = async (data: SkillCreateDTO) => {
         return await prisma.skillAssessments.create({ data });

@@ -8,6 +8,10 @@ class UserAssessmentService {
         return await this.UserAssessmentRepo.getUserAssessment(user_id);
     }
 
+    getTime = async () => {
+        return await this.UserAssessmentRepo.getTime();
+    }
+
     createUserAssessment = async (data: UserAssessmentCreateDTO) => {
         return await this.UserAssessmentRepo.createUserAssessment(data);
     }
