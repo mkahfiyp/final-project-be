@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../utils/sendResponse";
 import SkillService from "../services/skill.services";
+import { SkillAssessmentDTO } from "../dto/skill.dto";
 
 class SkillController {
     private skillServices = new SkillService;
@@ -9,6 +10,15 @@ class SkillController {
         try {
             const items = await this.skillServices.getAllData();
             sendResponse(res, "List skill assessments", 200, items);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    getDataById = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const items: SkillAssessmentDTO[] = await this.skillServices.getDataById(Number(req.params.assessment_id));
+            sendResponse(res, "Skill assessment detail", 200, items);
         } catch (error) {
             next(error);
         }

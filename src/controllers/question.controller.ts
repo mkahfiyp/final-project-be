@@ -6,6 +6,15 @@ import { AssessmentQuestionsDto, AssessmentQuestionInput } from "../dto/question
 class QuestionController {
     private questionService = new QuestionService;
 
+    getDataAssessment = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const data = await this.questionService.getDataAssessment();
+            sendResponse(res, "Questions list", 200, data);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     getDataByAssessmentId = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const assessment_id = Number(req.params.id);

@@ -62,20 +62,8 @@ class UserCompanyRepository {
         });
     }
 
-    async deleteUserCompany(userCompanyId: number, userId: number) {
-        const existingRecord = await prisma.userCompanies.findFirst({
-            where: { user_company_id: userCompanyId, user_id: userId }
-        });
-
-        if (!existingRecord) {
-            throw new AppError("Work history not found or you do not have permission to delete it", 404);
-        }
-
-        return await prisma.userCompanies.delete({
-            where: {
-                user_company_id: userCompanyId,
-            },
-        });
+    async deleteUserCompany(user_company_id: number) {
+        return await prisma.userCompanies.delete({ where: { user_company_id } });
     }
 }
 

@@ -50,10 +50,9 @@ class UserCompanyController {
 
     deleteUserCompany = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const userId = Number(res.locals.decript.id);
-            const userCompanyId = Number(req.params.id);
+            const user_company_id = Number(req.params.id);
 
-            await this.userCompanyService.deleteUserCompany(userCompanyId, userId);
+            await this.userCompanyService.deleteUserCompany(user_company_id);
             sendResponse(res, "Work history deleted successfully", 200, null);
         } catch (error) {
             next(error);

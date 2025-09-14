@@ -13,28 +13,16 @@ class ReviewCompanyRouter {
   }
 
   private initializeRoutes(): void {
-    this.router.post(
-      "/companies/:companyId",
-      verifyToken,
-      this.reviewCompanyController.createReview
-    );
+    this.router.post("/", verifyToken, this.reviewCompanyController.createReview);
 
     this.router.get(
-      "/companies/:companyId",
+      "/",
       this.reviewCompanyController.getReviewsByCompanyId
     );
 
-    this.router.patch(
-      "/:reviewId",
-      verifyToken,
-      this.reviewCompanyController.updateReview
-    );
+    this.router.patch("/:reviewId", verifyToken, this.reviewCompanyController.updateReview);
 
-    this.router.delete(
-      "/:reviewId",
-      verifyToken,
-      this.reviewCompanyController.deleteReview
-    );
+    this.router.delete("/:reviewId", verifyToken, this.reviewCompanyController.deleteReview);
   }
 
   getRouter(): Router {

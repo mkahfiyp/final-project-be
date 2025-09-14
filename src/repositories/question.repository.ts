@@ -2,6 +2,10 @@ import { prisma } from "../config/prisma"
 import { AssessmentQuestionInput } from "../dto/questions.dto";
 
 class QuestionRepository {
+    getDataAssessment = async () => {
+        return await prisma.assessmentQuestions.findMany();
+    }
+
     getDataByAssessmentId = async (assessment_id: number) => {
         return await prisma.assessmentQuestions.findMany({
             where: {
