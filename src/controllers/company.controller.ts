@@ -67,13 +67,13 @@ class CompanyController {
   getCompanyById = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const companyId = parseInt(req.params.id);
-      
+
       if (!companyId || isNaN(companyId)) {
         return sendResponse(res, "Invalid company ID", 400);
       }
 
       const result = await this.companyService.getCompanyById(companyId);
-      
+
       if (!result) {
         return sendResponse(res, "Company not found", 404);
       }
@@ -83,5 +83,15 @@ class CompanyController {
       next(error);
     }
   };
+
+  getCompanyByName = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const companyName = req.params.name;
+      const result = await this.companyService.getCompanyByName(companyName);
+      sendResponse(res, "Get Company detail by name", 200, result);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 export default CompanyController;

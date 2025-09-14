@@ -15,10 +15,7 @@ class ReviewCompanyRouter {
   private initializeRoutes(): void {
     this.router.post("/", verifyToken, this.reviewCompanyController.createReview);
 
-    this.router.get(
-      "/",
-      this.reviewCompanyController.getReviewsByCompanyId
-    );
+    this.router.get("/:companyId", this.reviewCompanyController.getReviewsByCompanyId);
 
     this.router.patch("/:reviewId", verifyToken, this.reviewCompanyController.updateReview);
 

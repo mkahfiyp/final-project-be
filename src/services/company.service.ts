@@ -48,6 +48,10 @@ class CompanyService {
     const result = await this.companyRepository.getCompanyById(companyId);
     return result;
   };
+
+  getCompanyByName = async (name: string) => {
+    return await this.companyRepository.getCompanyByName(name);
+  }
 }
 
 export default CompanyService;

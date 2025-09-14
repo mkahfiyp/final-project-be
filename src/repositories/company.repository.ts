@@ -110,5 +110,13 @@ class CompanyRepository {
       },
     });
   };
+
+  getCompanyByName = async (name: string) => {
+    return await prisma.companies.findFirst({
+      where: {
+        name,
+      }
+    })
+  }
 }
 export default CompanyRepository;
