@@ -196,5 +196,4 @@ class ApplicationRepository {
     });
   }
 }
-
 export default ApplicationRepository;
