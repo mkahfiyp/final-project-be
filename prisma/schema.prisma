@@ -65,6 +65,7 @@ model Interviews {
   startDate      DateTime
   endDate        DateTime
   note           String
+  location       String?
   createAt       DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -281,11 +282,10 @@ model Applications {
 }
 
 enum Status {
-  SUBMITTED // baru daftar
-  IN_REVIEW // sedang diproses / screening
-  INTERVIEW // dijadwalkan interview
-  ACCEPTED // diterima
-  REJECTED // ditolak
+  SUBMITTED
+  INTERVIEW
+  ACCEPTED
+  REJECTED
 }
 
 // END FENDRI
