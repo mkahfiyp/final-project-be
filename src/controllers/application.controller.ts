@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import ApplicationService from "../services/application.service";
 import AppError from "../errors/appError";
 import { sendResponse } from "../utils/sendResponse";
-import { getJobApplicantListMap } from "../mappers/applicantion.mappers";
 import { FilterApplicant } from "../dto/application.dto";
 
 class ApplicationController {
@@ -46,7 +45,6 @@ class ApplicationController {
     next: NextFunction
   ) => {
     try {
-      // Ambil filters dari query params
       const filters: FilterApplicant = {
         minAge: req.query.minAge ? Number(req.query.minAge) : undefined,
         maxAge: req.query.maxAge ? Number(req.query.maxAge) : undefined,
@@ -57,17 +55,37 @@ class ApplicationController {
           ? Number(req.query.maxSalary)
           : undefined,
         education: req.query.education as string,
-        status: req.query.status as string,
+        gender: req.query.gender as string,
+        search: req.query.search as string,
         sortBy: (req.query.sortBy as any) || "createdAt",
         sortOrder: (req.query.sortOrder as any) || "asc",
       };
-
+      const limit = Number(req.query.limit);
+      const offset = Number(req.query.offset);
+      console.log("query", filters, limit, offset);
       const data = await this.applicationService.getCompanyApplicant(
         req.params.slug,
-        filters
+        filters,
+        limit,
+        offset
       );
-
-      sendResponse(res, "success", 200, getJobApplicantListMap(data));
+      console.log("ini data", data);
+      sendResponse(res, "success", 200, data);
+    } catch (error) {
+      next(error);
+    }
+  };
+  getDetailApplicant = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const application_id = Number(req.params.application_id);
+      const result = await this.applicationService.getDetailApplication(
+        application_id
+      );
+      sendResponse(res, "success", 200, result);
     } catch (error) {
       next(error);
     }
@@ -89,10 +107,7 @@ class ApplicationController {
         throw new AppError("Invalid application ID", 400);
       }
 
-      const application = await this.applicationService.getApplicationDetail(
-        applicationId,
-        userId
-      );
+      const application = await this.applicationService.getApplicationDetail();
 
       res.status(200).json({
         success: true,

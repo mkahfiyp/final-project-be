@@ -1,3 +1,4 @@
+import { prisma } from "../config/prisma";
 import AppError from "../errors/appError";
 import { PreselectionInput } from "../middleware/validation/preselection.validation";
 import PreselectionTestRepository from "../repositories/preselection.repository";
@@ -51,6 +52,23 @@ class PreselectionService {
       throw new AppError("faild deactive", 500);
     }
     return result;
+  };
+  checkIfAlreadyHavePreselectionTest = async (slug: string) => {
+    const result = await this.preselectionTestRepository.findJobId(slug);
+    if (!result || result?.deletedAt) {
+      throw new AppError("job not exist", 400);
+    }
+    const selection = await this.preselectionTestRepository.checkIsExist(
+      result?.job_id
+    );
+    if (selection) {
+      await prisma.jobs.update({
+        where: { job_id: result.job_id },
+        data: { preselection_test: true },
+      });
+      return true;
+    }
+    return false;
   };
 }
 

@@ -4,10 +4,13 @@ import { prisma } from "../config/prisma";
 export const createSlug = async (
   title: string,
   category: string,
-  jobType: string
+  jobType: string,
+  username: string
 ) => {
   // gabungkan title + category + jobType
-  let slugBase = slug(`${title} ${category} ${jobType}`, { lower: true });
+  let slugBase = slug(`${title} ${category} ${jobType} ${username}`, {
+    lower: true,
+  });
   let uniqueSlug = slugBase;
   let counter = 1;
 

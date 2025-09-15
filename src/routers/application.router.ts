@@ -22,12 +22,17 @@ class ApplicationRouter {
       this.applicationController.getMyApplications
     );
 
-    // Get company applications (for companies)
     this.router.get(
       "/company/list/:slug",
       verifyToken,
       validatorRole(Role.COMPANY),
       this.applicationController.getJobApplicantList
+    );
+    this.router.get(
+      "/detail/:application_id",
+      verifyToken,
+      validatorRole(Role.COMPANY),
+      this.applicationController.getDetailApplicant
     );
 
     // Get application detail by ID

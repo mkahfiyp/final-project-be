@@ -35,6 +35,10 @@ class PreselectionRouter {
       "/deactive/:slug",
       this.preselectionController.deactivePreselectionTest
     );
+    this.route.get(
+      "/active/:slug",
+      this.preselectionController.checkIfAlreadyHavePreselectionTest
+    );
   }
   public getRouter(): Router {
     return this.route;
