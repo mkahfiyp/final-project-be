@@ -1,4 +1,4 @@
-import { UserSubscriptionGetDTO } from "../dto/userSubscription.dto";
+import { UserSubscriptionGetDTO, UserSubscriptionsGetDTO } from "../dto/userSubscription.dto";
 import UserSubscriptionRepository from "../repositories/userSubscription.repository";
 
 class UserSubscriptionService {
@@ -6,6 +6,11 @@ class UserSubscriptionService {
 
     getUserSubscription = async (user_id: number) => {
         const data: UserSubscriptionGetDTO[] = await this.userSubscriptionRepo.getUserSubscription(user_id);
+        return data;
+    }
+
+    getUserSubscriptions = async () => {
+        const data: UserSubscriptionsGetDTO[] = await this.userSubscriptionRepo.getUserSubscriptions();
         return data;
     }
 }

@@ -3,7 +3,7 @@ import { Subscription, SubscriptionCreateDTO, SubscriptionUpdateDTO } from "../d
 
 class SubscriptionRepository {
     getSubscription = async () => {
-        const result: Subscription[] = await prisma.subscriptions.findMany({ orderBy: { createAt: "asc" } });
+        const result: Subscription[] = await prisma.subscriptions.findMany({ where: { deletedAt: null }, orderBy: { createAt: "asc" } });
         return result
     }
 
