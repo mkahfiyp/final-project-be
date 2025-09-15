@@ -13,9 +13,8 @@ import EducationRouter from "./routers/education.router";
 import ExperienceRouter from "./routers/experience.router";
 import JobSaveRouter from "./routers/jobSave.router";
 import ApplicationRouter from "./routers/application.router";
-// import InterviewRouter from "./routers/interview.router";
+import InterviewRouter from "./routers/interview.router";
 import { blogRouter } from "./routers/blog.router";
-
 import PostingsRouter from "./routers/postings.route";
 import CompanyRouter from "./routers/company.route";
 import UserAssessmentRouter from "./routers/userAssessment.router";
@@ -59,7 +58,7 @@ class App {
     const experienceRouter: ExperienceRouter = new ExperienceRouter();
     const jobSaveRouter: JobSaveRouter = new JobSaveRouter();
     const applicationRouter: ApplicationRouter = new ApplicationRouter();
-    // const interviewRouter: InterviewRouter = new InterviewRouter();
+    const interviewRouter: InterviewRouter = new InterviewRouter();
     const preselection: PreselectionRouter = new PreselectionRouter();
     const userCompanyRouter: UserCompanyRouter = new UserCompanyRouter();
     const userSubscriptionRouter: UserSubscriptionRouter = new UserSubscriptionRouter();
@@ -93,7 +92,7 @@ class App {
     this.app.use("/applications", applicationRouter.getRouter());
 
     // Interview routes
-    // this.app.use("/interviews", interviewRouter.getRouter());
+    this.app.use("/interviews", interviewRouter.getRouter());
 
     // Blog routes
     this.app.use("/blog", blogRouter);
