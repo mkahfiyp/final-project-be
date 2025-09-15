@@ -103,6 +103,7 @@ class ApplicationRepository {
         application_id: true,
         expected_salary: true,
         status: true,
+        interview: true,
         Jobs: true,
         cv: true,
         createdAt: true,

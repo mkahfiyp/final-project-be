@@ -124,6 +124,12 @@ class ApplicationService {
       jobTitle: detailApplicant.Jobs?.title,
       JobType: detailApplicant.Jobs?.job_type,
       jobCategory: detailApplicant.Jobs?.category,
+      interview: {
+        startDate: detailApplicant.interview?.startDate,
+        endDate: detailApplicant.interview?.endDate,
+        note: detailApplicant.interview?.note,
+        location: detailApplicant.interview?.location,
+      },
       status: detailApplicant.status,
       age: detailApplicant.Users?.profiles?.birthDate
         ? Math.floor(
