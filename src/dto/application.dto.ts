@@ -1,10 +1,11 @@
 export interface FilterApplicant {
+  search?: string;
   minAge?: number;
   maxAge?: number;
   minSalary?: number;
   maxSalary?: number;
   education?: string;
-  status?: string;
-  sortBy?: "createdAt" | "status" | "score" | "age" | "expected_salary";
+  gender?: string;
+  sortBy?: "appliedOn" | "score" | "age" | "expected_salary";
   sortOrder?: "asc" | "desc";
 }

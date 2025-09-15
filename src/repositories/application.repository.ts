@@ -57,20 +57,34 @@ class ApplicationRepository {
     };
   }
 
-  getApplicantListByJobId = async (job_id: number) => {
+  getApplicantListByJobId = async (job_id: number, selection_id: number) => {
     return await prisma.applications.findMany({
       where: { job_id },
-      include: {
+      select: {
+        application_id: true,
+        expected_salary: true,
+        status: true,
+        cv: true,
+        createdAt: true,
         Users: {
           select: {
             name: true,
             email: true,
+            username: true,
             profiles: true,
-            user_selection: true,
             education: true,
+            user_selection: {
+              where: { selection_id },
+              select: { score: true, selection_id: true },
+            },
           },
         },
       },
+    });
+  };
+  getSelectionId = async (job_id: number) => {
+    return await prisma.selections.findUnique({
+      where: { job_id },
     });
   };
   getJobId = async (slug: string) => {
@@ -78,40 +92,39 @@ class ApplicationRepository {
       where: { slug },
     });
   };
-
-  /**
-   * Get application by ID
-   */
-  async getApplicationById(applicationId: number) {
+  getDetailApplication = async (
+    application_id: number,
+    selection_id: number,
+    user_id: number
+  ) => {
     return await prisma.applications.findUnique({
-      where: {
-        application_id: applicationId,
-      },
-      include: {
+      where: { application_id },
+      select: {
+        application_id: true,
+        expected_salary: true,
+        status: true,
+        Jobs: true,
+        cv: true,
+        createdAt: true,
         Users: {
           select: {
             name: true,
             email: true,
+            username: true,
             profiles: true,
             education: true,
             experience: true,
-          },
-        },
-        Jobs: {
-          include: {
-            Companies: {
-              select: {
-                name: true,
-                profile_picture: true,
+            user_selection: {
+              where: {
+                selection_id,
+                user_id,
               },
             },
           },
         },
-        interview: true,
       },
     });
-  }
-
+  };
   /**
    * Create new application
    */

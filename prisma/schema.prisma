@@ -43,8 +43,7 @@ model SelectionQuestions {
   updatedAt             DateTime          @updatedAt
 
   // Relasi
-  selection   Selections   @relation(fields: [selection_id], references: [selection_id])
-  userAnswers UserAnswer[]
+  selection Selections @relation(fields: [selection_id], references: [selection_id])
 }
 
 model UserSelection {
@@ -56,27 +55,16 @@ model UserSelection {
   completedAt       DateTime?
 
   // Relasi
-  user        Users        @relation(fields: [user_id], references: [user_id])
-  selection   Selections   @relation(fields: [selection_id], references: [selection_id])
-  userAnswers UserAnswer[]
-}
-
-model UserAnswer {
-  user_answer_id        Int      @id @default(autoincrement())
-  user_selection_id     Int
-  selection_question_id Int
-  answer                String
-  isCorrect             Boolean?
-
-  // Relasi
-  userSelection     UserSelection      @relation(fields: [user_selection_id], references: [user_selection_id])
-  selectionQuestion SelectionQuestions @relation(fields: [selection_question_id], references: [selection_question_id])
+  user      Users      @relation(fields: [user_id], references: [user_id])
+  selection Selections @relation(fields: [selection_id], references: [selection_id])
 }
 
 model Interviews {
   interview_id   Int      @id @default(autoincrement())
   application_id Int      @unique
-  schedule       DateTime
+  startDate      DateTime
+  endDate        DateTime
+  note           String
   createAt       DateTime @default(now())
   updatedAt      DateTime @updatedAt
 

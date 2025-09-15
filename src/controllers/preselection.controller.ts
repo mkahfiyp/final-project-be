@@ -61,7 +61,7 @@ class PreselectionController {
       );
       sendResponse(res, "success update preselection test", 200);
     } catch (error) {
-      console.log(error);
+      next(error);
     }
   };
   deactivePreselectionTest = async (
@@ -74,7 +74,23 @@ class PreselectionController {
       await this.preselectionService.deactivePreselectionTest(slug);
       sendResponse(res, "success", 200);
     } catch (error) {
-      console.log(error);
+      next(error);
+    }
+  };
+  checkIfAlreadyHavePreselectionTest = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.params.slug);
+      const result =
+        await this.preselectionService.checkIfAlreadyHavePreselectionTest(
+          req.params.slug
+        );
+      sendResponse(res, "success", 200, result);
+    } catch (error) {
+      next(error);
     }
   };
 }

@@ -13,18 +13,18 @@ class PreselectionTestRepository {
           preselection_test: true,
         },
       });
-      // cek apakah sudah ada selection sebelumnya
-      const existingSelection = await tx.selections.findFirst({
-        where: { job_id: job.job_id },
-      });
-      if (existingSelection) {
-        await tx.selectionQuestions.deleteMany({
-          where: { selection_id: existingSelection.selection_id },
-        });
-        await tx.selections.delete({
-          where: { selection_id: existingSelection.selection_id },
-        });
-      }
+      // // cek apakah sudah ada selection sebelumnya
+      // const existingSelection = await tx.selections.findFirst({
+      //   where: { job_id: job.job_id },
+      // });
+      // if (existingSelection) {
+      //   await tx.selectionQuestions.deleteMany({
+      //     where: { selection_id: existingSelection.selection_id },
+      //   });
+      //   await tx.selections.delete({
+      //     where: { selection_id: existingSelection.selection_id },
+      //   });
+      // }
       const result = await tx.selections.create({
         data: { passingScore, job_id: job.job_id },
       });
@@ -95,6 +95,11 @@ class PreselectionTestRepository {
         slug,
       },
       data: { preselection_test: false },
+    });
+  };
+  checkIsExist = async (job_id: number) => {
+    return await prisma.selections.findUnique({
+      where: { job_id },
     });
   };
 }

@@ -10,8 +10,10 @@ class PostingsRepository {
       // 1. Cari company dari user_id
       const company = await tx.companies.findUnique({
         where: { user_id },
+        include: { Users: true },
       });
-      if (!company) throw new AppError("Company not found for this user", 400);
+      if (!company || !company.Users)
+        throw new AppError("Company not found for this user", 400);
 
       const { skills, ...jobData } = data;
 
@@ -22,7 +24,8 @@ class PostingsRepository {
           slug: await createSlug(
             jobData.title,
             jobData.category,
-            jobData.job_type
+            jobData.job_type,
+            company.Users?.username
           ),
           company_id: company.company_id,
           expiredAt: new Date(data.expiredAt),
