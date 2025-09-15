@@ -341,11 +341,12 @@ model UserSubscriptions {
 }
 
 model Subscriptions {
-  subscription_id Int      @id @default(autoincrement())
+  subscription_id Int       @id @default(autoincrement())
   name            String
   price           Int
-  createAt        DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createAt        DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
 
   user_subscriptions UserSubscriptions[]
 }

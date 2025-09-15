@@ -15,12 +15,14 @@ import JobSaveRouter from "./routers/jobSave.router";
 import ApplicationRouter from "./routers/application.router";
 import InterviewRouter from "./routers/interview.router";
 import { blogRouter } from "./routers/blog.router";
-
 import PostingsRouter from "./routers/postings.route";
 import CompanyRouter from "./routers/company.route";
 import UserAssessmentRouter from "./routers/userAssessment.router";
 import PreselectionRouter from "./routers/preselection.router";
 import UserCompanyRouter from "./routers/userCompany.router";
+import UserSubscriptionRouter from "./routers/userSubscription.router";
+import ReviewCompanyRouter from "./routers/reviewCompany.router";
+import SubscriptionRouter from "./routers/subscription.router";
 const PORT: string = process.env.PORT || "8181";
 class App {
   public app: Application;
@@ -59,6 +61,9 @@ class App {
     const interviewRouter: InterviewRouter = new InterviewRouter();
     const preselection: PreselectionRouter = new PreselectionRouter();
     const userCompanyRouter: UserCompanyRouter = new UserCompanyRouter();
+    const userSubscriptionRouter: UserSubscriptionRouter = new UserSubscriptionRouter();
+    const reviewCompanyRouter: ReviewCompanyRouter = new ReviewCompanyRouter();
+    const subscriptionRouter: SubscriptionRouter = new SubscriptionRouter();
 
     this.app.get("/", (req: Request, res: Response, next: NextFunction) => {
       res.status(200).send("<h1>Job Portal API</h1>");
@@ -99,6 +104,9 @@ class App {
     this.app.use("/postings", postingsRoter.getRouter());
     this.app.use("/userAssessments", userAssessmentRouter.getRouter());
     this.app.use("/user-companies", userCompanyRouter.getRouter());
+    this.app.use("/userSubscription", userSubscriptionRouter.getRouter());
+    this.app.use("/reviewCompany", reviewCompanyRouter.getRouter());
+    this.app.use("/subscription", subscriptionRouter.getRouter());
 
     this.app.use("/preselection", preselection.getRouter());
     this.app.use((req: Request, res: Response, next: NextFunction) => {
