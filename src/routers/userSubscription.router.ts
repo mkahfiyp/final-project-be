@@ -15,6 +15,7 @@ export class UserSubscriptionRouter {
     private initializeRoutes(): void {
         this.router.use(verifyToken);
         this.router.get('/', this.userSubscriptionController.getUserSubscription);
+        this.router.get('/user-subscription', this.userSubscriptionController.getUserSubscriptions);
     }
 
     public getRouter(): Router {
