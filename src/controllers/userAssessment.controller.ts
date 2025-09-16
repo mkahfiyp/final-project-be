@@ -27,11 +27,9 @@ class UserAssessmentController {
 
     createUserAssessment = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            console.log(req.body);
             const user_id = Number(res.locals.decript.id);
             const payload = UserAssessmentCreateSchema.parse({ ...req.body, user_id });
             const result = await this.UserAssessmentService.createUserAssessment(payload)
-            console.log(result);
             return sendResponse(res, "User Assessment Created", 200, result);
         } catch (error) {
             next(error)
