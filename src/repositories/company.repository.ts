@@ -114,7 +114,11 @@ class CompanyRepository {
   getCompanyByName = async (name: string) => {
     return await prisma.companies.findFirst({
       where: {
-        name,
+        name: { equals: name, mode: "insensitive" },
+      }, include: {
+        job: true,
+        user_company: true,
+        Users: true,
       }
     })
   }

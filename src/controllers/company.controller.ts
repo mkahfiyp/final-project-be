@@ -86,7 +86,7 @@ class CompanyController {
 
   getCompanyByName = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const companyName = req.params.name;
+      const companyName = req.params.name.replace(/-/g, " ");
       const result = await this.companyService.getCompanyByName(companyName);
       sendResponse(res, "Get Company detail by name", 200, result);
     } catch (error) {
