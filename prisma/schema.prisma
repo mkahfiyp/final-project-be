@@ -303,7 +303,7 @@ model UserAssessments {
   assessment SkillAssessments @relation(fields: [assessment_id], references: [assessment_id])
   user       Users            @relation(fields: [user_id], references: [user_id])
 
-  assessment_certificates AssessmentCertificates[]
+  assessment_certificates AssessmentCertificates
 }
 
 model SkillAssessments {

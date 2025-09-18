@@ -14,7 +14,10 @@ class UserAssessmentRepository {
             },
             orderBy: {
                 date_taken: 'desc',
-            },
+            }, include: {
+                assessment: true,
+                assessment_certificates: true,
+            }
         })
     }
 
