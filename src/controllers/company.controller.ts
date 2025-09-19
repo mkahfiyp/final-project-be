@@ -93,5 +93,37 @@ class CompanyController {
       next(error);
     }
   }
+
+  // Public endpoint to get top companies
+  getTopCompanies = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+
+      if (limit > 50) {
+        return sendResponse(res, "Limit cannot exceed 50", 400);
+      }
+
+      const result = await this.companyService.getTopCompanies(limit);
+      sendResponse(res, "success get top companies", 200, result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // Public endpoint to get top companies with detailed statistics
+  getTopCompaniesWithStats = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+
+      if (limit > 20) {
+        return sendResponse(res, "Limit cannot exceed 20 for detailed stats", 400);
+      }
+
+      const result = await this.companyService.getTopCompaniesWithStats(limit);
+      sendResponse(res, "success get top companies with detailed statistics", 200, result);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 export default CompanyController;

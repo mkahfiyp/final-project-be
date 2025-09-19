@@ -10,11 +10,15 @@ class JobSaveController {
      */
     getSavedJobs = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const userId = res.locals.decrypt.id;
+            console.log('getSavedJobs called');
+            const userId = res.locals.decript.id;
+            console.log('User ID:', userId);
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 10;
+            console.log('Page:', page, 'Limit:', limit);
 
             const result = await this.jobSaveService.getSavedJobs(userId, page, limit);
+            console.log('Result obtained:', result);
 
             res.status(200).json({
                 success: true,
@@ -23,6 +27,7 @@ class JobSaveController {
                 pagination: result.pagination,
             });
         } catch (error) {
+            console.error('Error in getSavedJobs:', error);
             next(error);
         }
     };
@@ -32,7 +37,7 @@ class JobSaveController {
      */
     saveJob = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const userId = res.locals.decrypt.id;
+            const userId = res.locals.decript.id;
             const { job_id } = req.body;
 
             if (!job_id) {
@@ -56,7 +61,7 @@ class JobSaveController {
      */
     unsaveJob = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const userId = res.locals.decrypt.id;
+            const userId = res.locals.decript.id;
             const jobId = parseInt(req.params.jobId);
 
             if (isNaN(jobId)) {
@@ -79,7 +84,7 @@ class JobSaveController {
      */
     checkJobSaved = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const userId = res.locals.decrypt.id;
+            const userId = res.locals.decript.id;
             const jobId = parseInt(req.params.jobId);
 
             if (isNaN(jobId)) {
