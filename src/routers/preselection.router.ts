@@ -16,28 +16,37 @@ class PreselectionRouter {
   }
   private initializeRoutes(): void {
     this.route.use(verifyToken);
-    this.route.use(validatorRole(Role.COMPANY));
     this.route.post(
       "/create/:slug",
       validator(schemaPreselectionInput),
+      validatorRole(Role.COMPANY),
       this.preselectionController.createPreselectionTest
     );
     this.route.get(
       "/detail/:slug",
+      validatorRole(Role.COMPANY),
       this.preselectionController.getDetailPreselectionTest
     );
     this.route.patch(
       "/edit/:selection_id",
       validator(schemaPreselectionInput),
+      validatorRole(Role.COMPANY),
       this.preselectionController.updatePreselectionTest
     );
     this.route.patch(
       "/deactive/:slug",
+      validatorRole(Role.COMPANY),
       this.preselectionController.deactivePreselectionTest
     );
     this.route.get(
       "/active/:slug",
+      validatorRole(Role.COMPANY),
       this.preselectionController.checkIfAlreadyHavePreselectionTest
+    );
+    this.route.post(
+      "/submit",
+      validatorRole(Role.USER),
+      this.preselectionController.submitSoal
     );
   }
   public getRouter(): Router {

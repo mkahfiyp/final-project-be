@@ -1,46 +1,14 @@
 import ApplicationRepository from "../repositories/application.repository";
 import AppError from "../errors/appError";
-import { JobType, Status } from "../../prisma/generated/client";
+import { Status } from "../../prisma/generated/client";
 import { prisma } from "../config/prisma";
 import { FilterApplicant } from "../dto/application.dto";
-import { processApplicantList } from "../helper/refactorGetCompanyService";
+import { applicantListMap } from "../mappers/applicant.mappers";
+import { transport } from "../config/nodemailer";
+import { acceptTemplateMail } from "../templates/accept.template";
+import { rejectTemplateMail } from "../templates/reject.template";
 class ApplicationService {
   private applicationRepository = new ApplicationRepository();
-
-  /**
-   * Get applications for a user
-   */
-  async getMyApplications(
-    userId: number,
-    page: number = 1,
-    limit: number = 10,
-    status?: string
-  ) {
-    try {
-      const result = await this.applicationRepository.getApplicationsByUserId(
-        userId,
-        page,
-        limit,
-        status
-      );
-
-      return {
-        data: result.data,
-        pagination: {
-          page: result.page,
-          limit: result.limit,
-          total: result.total,
-          totalPages: result.totalPages,
-        },
-      };
-    } catch (error) {
-      if (error instanceof AppError) {
-        throw error;
-      }
-      throw new AppError("Failed to fetch user applications", 500);
-    }
-  }
-
   getCompanyApplicant = async (
     slug: string,
     filters: FilterApplicant,
@@ -63,7 +31,7 @@ class ApplicationService {
         selectionId.selection_id
       );
 
-    const mappedList = processApplicantList(
+    const mappedList = applicantListMap(
       applicantList,
       filters,
       isPreselectionTrue,
@@ -79,7 +47,6 @@ class ApplicationService {
       total,
     };
   };
-
   getDetailApplication = async (application_id: number) => {
     const user = await prisma.applications.findUnique({
       where: { application_id },
@@ -164,73 +131,44 @@ class ApplicationService {
     };
     return afterMap;
   };
-
-  getApplicationDetail = async () => {};
-  /**
-   * Apply for a job
-   */
-  async applyForJob(
-    userId: number,
-    jobId: number,
-    expectedSalary: number,
-    cv: string
-  ) {
-    // Validate required fields
-    if (!jobId || !expectedSalary || !cv) {
-      throw new AppError(
-        "Missing required fields: job_id, expected_salary, cv",
-        400
-      );
-    }
-
-    // Check if job exists and is not expired
-    const job = await prisma.jobs.findUnique({
-      where: {
-        job_id: jobId,
-      },
+  updateStatus = async (
+    status: Status,
+    application_id: number,
+    user_id: number,
+    message: string
+  ) => {
+    const company = await prisma.companies.findUnique({
+      where: { user_id },
     });
+    if (!company) throw new AppError("cannot find company id", 400);
+    const result = await this.applicationRepository.updateStatus(
+      status,
+      application_id,
+      company?.company_id
+    );
+    if (!result.Users?.email) throw new AppError("faild send email", 500);
 
-    if (!job) {
-      throw new AppError("Job not found", 404);
-    }
-
-    if (job.deletedAt) {
-      throw new AppError("Job is no longer available", 400);
-    }
-
-    if (new Date() > new Date(job.expiredAt)) {
-      throw new AppError("Job application deadline has passed", 400);
-    }
-
-    try {
-      return await this.applicationRepository.createApplication(
-        userId,
-        jobId,
-        expectedSalary,
-        cv
-      );
-    } catch (error) {
-      if (error instanceof AppError) {
-        throw error;
-      }
-      throw new AppError("Failed to submit application", 500);
-    }
-  }
-
-  /**
-   * Update application status (company only)
-   */
-  async updateApplicationStatus(
-    applicationId: number,
-    status: string,
-    userId: number
-  ) {
-    // Validate status
-    const validStatuses = Object.values(Status);
-    if (!validStatuses.includes(status as Status)) {
-      throw new AppError("Invalid status", 400);
-    }
-  }
+    await transport.sendMail({
+      from: process.env.MAILSENDER,
+      to: result.Users.email,
+      subject:
+        status === Status.ACCEPTED
+          ? `Great News, ${result.Users.name}! You're Accepted`
+          : `Application Update for ${result.Users.name}`,
+      html:
+        status === Status.ACCEPTED
+          ? acceptTemplateMail(
+              message,
+              result.Users?.name,
+              `${process.env.FE_URL}/images/logo.png`
+            )
+          : rejectTemplateMail(
+              result.Users.name,
+              `${process.env.FE_URL}/images/logo.png`,
+              message
+            ),
+    });
+  };
 }
 
 export default ApplicationService;

@@ -23,6 +23,8 @@ import UserCompanyRouter from "./routers/userCompany.router";
 import UserSubscriptionRouter from "./routers/userSubscription.router";
 import ReviewCompanyRouter from "./routers/reviewCompany.router";
 import SubscriptionRouter from "./routers/subscription.router";
+import AnalyticRouter from "./routers/analytic.route";
+import { job } from "./server";
 import AssessmentCertificateRouter from "./routers/AssessmentCertificate.router";
 const PORT: string = process.env.PORT || "8181";
 class App {
@@ -61,9 +63,11 @@ class App {
     const interviewRouter: InterviewRouter = new InterviewRouter();
     const preselection: PreselectionRouter = new PreselectionRouter();
     const userCompanyRouter: UserCompanyRouter = new UserCompanyRouter();
-    const userSubscriptionRouter: UserSubscriptionRouter = new UserSubscriptionRouter();
+    const userSubscriptionRouter: UserSubscriptionRouter =
+      new UserSubscriptionRouter();
     const reviewCompanyRouter: ReviewCompanyRouter = new ReviewCompanyRouter();
     const subscriptionRouter: SubscriptionRouter = new SubscriptionRouter();
+    const analyticRouter: AnalyticRouter = new AnalyticRouter();
     const assessmentCertificateRouter: AssessmentCertificateRouter = new AssessmentCertificateRouter();
 
     this.app.get("/", (req: Request, res: Response, next: NextFunction) => {
@@ -111,6 +115,7 @@ class App {
     this.app.use("/assessmentCertificate", assessmentCertificateRouter.getRouter());
 
     this.app.use("/preselection", preselection.getRouter());
+    this.app.use("/analytic", analyticRouter.getRouter());
     this.app.use((req: Request, res: Response, next: NextFunction) => {
       throw new AppError("Route Not Found", 404);
     });
@@ -123,6 +128,7 @@ class App {
   public start(): void {
     this.app.listen(PORT, () => {
       console.log(`API RUNNING : http:localhost:${PORT}`);
+      job.start();
     });
   }
 }

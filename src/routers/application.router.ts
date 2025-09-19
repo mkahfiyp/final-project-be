@@ -15,41 +15,21 @@ class ApplicationRouter {
   }
 
   private initializeRoutes(): void {
-    // Get my applications (for users)
-    this.router.get(
-      "/my",
-      verifyToken,
-      this.applicationController.getMyApplications
-    );
-
+    this.router.use(verifyToken);
     this.router.get(
       "/company/list/:slug",
-      verifyToken,
       validatorRole(Role.COMPANY),
       this.applicationController.getJobApplicantList
     );
     this.router.get(
       "/detail/:application_id",
-      verifyToken,
       validatorRole(Role.COMPANY),
       this.applicationController.getDetailApplicant
     );
-
-    // Get application detail by ID
-    this.router.get(
-      "/:id",
-      verifyToken,
-      this.applicationController.getApplicationDetail
-    );
-
-    // Apply for a job
-    this.router.post("/", verifyToken, this.applicationController.applyForJob);
-
-    // Update application status (company only)
-    this.router.put(
-      "/:id/status",
-      verifyToken,
-      this.applicationController.updateApplicationStatus
+    this.router.patch(
+      "/update/:status/:application_id",
+      validatorRole(Role.COMPANY),
+      this.applicationController.updateStatus
     );
   }
 

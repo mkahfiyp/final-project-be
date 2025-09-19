@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import PreselectionService from "../services/preselection.service";
 import AppError from "../errors/appError";
 import { sendResponse } from "../utils/sendResponse";
+import { SubmitPreselectionTest } from "../dto/application.dto";
 
 class PreselectionController {
   private preselectionService = new PreselectionService();
@@ -89,6 +90,19 @@ class PreselectionController {
           req.params.slug
         );
       sendResponse(res, "success", 200, result);
+    } catch (error) {
+      next(error);
+    }
+  };
+  submitSoal = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data: SubmitPreselectionTest = {
+        user_id: res.locals.decript.id,
+        selection_id: req.body.selection_id,
+        score: req.body.score,
+      };
+      await this.preselectionService.submitSoal(data);
+      sendResponse(res, "success", 200);
     } catch (error) {
       next(error);
     }
