@@ -25,9 +25,20 @@ class InterviewRouter {
     );
     this.router.post(
       "/create",
-      validator(schemaInterviewInput),
       validatorRole(Role.COMPANY),
+      validator(schemaInterviewInput),
       this.interviewController.createInterview
+    );
+    this.router.get(
+      "/all/edit/:application_id",
+      validatorRole(Role.COMPANY),
+      this.interviewController.getInterviewShedule
+    );
+    this.router.patch(
+      "/update/:interview_id",
+      validatorRole(Role.COMPANY),
+      validator(schemaInterviewInput),
+      this.interviewController.updateInterview
     );
   }
 

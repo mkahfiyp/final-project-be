@@ -15,12 +15,12 @@ interface ProcessedApplicant {
   appliedOn: string | Date;
 }
 
-export function processApplicantList(
+export const applicantListMap = (
   applicantList: any[],
   filters: FilterApplicant,
   preselection_test: boolean,
   passingScore: number
-): ProcessedApplicant[] {
+): ProcessedApplicant[] => {
   return applicantList
     .map((app) => {
       const user = app.Users!;
@@ -88,6 +88,8 @@ export function processApplicantList(
         if ((a.score ?? 0) < passingScore) return false;
       }
 
+      if (filters.status && a.status !== filters.status) return false;
+
       return true;
     })
     .sort((a, b) => {
@@ -108,4 +110,4 @@ export function processApplicantList(
           );
       }
     });
-}
+};
