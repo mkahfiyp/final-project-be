@@ -1,4 +1,5 @@
 import { prisma } from "../config/prisma";
+import { SubmitPreselectionTest } from "../dto/application.dto";
 import AppError from "../errors/appError";
 import { PreselectionInput } from "../middleware/validation/preselection.validation";
 import PreselectionTestRepository from "../repositories/preselection.repository";
@@ -69,6 +70,15 @@ class PreselectionService {
       return true;
     }
     return false;
+  };
+  submitSoal = async (data: SubmitPreselectionTest) => {
+    const result = await this.preselectionTestRepository.createUserSelection(
+      data
+    );
+    if (!result) {
+      throw new AppError("faild create user selection", 500);
+    }
+    return result;
   };
 }
 

@@ -1,6 +1,8 @@
+import { transport } from "../config/nodemailer";
 import AppError from "../errors/appError";
 import { InterviewInput } from "../middleware/validation/interview.validation";
 import InterviewRepository from "../repositories/interview.repository";
+import { scheduleReminderMail } from "../templates/scheduleReminder.template";
 
 class InterviewService {
   private interviewRepository = new InterviewRepository();
@@ -22,6 +24,69 @@ class InterviewService {
       throw new AppError("faild create interview", 500);
     }
     return result;
+  };
+  getInterviewShedule = async (application_id: number, user_id: number) => {
+    const result = await this.interviewRepository.getInterviewShedule(
+      application_id
+    );
+    if (!result) {
+      throw new AppError("interview not exist", 400);
+    }
+    const company = await this.interviewRepository.getCompanyId(user_id);
+    if (!company?.companies?.company_id) {
+      throw new AppError("faild get company id", 400);
+    }
+    const all = await this.interviewRepository.getAllInterviewForCompany(
+      company?.companies?.company_id
+    );
+    const payload = all.filter((a) => a.interview_id !== result.interview_id);
+
+    return { edit: result, all: payload };
+  };
+  updateInterview = async (interview_id: number, data: InterviewInput) => {
+    const result = await this.interviewRepository.updateInterview(
+      interview_id,
+      data
+    );
+    return result;
+  };
+  ScheduleReminder = async () => {
+    const result = await this.interviewRepository.getAllInterviewSchedule();
+    if (result.length === 0) return;
+    for (const interview of result) {
+      console.log(`sending email running ${interview.interview_id}`);
+      //to pelamar
+      const htmlPelamar = scheduleReminderMail(
+        interview.application.Users?.name || "",
+        `${process.env.FE_URL}/images/logo.png`,
+        interview.note,
+        interview.location || "",
+        interview.startDate,
+        interview.endDate
+      );
+      await transport.sendMail({
+        from: process.env.MAILSENDER,
+        to: interview.application.Users?.email,
+        subject: `Reminder: Your Interview Tomorrow, ${interview.application.Users?.name}`,
+        html: htmlPelamar,
+      });
+
+      //to company
+      const htmlCompany = scheduleReminderMail(
+        interview.application.Jobs?.Companies?.name || "",
+        `${process.env.FE_URL}/images/logo.png`,
+        interview.note,
+        interview.location || "",
+        interview.startDate,
+        interview.endDate
+      );
+      await transport.sendMail({
+        from: process.env.MAILSENDER,
+        to: interview.application.Jobs?.Companies?.email,
+        subject: `Reminder: Your Interview Tomorrow, ${interview.application.Jobs?.Companies?.name}`,
+        html: htmlCompany,
+      });
+    }
   };
 }
 

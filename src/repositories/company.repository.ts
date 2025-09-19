@@ -13,12 +13,21 @@ class CompanyRepository {
     data: SchemaUpdateCompanyProfile,
     uploadedPicture?: string
   ) => {
-    return await prisma.companies.update({
-      where: { user_id },
-      data: {
-        ...data,
-        profile_picture: uploadedPicture,
-      },
+    return await prisma.$transaction(async (tx) => {
+      const result = await tx.companies.update({
+        where: { user_id },
+        data: {
+          ...data,
+          profile_picture: uploadedPicture,
+        },
+      });
+      await tx.users.update({
+        where: {
+          user_id,
+        },
+        data: { name: result.name },
+      });
+      return result;
     });
   };
 
@@ -36,9 +45,9 @@ class CompanyRepository {
     // Add search filter
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-        { email: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
+        { email: { contains: search, mode: "insensitive" } },
       ];
     }
 
@@ -57,7 +66,7 @@ class CompanyRepository {
           user_id: true,
         },
         orderBy: {
-          name: 'asc',
+          name: "asc",
         },
         skip,
         take: limit,
@@ -103,7 +112,7 @@ class CompanyRepository {
             expiredAt: true,
           },
           orderBy: {
-            createdAt: 'desc',
+            createdAt: "desc",
           },
           take: 10, // Limit to latest 10 jobs
         },

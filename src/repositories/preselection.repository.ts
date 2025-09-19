@@ -1,5 +1,5 @@
-import slug from "slug";
 import { prisma } from "../config/prisma";
+import { SubmitPreselectionTest } from "../dto/application.dto";
 import { PreselectionInput } from "../middleware/validation/preselection.validation";
 
 class PreselectionTestRepository {
@@ -100,6 +100,11 @@ class PreselectionTestRepository {
   checkIsExist = async (job_id: number) => {
     return await prisma.selections.findUnique({
       where: { job_id },
+    });
+  };
+  createUserSelection = async (data: SubmitPreselectionTest) => {
+    return await prisma.userSelection.create({
+      data: { ...data },
     });
   };
 }

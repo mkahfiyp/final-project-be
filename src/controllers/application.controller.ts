@@ -1,43 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import ApplicationService from "../services/application.service";
-import AppError from "../errors/appError";
 import { sendResponse } from "../utils/sendResponse";
 import { FilterApplicant } from "../dto/application.dto";
+import { Status } from "../../prisma/generated/client";
 
 class ApplicationController {
   private applicationService = new ApplicationService();
-
-  /**
-   * Get applications for authenticated user
-   */
-  getMyApplications = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const userId = res.locals.decrypt.id;
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
-      const status = req.query.status as string;
-
-      const result = await this.applicationService.getMyApplications(
-        userId,
-        page,
-        limit,
-        status
-      );
-
-      res.status(200).json({
-        success: true,
-        message: "Applications retrieved successfully",
-        data: result.data,
-        pagination: result.pagination,
-      });
-    } catch (error) {
-      next(error);
-    }
-  };
 
   getJobApplicantList = async (
     req: Request,
@@ -57,6 +25,7 @@ class ApplicationController {
         education: req.query.education as string,
         gender: req.query.gender as string,
         search: req.query.search as string,
+        status: req.query.status as Status,
         sortBy: (req.query.sortBy as any) || "createdAt",
         sortOrder: (req.query.sortOrder as any) || "asc",
       };
@@ -90,88 +59,18 @@ class ApplicationController {
       next(error);
     }
   };
-
-  /**
-   * Get application detail by ID
-   */
-  getApplicationDetail = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  updateStatus = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const applicationId = parseInt(req.params.id);
-      const userId = res.locals.decrypt.id;
-
-      if (isNaN(applicationId)) {
-        throw new AppError("Invalid application ID", 400);
-      }
-
-      const application = await this.applicationService.getApplicationDetail();
-
-      res.status(200).json({
-        success: true,
-        message: "Application detail retrieved successfully",
-        data: application,
-      });
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  /**
-   * Apply for a job
-   */
-  applyForJob = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const userId = res.locals.decrypt.id;
-      const { job_id, expected_salary, cv } = req.body;
-
-      const application = await this.applicationService.applyForJob(
-        userId,
-        job_id,
-        expected_salary,
-        cv
-      );
-
-      res.status(201).json({
-        success: true,
-        message: "Application submitted successfully",
-        data: application,
-      });
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  /**
-   * Update application status (company only)
-   */
-  updateApplicationStatus = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const applicationId = parseInt(req.params.id);
-      const userId = res.locals.decrypt.id;
-      const { status } = req.body;
-
-      if (isNaN(applicationId)) {
-        throw new AppError("Invalid application ID", 400);
-      }
-
-      const application = await this.applicationService.updateApplicationStatus(
-        applicationId,
+      const status = req.params.status as Status;
+      const application_id = Number(req.params.application_id);
+      const user_id = res.locals.decript.id;
+      await this.applicationService.updateStatus(
         status,
-        userId
+        application_id,
+        user_id,
+        req.body.message
       );
-
-      res.status(200).json({
-        success: true,
-        message: "Application status updated successfully",
-        data: application,
-      });
+      sendResponse(res, "success", 200);
     } catch (error) {
       next(error);
     }
