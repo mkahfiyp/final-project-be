@@ -156,11 +156,11 @@ class ApplicationService {
         startDate: e.startDate,
         endDate: e.endDate,
       })),
-      CertificatesCode: userCertificate.flatMap((c) =>
-        c.assessment_certificates.map((cert) => ({
-          code: cert.certificate_code,
-        }))
-      ),
+      // CertificatesCode: userCertificate.flatMap((c) =>
+      //   c.assessment_certificates.map((cert) => ({
+      //     code: cert.certificate_code,
+      //   }))
+      // ),
     };
     return afterMap;
   };

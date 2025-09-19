@@ -23,6 +23,7 @@ import UserCompanyRouter from "./routers/userCompany.router";
 import UserSubscriptionRouter from "./routers/userSubscription.router";
 import ReviewCompanyRouter from "./routers/reviewCompany.router";
 import SubscriptionRouter from "./routers/subscription.router";
+import AssessmentCertificateRouter from "./routers/AssessmentCertificate.router";
 const PORT: string = process.env.PORT || "8181";
 class App {
   public app: Application;
@@ -52,8 +53,7 @@ class App {
     const questionRouter: QuestionRouter = new QuestionRouter();
     const companyRouter: CompanyRouter = new CompanyRouter();
     const postingsRoter: PostingsRouter = new PostingsRouter();
-    const userAssessmentRouter: UserAssessmentRouter =
-      new UserAssessmentRouter();
+    const userAssessmentRouter: UserAssessmentRouter = new UserAssessmentRouter();
     const educationRouter: EducationRouter = new EducationRouter();
     const experienceRouter: ExperienceRouter = new ExperienceRouter();
     const jobSaveRouter: JobSaveRouter = new JobSaveRouter();
@@ -64,6 +64,7 @@ class App {
     const userSubscriptionRouter: UserSubscriptionRouter = new UserSubscriptionRouter();
     const reviewCompanyRouter: ReviewCompanyRouter = new ReviewCompanyRouter();
     const subscriptionRouter: SubscriptionRouter = new SubscriptionRouter();
+    const assessmentCertificateRouter: AssessmentCertificateRouter = new AssessmentCertificateRouter();
 
     this.app.get("/", (req: Request, res: Response, next: NextFunction) => {
       res.status(200).send("<h1>Job Portal API</h1>");
@@ -107,6 +108,7 @@ class App {
     this.app.use("/userSubscription", userSubscriptionRouter.getRouter());
     this.app.use("/reviewCompany", reviewCompanyRouter.getRouter());
     this.app.use("/subscription", subscriptionRouter.getRouter());
+    this.app.use("/assessmentCertificate", assessmentCertificateRouter.getRouter());
 
     this.app.use("/preselection", preselection.getRouter());
     this.app.use((req: Request, res: Response, next: NextFunction) => {

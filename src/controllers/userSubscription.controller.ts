@@ -2,6 +2,8 @@ import { NextFunction, Request, response, Response } from "express";
 import UserSubscriptionService from "../services/userSubscription.service";
 import { UserSubscriptionGetDTO, UserSubscriptionsGetDTO } from "../dto/userSubscription.dto";
 import { sendResponse } from "../utils/sendResponse";
+import { UploadApiResponse } from "cloudinary";
+import { cloudinaryUpload } from "../config/coudinary";
 
 class UserSubscriptionController {
     private userSubscriptionService: UserSubscriptionService = new UserSubscriptionService();
@@ -27,8 +29,12 @@ class UserSubscriptionController {
 
     updateUserSubscription = async (req: Request, res: Response, next: NextFunction) => {
         try {
+            let upload: UploadApiResponse | undefined;
+            if (req.file) {
+                upload = await cloudinaryUpload(req.file);
+            }
             const user_subscription_id: number = Number(req.params.id);
-            const result: UserSubscriptionGetDTO = await this.userSubscriptionService.updateUserSubscription({ ...req.body, user_subscription_id });
+            const result: UserSubscriptionGetDTO = await this.userSubscriptionService.updateUserSubscription({ ...req.body, user_subscription_id, proof_url: upload?.secure_url });
             sendResponse(res, "Update data user subscription", 200, result);
         } catch (error) {
             next(error);

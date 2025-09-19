@@ -19,6 +19,10 @@ class UserAssessmentService {
     updateUserAssessment = async (data: UserAssessmentUpdateDTO) => {
         return await this.UserAssessmentRepo.updateUserAssessment(data);
     }
+
+    getUserAssessmentById = async (id: number) => {
+        return await this.UserAssessmentRepo.getUserAssessmentById(id);
+    }
 }
 
 export default UserAssessmentService;

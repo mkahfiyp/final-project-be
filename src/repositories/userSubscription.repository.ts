@@ -27,7 +27,7 @@ class UserSubscriptionRepository {
             where: {
                 end_date: { gte: new Date() },
                 user_id,
-                payment_status: "APPROVED",
+                // payment_status: "APPROVED",
             }, include: {
                 subscription: true,
                 user: true,

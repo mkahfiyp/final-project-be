@@ -18,6 +18,7 @@ class UserAssessmentRouter {
         this.router.get("/", this.userAssessmentController.getUserAssessment);
         this.router.patch("/", this.userAssessmentController.updateUserAssessment);
         this.router.get("/getTime", this.userAssessmentController.getTime);
+        this.router.get("/:id", this.userAssessmentController.getUserAssessmentById);
     }
 
     public getRouter(): Router {
