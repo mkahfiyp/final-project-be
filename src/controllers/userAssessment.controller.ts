@@ -45,6 +45,16 @@ class UserAssessmentController {
             next(error);
         }
     }
+
+    getUserAssessmentById = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const id: number = Number(req.params.id);
+            const result = await this.UserAssessmentService.getUserAssessmentById(id);
+            return sendResponse(res, "User assessment get", 200, result);
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export default UserAssessmentController;

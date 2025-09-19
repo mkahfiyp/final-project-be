@@ -342,6 +342,7 @@ model UserSubscriptions {
   createAt             DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
   payment_status       PaymentStatus @default(PENDING)
+  proof_url            String?
 
   user         Users         @relation(fields: [user_id], references: [user_id])
   subscription Subscriptions @relation(fields: [subscription_id], references: [subscription_id])

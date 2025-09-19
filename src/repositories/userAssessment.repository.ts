@@ -39,6 +39,16 @@ class UserAssessmentRepository {
     updateUserAssessment = async (data: UserAssessmentUpdateDTO) => {
         return await prisma.userAssessments.update({ where: { user_assessment_id: data.user_assessment_id }, data });
     }
+
+    getUserAssessmentById = async (id: number) => {
+        return await prisma.userAssessments.findUnique({
+            where: {
+                user_assessment_id: id,
+            }, include: {
+                assessment: true,
+            }
+        })
+    }
 }
 
 export default UserAssessmentRepository;
