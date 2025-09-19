@@ -123,9 +123,140 @@ class CompanyRepository {
   getCompanyByName = async (name: string) => {
     return await prisma.companies.findFirst({
       where: {
-        name,
+        name: { equals: name, mode: "insensitive" },
+      }, include: {
+        job: true,
+        user_company: true,
+        Users: true,
+      }
+    })
+  }
+
+  getTopCompanies = async (limit: number = 10) => {
+    return await prisma.companies.findMany({
+      select: {
+        company_id: true,
+        name: true,
+        email: true,
+        phone: true,
+        description: true,
+        website: true,
+        profile_picture: true,
+        _count: {
+          select: {
+            job: {
+              where: {
+                deletedAt: null,
+                expiredAt: {
+                  gte: new Date(), // Only count active jobs
+                },
+              },
+            },
+          },
+        },
+        job: {
+          where: {
+            deletedAt: null,
+            expiredAt: {
+              gte: new Date(),
+            },
+          },
+          select: {
+            _count: {
+              select: {
+                applications: true,
+              },
+            },
+          },
+        },
       },
+      orderBy: [
+        {
+          job: {
+            _count: 'desc', // Order by number of active jobs
+          },
+        },
+        {
+          name: 'asc', // Secondary sort by name
+        },
+      ],
+      take: limit,
     });
-  };
+  }
+
+  getTopCompaniesWithStats = async (limit: number = 10) => {
+    return await prisma.companies.findMany({
+      select: {
+        company_id: true,
+        name: true,
+        email: true,
+        phone: true,
+        description: true,
+        website: true,
+        profile_picture: true,
+        Users: {
+          select: {
+            createdAt: true,
+          },
+        },
+        _count: {
+          select: {
+            job: true, // Total jobs (including expired/deleted)
+            user_company: true, // Total employees/users associated
+          },
+        },
+        user_company: {
+          select: {
+            user_company_id: true,
+            reviews: {
+              select: {
+                review_id: true,
+                rating_culture: true,
+                rating_work_life_balance: true,
+                rating_facilities: true,
+                rating_career: true,
+              },
+            },
+          },
+        },
+        job: {
+          select: {
+            job_id: true,
+            title: true,
+            category: true,
+            job_type: true,
+            salary: true,
+            currency: true,
+            createdAt: true,
+            expiredAt: true,
+            deletedAt: true,
+            _count: {
+              select: {
+                applications: true,
+                job_save: true,
+              },
+            },
+            applications: {
+              select: {
+                status: true,
+                createdAt: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: [
+        {
+          job: {
+            _count: 'desc',
+          },
+        },
+        {
+          name: 'asc',
+        },
+      ],
+      take: limit,
+    });
+  }
 }
 export default CompanyRepository;

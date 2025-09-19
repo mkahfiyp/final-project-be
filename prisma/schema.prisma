@@ -303,7 +303,7 @@ model UserAssessments {
   assessment SkillAssessments @relation(fields: [assessment_id], references: [assessment_id])
   user       Users            @relation(fields: [user_id], references: [user_id])
 
-  assessment_certificates AssessmentCertificates[]
+  assessment_certificates AssessmentCertificates?
 }
 
 model SkillAssessments {
@@ -319,7 +319,7 @@ model SkillAssessments {
 
 model AssessmentCertificates {
   assessment_certificate_id Int      @id @default(autoincrement())
-  user_assessment_id        Int
+  user_assessment_id        Int      @unique
   certificate_code          String
   createAt                  DateTime @default(now())
   updatedAt                 DateTime @updatedAt
@@ -327,14 +327,21 @@ model AssessmentCertificates {
   user_assessment UserAssessments @relation(fields: [user_assessment_id], references: [user_assessment_id])
 }
 
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model UserSubscriptions {
-  user_subscription_id Int      @id @default(autoincrement())
+  user_subscription_id Int           @id @default(autoincrement())
   user_id              Int
   subscription_id      Int
-  start_date           DateTime @default(now())
+  start_date           DateTime      @default(now())
   end_date             DateTime
-  createAt             DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  createAt             DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  payment_status       PaymentStatus @default(PENDING)
 
   user         Users         @relation(fields: [user_id], references: [user_id])
   subscription Subscriptions @relation(fields: [subscription_id], references: [subscription_id])

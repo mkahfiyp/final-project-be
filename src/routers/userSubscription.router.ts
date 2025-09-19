@@ -16,6 +16,10 @@ export class UserSubscriptionRouter {
         this.router.use(verifyToken);
         this.router.get('/', this.userSubscriptionController.getUserSubscription);
         this.router.get('/user-subscription', this.userSubscriptionController.getUserSubscriptions);
+        this.router.patch('/:id', this.userSubscriptionController.updateUserSubscription);
+        this.router.get('/user-subscription-active', this.userSubscriptionController.getUserSubscriptionActive);
+        this.router.get('/user-subscription-history', this.userSubscriptionController.getUserSubscriptionHistory);
+        this.router.post('/', this.userSubscriptionController.createUserSubscription);
     }
 
     public getRouter(): Router {

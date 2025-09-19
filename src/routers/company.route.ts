@@ -18,6 +18,8 @@ class CompanyRouter {
   private initializeRoutes(): void {
     // Public routes (no authentication required)
     this.route.get("/", this.companyController.getAllCompanies);
+    this.route.get("/top/with-stats", this.companyController.getTopCompaniesWithStats);
+    this.route.get("/top", this.companyController.getTopCompanies);
     this.route.get("/:id", this.companyController.getCompanyById);
     this.route.get("/name/:name", this.companyController.getCompanyByName);
 
