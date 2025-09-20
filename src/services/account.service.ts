@@ -53,6 +53,20 @@ class AccountService {
     }
     return result;
   };
+  getProfileByUsername = async (username: string) => {
+    const result = await this.accountRepository.getProfileByUsername(username);
+    if (!result) {
+      throw new AppError("User not found", 404);
+    }
+    return result;
+  };
+  searchUsersByName = async (searchTerm: string) => {
+    if (!searchTerm || searchTerm.trim().length < 2) {
+      throw new AppError("Search term must be at least 2 characters", 400);
+    }
+    const result = await this.accountRepository.searchUsersByName(searchTerm.trim());
+    return result;
+  };
 }
 
 export default AccountService;
