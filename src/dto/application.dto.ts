@@ -18,3 +18,8 @@ export interface SubmitPreselectionTest {
   user_id: number;
   score: number;
 }
+
+export interface CreateApplicationDto {
+  job_id: number;
+  expected_salary: number;
+}
