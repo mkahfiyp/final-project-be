@@ -22,6 +22,7 @@ class AccountRouter {
     this.route.use(verifyToken);
     this.route.use(validatorRole(Role.USER));
     this.route.get("/get-data/user", this.accountController.getProfileRoleUser);
+    this.route.get("/profile", this.accountController.getProfileRoleUser);
     this.route.patch(
       "/update-profile/user",
       uploadMemory().single("profile_picture"),

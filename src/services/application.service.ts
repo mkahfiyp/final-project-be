@@ -9,6 +9,143 @@ import { acceptTemplateMail } from "../templates/accept.template";
 import { rejectTemplateMail } from "../templates/reject.template";
 class ApplicationService {
   private applicationRepository = new ApplicationRepository();
+
+  createApplication = async (data: {
+    user_id: number;
+    job_id: number;
+    expected_salary: number;
+    cv: string;
+  }) => {
+    // Check if user already applied for this job
+    const existingApplication = await prisma.applications.findFirst({
+      where: {
+        user_id: data.user_id,
+        job_id: data.job_id,
+      },
+    });
+
+    if (existingApplication) {
+      throw new AppError("You have already applied for this job", 400);
+    }
+
+    // Check if job exists and is not expired
+    const job = await prisma.jobs.findUnique({
+      where: { job_id: data.job_id },
+    });
+
+    if (!job) {
+      throw new AppError("Job not found", 404);
+    }
+
+    if (job.expiredAt < new Date()) {
+      throw new AppError("Job application deadline has passed", 400);
+    }
+
+    // Create application
+    const application = await prisma.applications.create({
+      data: {
+        user_id: data.user_id,
+        job_id: data.job_id,
+        expected_salary: data.expected_salary,
+        cv: data.cv,
+        status: Status.SUBMITTED,
+      },
+      include: {
+        Jobs: {
+          select: {
+            title: true,
+            company_id: true,
+            Companies: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        Users: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return {
+      application_id: application.application_id,
+      job_title: application.Jobs?.title,
+      company_name: application.Jobs?.Companies?.name,
+      expected_salary: application.expected_salary,
+      status: application.status,
+      applied_at: application.createdAt,
+    };
+  };
+
+  getUserApplications = async (
+    user_id: number,
+    limit: number,
+    offset: number
+  ) => {
+    const applications = await prisma.applications.findMany({
+      where: {
+        user_id: user_id,
+      },
+      include: {
+        Jobs: {
+          select: {
+            title: true,
+            location: true,
+            salary: true,
+            periodSalary: true,
+            currency: true,
+            expiredAt: true,
+            slug: true,
+            Companies: {
+              select: {
+                name: true,
+                profile_picture: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: limit,
+      skip: offset,
+    });
+
+    const total = await prisma.applications.count({
+      where: {
+        user_id: user_id,
+      },
+    });
+
+    const mappedApplications = applications.map((app) => ({
+      application_id: app.application_id,
+      job_title: app.Jobs?.title,
+      company_name: app.Jobs?.Companies?.name,
+      company_logo: app.Jobs?.Companies?.profile_picture,
+      location: app.Jobs?.location,
+      salary: app.Jobs?.salary,
+      periodSalary: app.Jobs?.periodSalary,
+      currency: app.Jobs?.currency,
+      expected_salary: app.expected_salary,
+      status: app.status,
+      applied_at: app.createdAt,
+      job_expired_at: app.Jobs?.expiredAt,
+      job_slug: app.Jobs?.slug,
+      cv: app.cv,
+    }));
+
+    return {
+      data: mappedApplications,
+      total,
+      limit,
+      offset,
+    };
+  };
   getCompanyApplicant = async (
     slug: string,
     filters: FilterApplicant,
