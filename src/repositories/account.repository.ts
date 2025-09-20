@@ -62,5 +62,53 @@ class AccountRepository {
       },
     });
   };
+  getProfileByUsername = async (username: string) => {
+    return await prisma.users.findUnique({
+      where: { username },
+      include: {
+        profiles: true,
+        education: true,
+        experience: true,
+        user_assessment: {
+          include: {
+            assessment: true,
+            assessment_certificates: true
+          }
+        }
+      },
+    });
+  };
+  searchUsersByName = async (searchTerm: string) => {
+    return await prisma.users.findMany({
+      where: {
+        OR: [
+          {
+            username: {
+              contains: searchTerm,
+              mode: 'insensitive'
+            }
+          },
+          {
+            name: {
+              contains: searchTerm,
+              mode: 'insensitive'
+            }
+          },
+          {
+            profiles: {
+              name: {
+                contains: searchTerm,
+                mode: 'insensitive'
+              }
+            }
+          }
+        ]
+      },
+      include: {
+        profiles: true,
+      },
+      take: 10 // Limit results to 10 users
+    });
+  };
 }
 export default AccountRepository;

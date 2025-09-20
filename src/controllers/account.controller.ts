@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import AccountService from "../services/account.service";
 import AppError from "../errors/appError";
 import { sendResponse } from "../utils/sendResponse";
-import { dataRoleUserMap } from "../mappers/account.mappers";
+import { dataRoleUserMap, publicProfileMap } from "../mappers/account.mappers";
 import { UploadApiResponse } from "cloudinary";
 import { cloudinaryUpload } from "../config/coudinary";
 import { prisma } from "../config/prisma";
@@ -113,6 +113,45 @@ class AccountController {
       sendResponse(res, "success", 200);
     } catch (error) {
       console.log(error);
+    }
+  };
+  getProfileByUsername = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { username } = req.params;
+      if (!username) {
+        throw new AppError("Username is required", 400);
+      }
+      const profile = await this.accountService.getProfileByUsername(username);
+      const payload = publicProfileMap(profile);
+      sendResponse(res, "success", 200, payload);
+    } catch (error) {
+      next(error);
+    }
+  };
+  searchUsers = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { q } = req.query;
+      if (!q || typeof q !== 'string') {
+        throw new AppError("Search query 'q' is required", 400);
+      }
+      const users = await this.accountService.searchUsersByName(q);
+      const payload = users.map(user => ({
+        username: user.username,
+        name: user.name,
+        profile_picture: user.profiles?.profile_picture || null,
+        role: user.role
+      }));
+      sendResponse(res, "success", 200, payload);
+    } catch (error) {
+      next(error);
     }
   };
 }
