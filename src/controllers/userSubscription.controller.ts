@@ -1,9 +1,11 @@
-import { NextFunction, Request, response, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import UserSubscriptionService from "../services/userSubscription.service";
-import { UserSubscriptionGetDTO, UserSubscriptionsGetDTO } from "../dto/userSubscription.dto";
+import { UserSubscriptionGetDTO, UserSubscriptionScheduleDTO, UserSubscriptionsGetDTO } from "../dto/userSubscription.dto";
 import { sendResponse } from "../utils/sendResponse";
 import { UploadApiResponse } from "cloudinary";
 import { cloudinaryUpload } from "../config/coudinary";
+import { transport } from "../config/nodemailer";
+import { subscriptionReminderTemplate } from "../templates/subscriptionReminder.template";
 
 class UserSubscriptionController {
     private userSubscriptionService: UserSubscriptionService = new UserSubscriptionService();
@@ -68,6 +70,37 @@ class UserSubscriptionController {
             sendResponse(res, "Get history user subscription", 200, result);
         } catch (error) {
             next(error);
+        }
+    }
+
+    scheduleReminder = async () => {
+        try {
+            const result: UserSubscriptionScheduleDTO[] = await this.userSubscriptionService.scheduleReminder();
+            for (const item of result) {
+                const endDate = new Date(item.end_date);
+                const now = new Date();
+
+                const endDateOnly = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+                const nowOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+                const diffInDays = (endDateOnly.getTime() - nowOnly.getTime()) / (1000 * 60 * 60 * 24);
+
+                if (diffInDays === 1) {
+                    const { subject, html, text } = subscriptionReminderTemplate(
+                        item.user.name,
+                        new Date(item.end_date)
+                    );
+                    await transport.sendMail({
+                        from: process.env.MAINSENDER,
+                        to: item.user.email,
+                        subject,
+                        html,
+                        text,
+                    })
+                }
+            }
+        } catch (error) {
+            console.log(error);
         }
     }
 }

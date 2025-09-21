@@ -1,4 +1,4 @@
-import { UserSubscriptionCreateDTO, UserSubscriptionGetDTO, UserSubscriptionsGetDTO, UserSubscriptionUpdateDTO } from "../dto/userSubscription.dto";
+import { UserSubscriptionCreateDTO, UserSubscriptionGetDTO, UserSubscriptionScheduleDTO, UserSubscriptionsGetDTO, UserSubscriptionUpdateDTO } from "../dto/userSubscription.dto";
 import UserSubscriptionRepository from "../repositories/userSubscription.repository";
 
 class UserSubscriptionService {
@@ -31,6 +31,11 @@ class UserSubscriptionService {
 
     createUserSubscription = async (data: UserSubscriptionCreateDTO) => {
         const result = await this.userSubscriptionRepo.createUserSubscription(data);
+        return result;
+    }
+
+    scheduleReminder = async () => {
+        const result: UserSubscriptionScheduleDTO[] = await this.userSubscriptionRepo.scheduleReminder();
         return result;
     }
 }
