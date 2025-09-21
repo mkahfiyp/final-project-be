@@ -1,11 +1,118 @@
 import { NextFunction, Request, Response } from "express";
 import ApplicationService from "../services/application.service";
 import { sendResponse } from "../utils/sendResponse";
-import { FilterApplicant } from "../dto/application.dto";
+import { FilterApplicant, CreateApplicationDto } from "../dto/application.dto";
 import { Status } from "../../prisma/generated/client";
+import { cloudinaryUpload } from "../config/coudinary";
+import AppError from "../errors/appError";
 
 class ApplicationController {
   private applicationService = new ApplicationService();
+
+  createApplication = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const user_id = res.locals.decript.id;
+      const { job_id, expected_salary }: CreateApplicationDto = res.locals.data;
+      
+      // Check if file is uploaded
+      if (!req.file) {
+        throw new AppError("CV file is required", 400);
+      }
+
+      // Validate file type (only PDF and DOC/DOCX)
+      const allowedMimeTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      ];
+
+      if (!allowedMimeTypes.includes(req.file.mimetype)) {
+        throw new AppError("Only PDF, DOC, and DOCX files are allowed for CV", 400);
+      }
+
+      // Upload CV to Cloudinary
+      const uploadResult = await cloudinaryUpload(req.file);
+      const cvUrl = uploadResult.secure_url;
+      
+      const result = await this.applicationService.createApplication({
+        user_id,
+        job_id,
+        expected_salary,
+        cv: cvUrl
+      });
+      
+      sendResponse(res, "Application submitted successfully", 201, result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getUserApplications = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const user_id = res.locals.decript.id;
+      const limit = Number(req.query.limit) || 10;
+      const offset = Number(req.query.offset) || 0;
+      
+      const result = await this.applicationService.getUserApplications(
+        user_id,
+        limit,
+        offset
+      );
+      
+      sendResponse(res, "User applications retrieved successfully", 200, result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getUserApplicationsPaginated = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const user_id = res.locals.decript.id;
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 8;
+      
+      // Calculate offset from page
+      const offset = (page - 1) * limit;
+      
+      const result = await this.applicationService.getUserApplications(
+        user_id,
+        limit,
+        offset
+      );
+      
+      // Add pagination metadata
+      const totalPages = Math.ceil(result.total / limit);
+      const hasNextPage = page < totalPages;
+      const hasPrevPage = page > 1;
+      
+      const paginatedResult = {
+        ...result,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          hasNextPage,
+          hasPrevPage,
+          totalItems: result.total
+        }
+      };
+      
+      sendResponse(res, "User applications retrieved successfully", 200, paginatedResult);
+    } catch (error) {
+      next(error);
+    }
+  };
 
   getJobApplicantList = async (
     req: Request,

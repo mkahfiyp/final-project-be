@@ -26,6 +26,7 @@ import SubscriptionRouter from "./routers/subscription.router";
 import AnalyticRouter from "./routers/analytic.route";
 import { job } from "./server";
 import AssessmentCertificateRouter from "./routers/AssessmentCertificate.router";
+import PublicProfileRouter from "./routers/publicProfile.router";
 const PORT: string = process.env.PORT || "8181";
 class App {
   public app: Application;
@@ -68,6 +69,7 @@ class App {
     const subscriptionRouter: SubscriptionRouter = new SubscriptionRouter();
     const analyticRouter: AnalyticRouter = new AnalyticRouter();
     const assessmentCertificateRouter: AssessmentCertificateRouter = new AssessmentCertificateRouter();
+    const publicProfileRouter: PublicProfileRouter = new PublicProfileRouter();
 
     this.app.get("/", (req: Request, res: Response, next: NextFunction) => {
       res.status(200).send("<h1>Job Portal API</h1>");
@@ -78,6 +80,9 @@ class App {
 
     // User profile routes
     this.app.use("/account", accountRouter.getRouter());
+
+    // Public profile routes (no authentication required)
+    this.app.use("/public", publicProfileRouter.getRouter());
 
     // Company routes
     this.app.use("/company", companyRouter.getRouter());
