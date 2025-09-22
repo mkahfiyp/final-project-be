@@ -107,6 +107,20 @@ class PreselectionController {
       next(error);
     }
   };
+  checkIfAlreadySubmit = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const user_id = res.locals.decript.id;
+      const job_id = Number(req.params.job_id);
+      await this.preselectionService.checkIfAlreadySubmit(job_id, user_id);
+      sendResponse(res, "success", 200);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export default PreselectionController;
