@@ -24,7 +24,6 @@ class PreselectionRouter {
     );
     this.route.get(
       "/detail/:slug",
-      validatorRole(Role.COMPANY),
       this.preselectionController.getDetailPreselectionTest
     );
     this.route.patch(

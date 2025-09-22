@@ -3,7 +3,7 @@ import { sendResponse } from "../utils/sendResponse";
 import CompanyService from "../services/company.service";
 import { companyProfileMap } from "../mappers/company.mappers";
 import { UploadApiResponse } from "cloudinary";
-import { cloudinaryUploadPdf } from "../config/coudinary";
+import { cloudinaryUpload, cloudinaryUploadPdf } from "../config/coudinary";
 
 class CompanyController {
   private companyService = new CompanyService();
@@ -31,7 +31,7 @@ class CompanyController {
       const user_id = Number(res.locals.decript.id);
       let upload: UploadApiResponse | undefined;
       if (req.file) {
-        upload = await cloudinaryUploadPdf(req.file);
+        upload = await cloudinaryUpload(req.file);
       }
       await this.companyService.updateCompanyProfile(
         user_id,
