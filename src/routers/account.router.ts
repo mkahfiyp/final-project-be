@@ -47,6 +47,7 @@ class AccountRouter {
       "/education/delete/:education_id",
       this.accountController.deleteEducation
     );
+    this.route.get("/cv/generator", this.accountController.getDataForCvGenerator);
   }
   public getRouter(): Router {
     return this.route;

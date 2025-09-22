@@ -1,5 +1,5 @@
 import { prisma } from "../config/prisma"
-import { UserSubscriptionCreateDTO, UserSubscriptionGetDTO, UserSubscriptionsGetDTO, UserSubscriptionUpdateDTO } from "../dto/userSubscription.dto";
+import { UserSubscriptionCreateDTO, UserSubscriptionGetDTO, UserSubscriptionScheduleDTO, UserSubscriptionsGetDTO, UserSubscriptionUpdateDTO } from "../dto/userSubscription.dto";
 
 class UserSubscriptionRepository {
     getUserSubscription = async (user_id: number) => {
@@ -55,6 +55,27 @@ class UserSubscriptionRepository {
     createUserSubscription = async (data: UserSubscriptionCreateDTO) => {
         const result = await prisma.userSubscriptions.create({ data });
         return result;
+    }
+
+    scheduleReminder = async () => {
+        const result = await prisma.userSubscriptions.findMany({
+            include: {
+                subscription: true,
+                user: true,
+            }
+        });
+
+        const safe = result.map(({ user, ...rest }) => ({
+            ...rest,
+            user: {
+                user_id: user.user_id,
+                username: user.username,
+                email: user.email,
+                name: user.name,
+            }
+        }));
+
+        return safe;
     }
 }
 

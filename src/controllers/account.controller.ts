@@ -154,5 +154,15 @@ class AccountController {
       next(error);
     }
   };
+
+  getDataForCvGenerator = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = res.locals.decript.id;
+      const result = await this.accountService.getDataForCvGenerator(id);
+      sendResponse(res, "CV generator", 200, result);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 export default AccountController;

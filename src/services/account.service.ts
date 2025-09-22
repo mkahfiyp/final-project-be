@@ -67,6 +67,11 @@ class AccountService {
     const result = await this.accountRepository.searchUsersByName(searchTerm.trim());
     return result;
   };
+
+  getDataForCvGenerator = async (id: number) => {
+    const result = await this.accountRepository.getDataForCvGenerator(id);
+    return result;
+  }
 }
 
 export default AccountService;

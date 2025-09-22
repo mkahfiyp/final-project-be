@@ -11,6 +11,7 @@ export const UserSubscriptionSchema = z.object({
     createAt: z.date().optional(),
     updatedAt: z.date().optional(),
     payment_status: z.enum(PaymentStatus),
+    proof_url: z.string().optional().nullable(),
 });
 
 export type UserSubscriptionGetDTO = z.infer<typeof UserSubscriptionSchema>;
@@ -40,3 +41,17 @@ export const UserSubscriptionCrateShcema = z.object({
 });
 
 export type UserSubscriptionCreateDTO = z.infer<typeof UserSubscriptionCrateShcema>;
+
+const UserSchema = z.object({
+    user_id: z.number(),
+    username: z.string(),
+    email: z.string(),
+    name: z.string(),
+})
+
+export const UserSubscriptionScheduleSchema = UserSubscriptionSchema.extend({
+    subscription: SubscriptionSchema,
+    user: UserSchema,
+})
+
+export type UserSubscriptionScheduleDTO = z.infer<typeof UserSubscriptionScheduleSchema>

@@ -106,6 +106,7 @@ model Users {
   user_Company     UserCompanies[]
   user_selection   UserSelection[]
   blogs            Blog[]
+  userSkills       UserSkills[]
 }
 
 enum Role {
@@ -208,9 +209,10 @@ model Jobs {
 }
 
 model Skills {
-  id   Int    @id @default(autoincrement())
-  name String @unique
-  jobs Jobs[] @relation("JobSkills")
+  id         Int          @id @default(autoincrement())
+  name       String       @unique
+  jobs       Jobs[]       @relation("JobSkills")
+  userSkills UserSkills[]
 }
 
 enum PeriodSalary {
@@ -400,6 +402,17 @@ model AssessmentQuestions {
   updatedAt              DateTime          @updatedAt
 
   assessment SkillAssessments @relation(fields: [assessment_id], references: [assessment_id])
+}
+
+model UserSkills {
+  id      Int @id @default(autoincrement())
+  userId  Int
+  skillId Int
+
+  user  Users  @relation(fields: [userId], references: [user_id])
+  skill Skills @relation(fields: [skillId], references: [id])
+
+  @@unique([userId, skillId])
 }
 
 // Blog model

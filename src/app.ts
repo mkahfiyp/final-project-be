@@ -64,8 +64,7 @@ class App {
     const interviewRouter: InterviewRouter = new InterviewRouter();
     const preselection: PreselectionRouter = new PreselectionRouter();
     const userCompanyRouter: UserCompanyRouter = new UserCompanyRouter();
-    const userSubscriptionRouter: UserSubscriptionRouter =
-      new UserSubscriptionRouter();
+    const userSubscriptionRouter: UserSubscriptionRouter = new UserSubscriptionRouter();
     const reviewCompanyRouter: ReviewCompanyRouter = new ReviewCompanyRouter();
     const subscriptionRouter: SubscriptionRouter = new SubscriptionRouter();
     const analyticRouter: AnalyticRouter = new AnalyticRouter();
