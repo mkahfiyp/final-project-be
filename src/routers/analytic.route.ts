@@ -16,7 +16,12 @@ class AnalyticRouter {
 
   private initializeRoutes(): void {
     this.router.use(verifyToken, validatorRole(Role.COMPANY));
-    this.router.get("/user-age", this.analyticController.getUserAge);
+    this.router.get(
+      "/user-demographics",
+      this.analyticController.getDemographics
+    );
+    this.router.get("/salary-trends", this.analyticController.getSalaryTrends);
+    this.router.get("/most-jobtype", this.analyticController.getMostJobType);
   }
 
   getRouter(): Router {

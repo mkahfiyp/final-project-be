@@ -25,3 +25,27 @@ export const cloudinaryUpload = (
     streamifier.createReadStream(file.buffer).pipe(uploadStream);
   });
 };
+
+// req.file di-handle multer unutk pdf
+export const cloudinaryUploadPdf = (
+  file: Express.Multer.File
+): Promise<UploadApiResponse> => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        resource_type: "raw",
+        folder: "cv",
+        type: "upload",
+      },
+      (err, result: UploadApiResponse | undefined) => {
+        if (err) {
+          reject(err);
+        } else if (result) {
+          resolve(result);
+        }
+      }
+    );
+
+    streamifier.createReadStream(file.buffer).pipe(uploadStream);
+  });
+};
