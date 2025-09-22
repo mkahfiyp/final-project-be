@@ -4,7 +4,7 @@ import AppError from "../errors/appError";
 import { sendResponse } from "../utils/sendResponse";
 import { dataRoleUserMap, publicProfileMap } from "../mappers/account.mappers";
 import { UploadApiResponse } from "cloudinary";
-import { cloudinaryUpload } from "../config/coudinary";
+import { cloudinaryUploadPdf } from "../config/coudinary";
 import { prisma } from "../config/prisma";
 
 class AccountController {
@@ -35,7 +35,7 @@ class AccountController {
       const { id } = res.locals.decript;
       let upload: UploadApiResponse | undefined;
       if (req.file) {
-        upload = await cloudinaryUpload(req.file);
+        upload = await cloudinaryUploadPdf(req.file);
       }
       const user = await this.accountService.updateProfileRoleUser(id, {
         ...req.body,
