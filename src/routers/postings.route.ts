@@ -24,6 +24,10 @@ class PostingsRouter {
       "/get-detail/:slug",
       this.postingsController.getDetailJobPosting
     );
+    this.route.get(
+      "/applicant_id/:job_id",
+      this.postingsController.getApplicantId
+    );
     this.route.use(validatorRole(Role.COMPANY));
     this.route.get("/get-general-data", this.postingsController.getGenralData);
     this.route.get("/get-skill-list", this.postingsController.getSkillList);

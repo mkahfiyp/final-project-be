@@ -19,7 +19,7 @@ class ApplicationRouter {
 
   private initializeRoutes(): void {
     this.router.use(verifyToken);
-    
+
     // Route untuk user apply job
     this.router.post(
       "/",
@@ -28,21 +28,21 @@ class ApplicationRouter {
       validator(createApplicationSchema),
       this.applicationController.createApplication
     );
-    
+
     // Route untuk user melihat aplikasi mereka
     this.router.get(
       "/my-applications",
       validatorRole(Role.USER),
       this.applicationController.getUserApplications
     );
-    
+
     // Route untuk user melihat aplikasi mereka dengan pagination
     this.router.get(
       "/user",
       validatorRole(Role.USER),
       this.applicationController.getUserApplicationsPaginated
     );
-    
+
     // Routes untuk company
     this.router.get(
       "/company/list/:slug",

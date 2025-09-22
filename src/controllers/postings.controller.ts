@@ -175,5 +175,18 @@ class PostingsController {
       next(error);
     }
   };
+
+  getApplicantId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = await prisma.selections.findUnique({
+        where: {
+          job_id: Number(req.params.job_id),
+        },
+      });
+      sendResponse(res, "success", 200, data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 }
 export default PostingsController;
