@@ -17,10 +17,12 @@ class ApplicationService {
     cv: string;
   }) => {
     // Check if user already applied for this job
-    const existingApplication = await prisma.applications.findFirst({
+    const existingApplication = await prisma.applications.findUnique({
       where: {
-        user_id: data.user_id,
-        job_id: data.job_id,
+        user_id_job_id: {
+          user_id: data.user_id,
+          job_id: data.job_id,
+        },
       },
     });
 

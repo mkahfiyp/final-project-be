@@ -57,6 +57,8 @@ model UserSelection {
   // Relasi
   user      Users      @relation(fields: [user_id], references: [user_id])
   selection Selections @relation(fields: [selection_id], references: [selection_id])
+
+  @@unique([user_id, selection_id])
 }
 
 model Interviews {
@@ -281,6 +283,8 @@ model Applications {
   Jobs      Jobs?       @relation(fields: [job_id], references: [job_id])
   job_id    Int?
   interview Interviews?
+
+  @@unique([user_id, job_id])
 }
 
 enum Status {

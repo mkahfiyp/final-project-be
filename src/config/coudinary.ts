@@ -31,21 +31,26 @@ export const cloudinaryUploadPdf = (
   file: Express.Multer.File
 ): Promise<UploadApiResponse> => {
   return new Promise((resolve, reject) => {
+    if (!file) {
+      return reject(new Error("No file provided"));
+    }
+
     const uploadStream = cloudinary.uploader.upload_stream(
       {
-        resource_type: "raw",
-        folder: "cv",
-        type: "upload",
+        folder: "pdfs",
+        resource_type: "auto", // penting supaya bisa preview
+        format: "pdf",
       },
-      (err, result: UploadApiResponse | undefined) => {
-        if (err) {
-          reject(err);
-        } else if (result) {
-          resolve(result);
-        }
+      (err, result) => {
+        if (err) return reject(err);
+        if (!result) return reject(new Error("Upload result undefined"));
+        resolve(result);
       }
     );
 
-    streamifier.createReadStream(file.buffer).pipe(uploadStream);
+    // pastikan stream beneran nulis semua
+    const stream = streamifier.createReadStream(file.buffer);
+    stream.on("error", (err) => reject(err));
+    stream.pipe(uploadStream);
   });
 };
