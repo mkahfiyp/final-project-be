@@ -28,7 +28,12 @@ class AssessmentCertificateController {
 
     getAllAssessmentCertificateByUserId = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const id: number = res.locals.decript.id;
+            let id: number;
+            if (req.params.id) {
+                id = Number(req.params.id);
+            } else {
+                id = Number(res.locals.decript.id);
+            }
             const result = await this.assessmentCertificateService.getAllAssessmentCertificateByUserId(id);
             return sendResponse(res, "Get All Certificate", 200, result);
         } catch (error) {
