@@ -19,7 +19,7 @@ export const applicantListMap = (
   applicantList: any[],
   filters: FilterApplicant,
   preselection_test: boolean,
-  passingScore: number
+  passingScore?: number
 ): ProcessedApplicant[] => {
   return applicantList
     .map((app) => {
@@ -37,9 +37,9 @@ export const applicantListMap = (
         profile_picture: user.profiles?.profile_picture ?? null,
         age: user.profiles?.birthDate
           ? Math.floor(
-              (Date.now() - new Date(user.profiles.birthDate).getTime()) /
-                (1000 * 60 * 60 * 24 * 365.25)
-            )
+            (Date.now() - new Date(user.profiles.birthDate).getTime()) /
+            (1000 * 60 * 60 * 24 * 365.25)
+          )
           : null,
         education: lastEducation ? lastEducation.degree ?? null : null,
         gender: user.profiles?.gender,
@@ -84,7 +84,7 @@ export const applicantListMap = (
       }
 
       // **filter preselection test**
-      if (preselection_test) {
+      if (preselection_test && passingScore) {
         if ((a.score ?? 0) < passingScore) return false;
       }
 

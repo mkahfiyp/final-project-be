@@ -12,11 +12,7 @@ class SkillRouter {
     }
 
     private initializeRoutes(): void {
-        this.route.get("/", this.skillController.getList);
-        this.route.get("/:assessment_id", this.skillController.getDataById);
-        this.route.post("/", this.skillController.createSkill);
-        this.route.delete("/:id", this.skillController.deleteSkill);
-        this.route.put("/:id", this.skillController.updateSkill);
+        this.route.get("/", this.skillController.getAllData);
     }
 
     public getRouter(): Router {

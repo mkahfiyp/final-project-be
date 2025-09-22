@@ -155,24 +155,28 @@ class ApplicationService {
     const job = await this.applicationRepository.getJobId(slug);
     if (!job) throw new AppError("cannot find job id", 400);
     //ada bug di preselection test true
+
     const selectionId = await this.applicationRepository.getSelectionId(
       job.job_id
     );
-    if (!selectionId) throw new AppError("cannot find selection id", 400);
+
+    // if (!selectionId) throw new AppError("cannot find selection id", 400);
+    let applicantList = null;
+    if (!selectionId) {
+      applicantList = await this.applicationRepository.getApplicationLlistByJobIdWithoutSelectionTes(job.job_id);
+    } else {
+      applicantList = await this.applicationRepository.getApplicantListByJobId(job.job_id, selectionId.selection_id);
+    }
 
     const isPreselectionTrue = job.preselection_test;
 
-    const applicantList =
-      await this.applicationRepository.getApplicantListByJobId(
-        job.job_id,
-        selectionId.selection_id
-      );
+
 
     const mappedList = applicantListMap(
       applicantList,
       filters,
       isPreselectionTrue,
-      selectionId.passingScore
+      selectionId?.passingScore
     );
 
     const total = mappedList.length;
@@ -194,13 +198,13 @@ class ApplicationService {
     const selection = await this.applicationRepository.getSelectionId(
       user?.job_id
     );
-    if (!selection || !selection.selection_id) {
-      throw new AppError("cannot find selection id", 400);
-    }
+    // if (!selection || !selection.selection_id) {
+    //   throw new AppError("cannot find selection id", 400);
+    // }
     const detailApplicant =
       await this.applicationRepository.getDetailApplication(
         application_id,
-        selection?.selection_id,
+        selection?.selection_id ? selection.selection_id : null,
         user.user_id
       );
     if (!detailApplicant) {
@@ -237,10 +241,10 @@ class ApplicationService {
       status: detailApplicant.status,
       age: detailApplicant.Users?.profiles?.birthDate
         ? Math.floor(
-            (Date.now() -
-              new Date(detailApplicant.Users.profiles.birthDate).getTime()) /
-              (1000 * 60 * 60 * 24 * 365.25)
-          )
+          (Date.now() -
+            new Date(detailApplicant.Users.profiles.birthDate).getTime()) /
+          (1000 * 60 * 60 * 24 * 365.25)
+        )
         : null,
       gender: detailApplicant.Users?.profiles?.gender,
       expectedSalary: detailApplicant.expected_salary,
@@ -298,15 +302,15 @@ class ApplicationService {
       html:
         status === Status.ACCEPTED
           ? acceptTemplateMail(
-              message,
-              result.Users?.name,
-              `${process.env.FE_URL}/images/logo.png`
-            )
+            message,
+            result.Users?.name,
+            `${process.env.FE_URL}/images/logo.png`
+          )
           : rejectTemplateMail(
-              result.Users.name,
-              `${process.env.FE_URL}/images/logo.png`,
-              message
-            ),
+            result.Users.name,
+            `${process.env.FE_URL}/images/logo.png`,
+            message
+          ),
     });
   };
 }

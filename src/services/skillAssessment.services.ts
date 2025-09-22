@@ -1,7 +1,7 @@
-import { SkillAssessmentDTO, SkillCreateDTO } from "../dto/skill.dto";
-import SkillRepository from "../repositories/skill.repository";
+import { SkillAssessmentDTO, SkillCreateDTO } from "../dto/skillAssessment.dto";
+import SkillRepository from "../repositories/skillAssessment.repository";
 
-class SkillService {
+class SkillAssessmentService {
     private skillRepo = new SkillRepository();
 
     getAllData = async () => {
@@ -26,4 +26,4 @@ class SkillService {
     };
 }
 
-export default SkillService;
+export default SkillAssessmentService;

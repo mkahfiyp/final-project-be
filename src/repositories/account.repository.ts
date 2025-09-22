@@ -112,7 +112,7 @@ class AccountRepository {
   };
 
   getDataForCvGenerator = async (id: number) => {
-    return await prisma.users.findMany({
+    return await prisma.users.findUnique({
       where: {
         user_id: id,
       },
@@ -120,7 +120,11 @@ class AccountRepository {
         profiles: true,
         education: true,
         experience: true,
-        userSkills: true,
+        userSkills: {
+          include: {
+            skill: true
+          }
+        },
         user_assessment: {
           where: {
             assessment_certificates: {
