@@ -154,7 +154,7 @@ class ApplicationService {
   ) => {
     const job = await this.applicationRepository.getJobId(slug);
     if (!job) throw new AppError("cannot find job id", 400);
-
+    //ada bug di preselection test true
     const selectionId = await this.applicationRepository.getSelectionId(
       job.job_id
     );
@@ -260,11 +260,14 @@ class ApplicationService {
         startDate: e.startDate,
         endDate: e.endDate,
       })),
-      // CertificatesCode: userCertificate.flatMap((c) =>
-      //   c.assessment_certificates.map((cert) => ({
-      //     code: cert.certificate_code,
-      //   }))
-      // ),
+      CertificatesCode:
+        userCertificate
+          ?.map((c) =>
+            c.assessment_certificates
+              ? { code: c.assessment_certificates.certificate_code }
+              : null
+          )
+          .filter((cert): cert is { code: string } => cert !== null) ?? [],
     };
     return afterMap;
   };
