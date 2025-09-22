@@ -25,6 +25,22 @@ class AssessmentCertificateRepository {
             }
         });
     }
+
+    getAllAssessmentCertificateByUserId = async (id: number) => {
+        return await prisma.assessmentCertificates.findMany({
+            where: {
+                user_assessment: {
+                    user_id: id,
+                }
+            }, include: {
+                user_assessment: {
+                    include: {
+                        assessment: true,
+                    }
+                }
+            }
+        })
+    }
 }
 
 export default AssessmentCertificateRepository;

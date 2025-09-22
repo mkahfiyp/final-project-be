@@ -110,5 +110,29 @@ class AccountRepository {
       take: 10 // Limit results to 10 users
     });
   };
+
+  getDataForCvGenerator = async (id: number) => {
+    return await prisma.users.findMany({
+      where: {
+        user_id: id,
+      },
+      include: {
+        profiles: true,
+        education: true,
+        experience: true,
+        userSkills: true,
+        user_assessment: {
+          where: {
+            assessment_certificates: {
+              isNot: null
+            }
+          },
+          include: {
+            assessment_certificates: true,
+          }
+        }
+      }
+    });
+  }
 }
 export default AccountRepository;

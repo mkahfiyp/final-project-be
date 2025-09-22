@@ -11,6 +11,10 @@ class AssessmentCertificateService {
     getAssessmentCertificate = async (id: string) => {
         return await this.AssessmentCertificateRepo.getAssessmentCertificate(id);
     }
+
+    getAllAssessmentCertificateByUserId = async (id: number) => {
+        return await this.AssessmentCertificateRepo.getAllAssessmentCertificateByUserId(id);
+    }
 }
 
 export default AssessmentCertificateService;

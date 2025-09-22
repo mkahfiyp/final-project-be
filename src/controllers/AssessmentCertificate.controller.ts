@@ -25,6 +25,16 @@ class AssessmentCertificateController {
             next(error);
         }
     }
+
+    getAllAssessmentCertificateByUserId = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const id: number = res.locals.decript.id;
+            const result = await this.assessmentCertificateService.getAllAssessmentCertificateByUserId(id);
+            return sendResponse(res, "Get All Certificate", 200, result);
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export default AssessmentCertificateController;
