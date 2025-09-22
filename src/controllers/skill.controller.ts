@@ -1,53 +1,14 @@
 import { NextFunction, Request, Response } from "express";
+import SkillService from "../services/skill.service";
 import { sendResponse } from "../utils/sendResponse";
-import SkillService from "../services/skill.services";
-import { SkillAssessmentDTO } from "../dto/skill.dto";
 
 class SkillController {
-    private skillServices = new SkillService;
+    private skillService = new SkillService();
 
-    getList = async (req: Request, res: Response, next: NextFunction) => {
+    getAllData = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const items = await this.skillServices.getAllData();
-            sendResponse(res, "List skill assessments", 200, items);
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    getDataById = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const items: SkillAssessmentDTO[] = await this.skillServices.getDataById(Number(req.params.assessment_id));
-            sendResponse(res, "Skill assessment detail", 200, items);
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    createSkill = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const createdSkill = await this.skillServices.createSkill(req.body);
-            sendResponse(res, "Skill created successfully", 201, createdSkill);
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    deleteSkill = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const id = Number(req.params.id);
-            const deleteSkill = await this.skillServices.deleteSkill(id);
-            sendResponse(res, "Skill deleted successfully", 200, deleteSkill);
-        } catch (error) {
-            next(error)
-        }
-    }
-
-    updateSkill = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const id = Number(req.params.id);
-            const updateSkill = await this.skillServices.updateSkill(id, req.body);
-            sendResponse(res, "Skill updated successfully", 200, updateSkill);
+            const result = await this.skillService.getAllData();
+            sendResponse(res, "Get All Skill", 200, result);
         } catch (error) {
             next(error);
         }

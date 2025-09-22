@@ -1,15 +1,8 @@
 import z from "zod";
 
-export interface SkillCreateDTO {
-    skill_name: string;
-}
-
-export const SkillAssessmentSchema = z.object({
-    assessment_id: z.number(),
-    skill_name: z.string(),
-    createAt: z.date(),
-    updatedAt: z.date(),
-    deletedAt: z.date().optional().nullable(),
+export const SkillSchema = z.object({
+    id: z.number().int().positive(),
+    name: z.string(),
 });
 
-export type SkillAssessmentDTO = z.infer<typeof SkillAssessmentSchema>;
+export type SkillGetAllData = z.infer<typeof SkillSchema>;

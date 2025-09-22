@@ -6,7 +6,7 @@ import AuthRouter from "./routers/auth.router";
 import { erorrCallback } from "./errors/errorCallback";
 import cookieParser from "cookie-parser";
 import AppError from "./errors/appError";
-import SkillRouter from "./routers/skill.router";
+import SkillAssessmentRouter from "./routers/skillAssessment.router";
 import QuestionRouter from "./routers/question.router";
 import AccountRouter from "./routers/account.router";
 import EducationRouter from "./routers/education.router";
@@ -27,6 +27,8 @@ import AnalyticRouter from "./routers/analytic.route";
 import { job } from "./server";
 import AssessmentCertificateRouter from "./routers/AssessmentCertificate.router";
 import PublicProfileRouter from "./routers/publicProfile.router";
+import UserSkillRouter from "./routers/userSkill.router";
+import SkillRouter from "./routers/skill.router";
 const PORT: string = process.env.PORT || "8181";
 class App {
   public app: Application;
@@ -52,7 +54,7 @@ class App {
   private route(): void {
     const accountRouter: AccountRouter = new AccountRouter();
     const authRouter: AuthRouter = new AuthRouter();
-    const skillRouter: SkillRouter = new SkillRouter();
+    const skillAssessmentRouter: SkillAssessmentRouter = new SkillAssessmentRouter();
     const questionRouter: QuestionRouter = new QuestionRouter();
     const companyRouter: CompanyRouter = new CompanyRouter();
     const postingsRoter: PostingsRouter = new PostingsRouter();
@@ -70,6 +72,8 @@ class App {
     const analyticRouter: AnalyticRouter = new AnalyticRouter();
     const assessmentCertificateRouter: AssessmentCertificateRouter = new AssessmentCertificateRouter();
     const publicProfileRouter: PublicProfileRouter = new PublicProfileRouter();
+    const userSKillRouter: UserSkillRouter = new UserSkillRouter();
+    const sKillRouter: SkillRouter = new SkillRouter();
 
     this.app.get("/", (req: Request, res: Response, next: NextFunction) => {
       res.status(200).send("<h1>Job Portal API</h1>");
@@ -107,7 +111,7 @@ class App {
     this.app.use("/blog", blogRouter);
 
     // Skill assessment routes
-    this.app.use("/skillAssessments", skillRouter.getRouter());
+    this.app.use("/skillAssessments", skillAssessmentRouter.getRouter());
     this.app.use("/questions", questionRouter.getRouter());
     this.app.use("/company", companyRouter.getRouter());
     this.app.use("/postings", postingsRoter.getRouter());
@@ -117,6 +121,8 @@ class App {
     this.app.use("/reviewCompany", reviewCompanyRouter.getRouter());
     this.app.use("/subscription", subscriptionRouter.getRouter());
     this.app.use("/assessmentCertificate", assessmentCertificateRouter.getRouter());
+    this.app.use("/user-skill", userSKillRouter.getRouter());
+    this.app.use("/skill", sKillRouter.getRouter());
 
     this.app.use("/preselection", preselection.getRouter());
     this.app.use("/analytic", analyticRouter.getRouter());
