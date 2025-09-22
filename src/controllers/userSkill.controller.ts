@@ -29,6 +29,16 @@ class UserSkillController {
             next(error);
         }
     }
+
+    deleteUserSkill = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const user_skill_id: number = Number(req.params.id);
+            const result = await this.userSkillService.deleteUserSkill(user_skill_id);
+            sendResponse(res, "Deleted user skill", 200, result);
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export default UserSkillController;

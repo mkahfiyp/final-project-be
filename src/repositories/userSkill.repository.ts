@@ -17,6 +17,11 @@ class UserSkillRepository {
         const result: UserSkillGetAllDataByUserIdDTO = await prisma.userSkills.create({ data: payload });
         return result;
     }
+
+    deleteUserSkill = async (id: number) => {
+        const result = await prisma.userSkills.delete({ where: { id } })
+        return result;
+    }
 }
 
 export default UserSkillRepository;

@@ -13,6 +13,11 @@ class UserSkillService {
         const result = await this.userSkillRepo.createUserSkill(payload);
         return result;
     }
+
+    deleteUserSkill = async (id: number) => {
+        const result = await this.userSkillRepo.deleteUserSkill(id);
+        return result;
+    }
 }
 
 export default UserSkillService;
