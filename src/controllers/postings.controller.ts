@@ -90,7 +90,7 @@ class PostingsController {
       next(error);
     }
   };
-  getDetailJobPostingForEdit = async (
+  getDetailJobPosting = async (
     req: Request,
     res: Response,
     next: NextFunction

@@ -17,9 +17,13 @@ class PostingsRouter {
   private initializeRoutes(): void {
     // Public routes (no authentication required)
     this.route.get("/", this.postingsController.getAllJobPostings);
-    
+
     // Protected routes (authentication required)
     this.route.use(verifyToken);
+    this.route.get(
+      "/get-detail/:slug",
+      this.postingsController.getDetailJobPosting
+    );
     this.route.use(validatorRole(Role.COMPANY));
     this.route.get("/get-general-data", this.postingsController.getGenralData);
     this.route.get("/get-skill-list", this.postingsController.getSkillList);
@@ -29,10 +33,6 @@ class PostingsRouter {
       this.postingsController.createJobPosting
     );
     this.route.get("/get", this.postingsController.getMyJobList);
-    this.route.get(
-      "/get-detail/:slug",
-      this.postingsController.getDetailJobPostingForEdit
-    );
     this.route.patch(
       "/update/:slug",
       validator(schemaJobsInput),
