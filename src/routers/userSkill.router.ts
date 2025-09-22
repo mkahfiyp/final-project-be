@@ -16,6 +16,7 @@ class UserSkillRouter {
         this.router.use(verifyToken);
         this.router.get("/", this.UserSkillController.getAllUserSkillByUserId);
         this.router.post("/", this.UserSkillController.createUserSkill);
+        this.router.delete("/:id", this.UserSkillController.deleteUserSkill);
     }
 
     public getRouter(): Router {
