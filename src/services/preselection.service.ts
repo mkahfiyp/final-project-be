@@ -80,6 +80,20 @@ class PreselectionService {
     }
     return result;
   };
+  checkIfAlreadySubmit = async (job_id: number, user_id: number) => {
+    const selection = await this.preselectionTestRepository.getSelectionId(
+      job_id
+    );
+    if (!selection) throw new AppError("cannot find selection id", 400);
+    const result = await this.preselectionTestRepository.checkIfAlreadySubmit(
+      user_id,
+      selection?.selection_id
+    );
+    if (!result) {
+      throw new AppError("Must Submit Preselection test", 403);
+    }
+    return result;
+  };
 }
 
 export default PreselectionService;

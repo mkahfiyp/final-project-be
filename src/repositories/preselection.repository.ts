@@ -13,18 +13,6 @@ class PreselectionTestRepository {
           preselection_test: true,
         },
       });
-      // // cek apakah sudah ada selection sebelumnya
-      // const existingSelection = await tx.selections.findFirst({
-      //   where: { job_id: job.job_id },
-      // });
-      // if (existingSelection) {
-      //   await tx.selectionQuestions.deleteMany({
-      //     where: { selection_id: existingSelection.selection_id },
-      //   });
-      //   await tx.selections.delete({
-      //     where: { selection_id: existingSelection.selection_id },
-      //   });
-      // }
       const result = await tx.selections.create({
         data: { passingScore, job_id: job.job_id },
       });
@@ -105,6 +93,16 @@ class PreselectionTestRepository {
   createUserSelection = async (data: SubmitPreselectionTest) => {
     return await prisma.userSelection.create({
       data: { ...data },
+    });
+  };
+  checkIfAlreadySubmit = async (user_id: number, selection_id: number) => {
+    return await prisma.userSelection.findUnique({
+      where: {
+        user_id_selection_id: {
+          user_id,
+          selection_id,
+        },
+      },
     });
   };
 }

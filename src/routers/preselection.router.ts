@@ -47,6 +47,11 @@ class PreselectionRouter {
       validatorRole(Role.USER),
       this.preselectionController.submitSoal
     );
+    this.route.get(
+      "/check-if-already-submit/:job_id",
+      validatorRole(Role.USER),
+      this.preselectionController.checkIfAlreadySubmit
+    );
   }
   public getRouter(): Router {
     return this.route;
