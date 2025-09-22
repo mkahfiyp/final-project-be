@@ -142,5 +142,20 @@ class CompanyController {
       next(error);
     }
   };
+
+  getFindCompany = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 0;
+      const search = (req.query.name as string) || "";
+      const location = (req.query.location as string) || "";
+
+      const payload = { page, limit, search, location };
+      const result = await this.companyService.getFindCompany(payload);
+      sendResponse(res, "success find companies", 200, result);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 export default CompanyController;

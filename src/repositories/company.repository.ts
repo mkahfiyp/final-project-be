@@ -124,13 +124,14 @@ class CompanyRepository {
     return await prisma.companies.findFirst({
       where: {
         name: { equals: name, mode: "insensitive" },
-      }, include: {
+      },
+      include: {
         job: true,
         user_company: true,
         Users: true,
-      }
-    })
-  }
+      },
+    });
+  };
 
   getTopCompanies = async (limit: number = 10) => {
     return await prisma.companies.findMany({
@@ -173,16 +174,16 @@ class CompanyRepository {
       orderBy: [
         {
           job: {
-            _count: 'desc', // Order by number of active jobs
+            _count: "desc", // Order by number of active jobs
           },
         },
         {
-          name: 'asc', // Secondary sort by name
+          name: "asc", // Secondary sort by name
         },
       ],
       take: limit,
     });
-  }
+  };
 
   getTopCompaniesWithStats = async (limit: number = 10) => {
     return await prisma.companies.findMany({
@@ -248,15 +249,97 @@ class CompanyRepository {
       orderBy: [
         {
           job: {
-            _count: 'desc',
+            _count: "desc",
           },
         },
         {
-          name: 'asc',
+          name: "asc",
         },
       ],
       take: limit,
     });
+  };
+
+  getFindCompany = async (filters: {
+    page: number;
+    limit: number;
+    search: string;
+    location: string;
+  }) => {
+    const { page, limit, search, location } = filters;
+    const take = limit > 0 ? limit : undefined;
+    const skip = take ? (page - 1) * take : undefined;
+
+    // job filter used both for company existence check and for included jobs
+    const jobWhere: any = {
+      deletedAt: null,
+      expiredAt: { gte: new Date() },
+    };
+
+    // location filter applies only to jobs
+    if (location) {
+      jobWhere.location = { contains: location, mode: "insensitive" };
+    }
+
+    // Company-level where
+    const companyWhere: any = {};
+
+    if (search && location) {
+      // company name must match AND company must have jobs matching jobWhere (i.e. location)
+      companyWhere.AND = [
+        { name: { contains: search, mode: "insensitive" } },
+        { job: { some: jobWhere } },
+      ];
+    } else if (search) {
+      // only search by company name
+      companyWhere.name = { contains: search, mode: "insensitive" };
+    } else if (location) {
+      // only location -> companies that have jobs in that location
+      companyWhere.job = { some: jobWhere };
+    }
+
+    const [companies, totalCompanies] = await Promise.all([
+      prisma.companies.findMany({
+        where: companyWhere,
+        select: {
+          company_id: true,
+          name: true,
+          email: true,
+          phone: true,
+          description: true,
+          website: true,
+          profile_picture: true,
+          user_id: true,
+          job: {
+            where: jobWhere,
+            select: {
+              job_id: true,
+              title: true,
+              slug: true,
+              location: true,
+              salary: true,
+              periodSalary: true,
+              currency: true,
+              job_type: true,
+              category: true,
+              createdAt: true,
+              expiredAt: true,
+            },
+            orderBy: { createdAt: "desc" },
+            take: 10,
+          },
+        },
+        orderBy: { name: "asc" },
+        skip,
+        take,
+      }),
+      prisma.companies.count({ where: companyWhere }),
+    ]);
+
+    return {
+      data: companies,
+      totalCompanies,
+    };
   }
 }
 export default CompanyRepository;

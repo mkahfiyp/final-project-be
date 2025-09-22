@@ -112,7 +112,7 @@ class CompanyService {
       // Calculate review statistics
       // Get all user_companies for this company
       const userCompanies = company.user_company;
-      
+
       // Count reviews from Reviews table based on user_company_id
       const reviews = userCompanies
         .filter(uc => uc.reviews !== null)
@@ -158,6 +158,15 @@ class CompanyService {
     });
 
     return transformedCompanies;
+  }
+
+  getFindCompany = async (filters: {
+    page: number;
+    limit: number;
+    search: string;
+    location: string;
+  }) => {
+    return await this.companyRepository.getFindCompany(filters);
   }
 }
 

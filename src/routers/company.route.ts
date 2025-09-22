@@ -16,6 +16,7 @@ class CompanyRouter {
     this.initializeRoutes();
   }
   private initializeRoutes(): void {
+    this.route.get("/find", this.companyController.getFindCompany)
     // Public routes (no authentication required)
     this.route.get("/", this.companyController.getAllCompanies);
     this.route.get("/top/with-stats", this.companyController.getTopCompaniesWithStats);
