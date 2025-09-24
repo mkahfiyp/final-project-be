@@ -15,7 +15,7 @@ class AnalyticController {
         | "year"
         | "all"
         | undefined;
-
+      console.log(range);
       const data = await this.analyticService.getUserDemographics({
         gender,
         range,

@@ -3,8 +3,8 @@ import ApplicationService from "../services/application.service";
 import { sendResponse } from "../utils/sendResponse";
 import { FilterApplicant, CreateApplicationDto } from "../dto/application.dto";
 import { Status } from "../../prisma/generated/client";
-import { cloudinaryUpload, cloudinaryUploadPdf } from "../config/coudinary";
 import AppError from "../errors/appError";
+import { supabaseUploadPdf } from "../config/supabaseStorage";
 
 class ApplicationController {
   private applicationService = new ApplicationService();
@@ -23,7 +23,6 @@ class ApplicationController {
         throw new AppError("CV file is required", 400);
       }
 
-      // Validate file type (only PDF and DOC/DOCX)
       const allowedMimeTypes = [
         "application/pdf",
         "application/msword",
@@ -36,11 +35,7 @@ class ApplicationController {
           400
         );
       }
-      console.log("run");
-      // Upload CV to Cloudinary
-      const uploadResult = await cloudinaryUploadPdf(req.file);
-      const cvUrl = uploadResult.secure_url;
-
+      const cvUrl = await supabaseUploadPdf(req.file);
       const result = await this.applicationService.createApplication({
         user_id,
         job_id,

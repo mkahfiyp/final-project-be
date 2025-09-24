@@ -135,5 +135,40 @@ class ApplicationRepository {
       return application;
     });
   };
+  createApplicant = async (data: {
+    user_id: number;
+    job_id: number;
+    expected_salary: number;
+    cv: string;
+  }) => {
+    return prisma.applications.create({
+      data: {
+        user_id: data.user_id,
+        job_id: data.job_id,
+        expected_salary: data.expected_salary,
+        cv: data.cv,
+        status: Status.SUBMITTED,
+      },
+      include: {
+        Jobs: {
+          select: {
+            title: true,
+            company_id: true,
+            Companies: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        Users: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+  };
 }
 export default ApplicationRepository;
