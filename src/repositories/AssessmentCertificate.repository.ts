@@ -20,6 +20,11 @@ class AssessmentCertificateRepository {
                                 username: true,
                             }
                         },
+                        assessment: {
+                            select: {
+                                skill_name: true,
+                            }
+                        }
                     }
                 },
             }
