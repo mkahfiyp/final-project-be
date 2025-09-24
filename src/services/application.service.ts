@@ -7,6 +7,7 @@ import { applicantListMap } from "../mappers/applicant.mappers";
 import { transport } from "../config/nodemailer";
 import { acceptTemplateMail } from "../templates/accept.template";
 import { rejectTemplateMail } from "../templates/reject.template";
+import { getAge } from "../utils/getAge";
 class ApplicationService {
   private applicationRepository = new ApplicationRepository();
 
@@ -165,14 +166,18 @@ class ApplicationService {
     // if (!selectionId) throw new AppError("cannot find selection id", 400);
     let applicantList = null;
     if (!selectionId) {
-      applicantList = await this.applicationRepository.getApplicationLlistByJobIdWithoutSelectionTes(job.job_id);
+      applicantList =
+        await this.applicationRepository.getApplicationLlistByJobIdWithoutSelectionTes(
+          job.job_id
+        );
     } else {
-      applicantList = await this.applicationRepository.getApplicantListByJobId(job.job_id, selectionId.selection_id);
+      applicantList = await this.applicationRepository.getApplicantListByJobId(
+        job.job_id,
+        selectionId.selection_id
+      );
     }
 
     const isPreselectionTrue = job.preselection_test;
-
-
 
     const mappedList = applicantListMap(
       applicantList,
@@ -198,17 +203,11 @@ class ApplicationService {
       throw new AppError("cannot find user", 400);
     }
     const selection = await this.applicationRepository.getSelectionId(
-      user?.job_id
+      user.job_id
     );
-    // if (!selection || !selection.selection_id) {
-    //   throw new AppError("cannot find selection id", 400);
-    // }
+    if (!selection) throw new AppError("cannot find selection", 400);
     const detailApplicant =
-      await this.applicationRepository.getDetailApplication(
-        application_id,
-        selection?.selection_id ? selection.selection_id : null,
-        user.user_id
-      );
+      await this.applicationRepository.getDetailApplication(application_id);
     if (!detailApplicant) {
       throw new AppError("cannotn find detail applicant", 400);
     }
@@ -222,11 +221,17 @@ class ApplicationService {
         },
       },
     });
+    const userSelection = await this.applicationRepository.getUserSelection(
+      user.user_id,
+      selection?.selection_id
+    );
     const afterMap = {
       name: detailApplicant.Users?.name,
       email: detailApplicant.Users?.email,
       profile_picture: detailApplicant.Users?.profiles?.profile_picture,
-      score: detailApplicant.Users?.user_selection?.[0]?.score ?? null,
+      score: detailApplicant.Jobs?.preselection_test
+        ? userSelection?.score
+        : undefined,
       appliedOn: detailApplicant.createdAt,
       phone: detailApplicant.Users?.profiles?.phone,
       address: detailApplicant.Users?.profiles?.address,
@@ -242,30 +247,38 @@ class ApplicationService {
       },
       status: detailApplicant.status,
       age: detailApplicant.Users?.profiles?.birthDate
-        ? Math.floor(
-          (Date.now() -
-            new Date(detailApplicant.Users.profiles.birthDate).getTime()) /
-          (1000 * 60 * 60 * 24 * 365.25)
-        )
+        ? getAge(detailApplicant.Users.profiles.birthDate)
         : null,
       gender: detailApplicant.Users?.profiles?.gender,
       expectedSalary: detailApplicant.expected_salary,
       cvUrl: detailApplicant.cv,
-      education: detailApplicant.Users?.education.map((e) => ({
-        university: e.university,
-        degree: e.degree,
-        fieldOfStudy: e.fieldOfStudy,
-        startDate: e.startDate,
-        endDate: e.endDate,
-        description: e.description,
-      })),
-      experience: detailApplicant.Users?.experience.map((e) => ({
-        name: e.name,
-        position: e.position,
-        description: e.description,
-        startDate: e.startDate,
-        endDate: e.endDate,
-      })),
+      education: detailApplicant.Users?.education
+        .map((e) => ({
+          university: e.university,
+          degree: e.degree,
+          fieldOfStudy: e.fieldOfStudy,
+          startDate: e.startDate,
+          endDate: e.endDate,
+          description: e.description,
+        }))
+        .sort(
+          (a, b) =>
+            new Date(b.endDate ?? b.startDate).getTime() -
+            new Date(a.endDate ?? a.startDate).getTime()
+        ),
+      experience: detailApplicant.Users?.experience
+        .map((e) => ({
+          name: e.name,
+          position: e.position,
+          description: e.description,
+          startDate: e.startDate,
+          endDate: e.endDate,
+        }))
+        .sort(
+          (a, b) =>
+            new Date(b.endDate ?? b.startDate).getTime() -
+            new Date(a.endDate ?? a.startDate).getTime()
+        ),
       CertificatesCode:
         userCertificate
           ?.map((c) =>
@@ -304,15 +317,15 @@ class ApplicationService {
       html:
         status === Status.ACCEPTED
           ? acceptTemplateMail(
-            message,
-            result.Users?.name,
-            `${process.env.FE_URL}/images/logo.png`
-          )
+              message,
+              result.Users?.name,
+              `${process.env.FE_URL}/images/logo.png`
+            )
           : rejectTemplateMail(
-            result.Users.name,
-            `${process.env.FE_URL}/images/logo.png`,
-            message
-          ),
+              result.Users.name,
+              `${process.env.FE_URL}/images/logo.png`,
+              message
+            ),
     });
   };
 }
