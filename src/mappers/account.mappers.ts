@@ -20,6 +20,7 @@ type UserWithProfile = {
 type UserWithProfileAndDetails = UserWithProfile & {
   education: any[];
   experience: any[];
+  userSkills?: Array<{ skill: { id: number; name: string } }>;
   user_assessment: any[];
 };
 
@@ -47,6 +48,10 @@ export const publicProfileMap = (user: UserWithProfileAndDetails) => {
     profile_picture: user.profiles?.profile_picture || null,
     education: user.education || [],
     experience: user.experience || [],
+    skills: (user.userSkills || []).map((us: any) => ({
+      id: us.skill?.id,
+      name: us.skill?.name,
+    })),
     user_assessment: (user.user_assessment || []).map(assessment => ({
       user_assessment_id: assessment.user_assessment_id,
       skill_name: assessment.assessment?.skill_name || null,
