@@ -1,6 +1,3 @@
-import slug from "slug";
-import { Category } from "../../prisma/generated/client";
-import { prisma } from "../config/prisma";
 import AppError from "../errors/appError";
 import { SchemaJobsInput } from "../middleware/validation/postings.validation";
 import PostingsRepository from "../repositories/postings.route";
@@ -25,7 +22,9 @@ class PostingsService {
     category: any,
     user_id: number,
     page: number,
-    limit: number
+    limit: number,
+    onlyPreselection?: string,
+    notExpired?: string
   ) => {
     const company = await this.postingsRepository.getCompanyId(user_id);
     if (!company) {
@@ -47,8 +46,15 @@ class PostingsService {
       ...job,
       requirements: parseRequirements(job.description, 3),
     }));
+    const afterFilter = dataWithReq.filter((d) => {
+      const isPreselectionOk =
+        !onlyPreselection || d.preselection_test === true;
+      const isNotExpiredOk = !notExpired || d.expiredAt >= new Date();
+
+      return isPreselectionOk && isNotExpiredOk;
+    });
     return {
-      data: dataWithReq,
+      data: afterFilter,
       totalJobs: result.totalJobs,
       totalPage,
       categories,
