@@ -32,6 +32,7 @@ class AnalyticService {
 
     // bucket umur
     const ageBuckets = {
+      "<18": 0,
       "18-24": 0,
       "25-34": 0,
       "35-44": 0,
@@ -46,15 +47,15 @@ class AnalyticService {
       // hitung umur
       if (user.Users?.profiles?.birthDate) {
         const age = getAge(user.Users.profiles.birthDate);
-
-        if (age >= 18 && age <= 24) ageBuckets["18-24"]++;
+        if (age < 18) ageBuckets["<18"]++;
+        else if (age >= 18 && age <= 24) ageBuckets["18-24"]++;
         else if (age >= 25 && age <= 34) ageBuckets["25-34"]++;
         else if (age >= 35 && age <= 44) ageBuckets["35-44"]++;
         else if (age >= 45 && age <= 54) ageBuckets["45-54"]++;
         else if (age >= 55) ageBuckets["55+"]++;
       }
 
-      // hitung lokasi
+      //hitung lokasi
       const locationStr = user.Jobs?.location;
       if (locationStr) {
         const city = locationStr.split(",")[0].trim().toLowerCase(); // normalisasi
@@ -62,11 +63,12 @@ class AnalyticService {
       }
     });
 
-    // convert ke array of object untuk chart
+    //convert ke array of object untuk chart
     const ageData = Object.entries(ageBuckets).map(([range, count]) => ({
       range,
       count,
     }));
+    // .filter((val) => val.count !== 0);
 
     const locationData = Object.entries(locationBucket).map(
       ([city, count]) => ({
@@ -74,11 +76,11 @@ class AnalyticService {
         count,
       })
     );
-
+    console.log(ageData);
     return {
       total: allUsers.length,
-      ageData, // siap buat bar chart umur
-      locationData, // siap buat bar chart/pie chart lokasi
+      ageData,
+      locationData,
     };
   };
 
@@ -176,12 +178,12 @@ class AnalyticService {
         jobTypeCounts[jobTypeDB] += 1;
       }
     });
-    const jobTypeArray = Object.entries(jobTypeCounts).map(
-      ([jobType, count]) => ({
+    const jobTypeArray = Object.entries(jobTypeCounts)
+      .map(([jobType, count]) => ({
         jobType,
         count,
-      })
-    );
+      }))
+      .filter((v) => v.count !== 0);
     return jobTypeArray;
   };
 }

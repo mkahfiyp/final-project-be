@@ -1,4 +1,5 @@
 import { FilterApplicant } from "../dto/application.dto";
+import { getAge } from "../utils/getAge";
 
 interface ProcessedApplicant {
   application_id: string;
@@ -37,9 +38,9 @@ export const applicantListMap = (
         profile_picture: user.profiles?.profile_picture ?? null,
         age: user.profiles?.birthDate
           ? Math.floor(
-            (Date.now() - new Date(user.profiles.birthDate).getTime()) /
-            (1000 * 60 * 60 * 24 * 365.25)
-          )
+              (Date.now() - new Date(user.profiles.birthDate).getTime()) /
+                (1000 * 60 * 60 * 24 * 365.25)
+            )
           : null,
         education: lastEducation ? lastEducation.degree ?? null : null,
         gender: user.profiles?.gender,
@@ -111,3 +112,70 @@ export const applicantListMap = (
       }
     });
 };
+
+// export const applicantDetailMap = (
+//   detailApplicant: any,
+//   userCertificate: any
+// ) => {
+//   return {
+//     name: detailApplicant.Users?.name,
+//     email: detailApplicant.Users?.email,
+//     profile_picture: detailApplicant.Users?.profiles?.profile_picture,
+//     score: detailApplicant.Users?.user_selection?.[0]?.score ?? null,
+//     appliedOn: detailApplicant.createdAt,
+//     phone: detailApplicant.Users?.profiles?.phone,
+//     address: detailApplicant.Users?.profiles?.address,
+//     birthDate: detailApplicant.Users?.profiles?.birthDate,
+//     jobTitle: detailApplicant.Jobs?.title,
+//     JobType: detailApplicant.Jobs?.job_type,
+//     jobCategory: detailApplicant.Jobs?.category,
+//     interview: {
+//       startDate: detailApplicant.interview?.startDate,
+//       endDate: detailApplicant.interview?.endDate,
+//       note: detailApplicant.interview?.note,
+//       location: detailApplicant.interview?.location,
+//     },
+//     status: detailApplicant.status,
+//     age: detailApplicant.Users?.profiles?.birthDate
+//       ? getAge(detailApplicant.Users.profiles.birthDate)
+//       : null,
+//     gender: detailApplicant.Users?.profiles?.gender,
+//     expectedSalary: detailApplicant.expected_salary,
+//     cvUrl: detailApplicant.cv,
+//     education: detailApplicant.Users?.education
+//       .map((e) => ({
+//         university: e.university,
+//         degree: e.degree,
+//         fieldOfStudy: e.fieldOfStudy,
+//         startDate: e.startDate,
+//         endDate: e.endDate,
+//         description: e.description,
+//       }))
+//       .sort(
+//         (a, b) =>
+//           new Date(b.endDate ?? b.startDate).getTime() -
+//           new Date(a.endDate ?? a.startDate).getTime()
+//       ),
+//     experience: detailApplicant.Users?.experience
+//       .map((e) => ({
+//         name: e.name,
+//         position: e.position,
+//         description: e.description,
+//         startDate: e.startDate,
+//         endDate: e.endDate,
+//       }))
+//       .sort(
+//         (a, b) =>
+//           new Date(b.endDate ?? b.startDate).getTime() -
+//           new Date(a.endDate ?? a.startDate).getTime()
+//       ),
+//     CertificatesCode:
+//       userCertificate
+//         ?.map((c) =>
+//           c.assessment_certificates
+//             ? { code: c.assessment_certificates.certificate_code }
+//             : null
+//         )
+//         .filter((cert): cert is { code: string } => cert !== null) ?? [],
+//   };
+// };
