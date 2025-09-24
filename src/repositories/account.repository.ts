@@ -139,6 +139,11 @@ class AccountRepository {
           include: {
             assessment_certificates: true,
           }
+        },
+        user_Company: {
+          include: {
+            company: true,
+          }
         }
       }
     });

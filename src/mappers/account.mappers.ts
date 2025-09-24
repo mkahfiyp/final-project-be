@@ -41,6 +41,7 @@ export const publicProfileMap = (user: UserWithProfileAndDetails) => {
   return {
     name: user.name,
     username: user.username,
+    phone: user.profiles?.phone || null,
     birthDate: user.profiles?.birthDate || null,
     gender: user.profiles?.gender || null,
     email: user.email,
