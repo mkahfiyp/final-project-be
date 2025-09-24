@@ -10,6 +10,7 @@ import { sendResponse } from "../utils/sendResponse";
 import PostingsService from "../services/postings.service";
 import AppError from "../errors/appError";
 import { getMyJobListMap } from "../mappers/potings.mappers";
+import { formatEnumCategory } from "../utils/createSlug";
 
 class PostingsController {
   private postingsService = new PostingsService();
@@ -71,19 +72,21 @@ class PostingsController {
       const user_id = res.locals.decript.id;
       const search = (req.query.search as string) || "";
       const sort = (req.query.sort as string) || "";
-      const category = (
-        (req.query.category as string) || ""
-      ).toLocaleUpperCase();
+      const category = (req.query.category as string) || "";
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
+      const onlyPreselection = req.query.onlyPreselection as string;
+      const notExpired = req.query.notExpired as string;
 
       const myJobs = await this.postingsService.getMyJobList(
         search,
         sort,
-        category,
+        formatEnumCategory(category),
         user_id,
         page,
-        limit
+        limit,
+        onlyPreselection,
+        notExpired
       );
       sendResponse(res, "success", 200, getMyJobListMap(myJobs));
     } catch (error) {

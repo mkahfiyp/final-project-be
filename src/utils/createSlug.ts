@@ -22,3 +22,10 @@ export const createSlug = async (
 
   return uniqueSlug;
 };
+
+export const formatEnumCategory = (str: string): string => {
+  if (!str.includes("-")) {
+    return str;
+  }
+  return str.replace(/-/g, "_").toUpperCase();
+};
