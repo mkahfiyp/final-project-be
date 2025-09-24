@@ -69,6 +69,11 @@ class AccountRepository {
         profiles: true,
         education: true,
         experience: true,
+        userSkills: {
+          include: {
+            skill: true,
+          },
+        },
         user_assessment: {
           include: {
             assessment: true,
