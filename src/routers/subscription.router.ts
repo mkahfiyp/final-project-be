@@ -13,8 +13,8 @@ export class SubscriptionRouter {
     }
 
     private initializeRoutes(): void {
-        this.router.use(verifyToken);
         this.router.get("/", this.subscriptionController.getSubscription);
+        this.router.use(verifyToken);
         this.router.post("/", this.subscriptionController.createSubscription);
         this.router.patch("/:id", this.subscriptionController.updateSubscription);
         this.router.delete("/:id", this.subscriptionController.deleteSubscription);
