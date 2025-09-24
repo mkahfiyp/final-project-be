@@ -3,7 +3,7 @@ import { sendResponse } from "../utils/sendResponse";
 import CompanyService from "../services/company.service";
 import { companyProfileMap } from "../mappers/company.mappers";
 import { UploadApiResponse } from "cloudinary";
-import { cloudinaryUpload, cloudinaryUploadPdf } from "../config/coudinary";
+import { cloudinaryUpload } from "../config/coudinary";
 
 class CompanyController {
   private companyService = new CompanyService();
@@ -156,6 +156,6 @@ class CompanyController {
     } catch (error) {
       next(error);
     }
-  }
+  };
 }
 export default CompanyController;

@@ -25,32 +25,3 @@ export const cloudinaryUpload = (
     streamifier.createReadStream(file.buffer).pipe(uploadStream);
   });
 };
-
-// req.file di-handle multer unutk pdf
-export const cloudinaryUploadPdf = (
-  file: Express.Multer.File
-): Promise<UploadApiResponse> => {
-  return new Promise((resolve, reject) => {
-    if (!file) {
-      return reject(new Error("No file provided"));
-    }
-
-    const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        folder: "pdfs",
-        resource_type: "auto", // penting supaya bisa preview
-        format: "pdf",
-      },
-      (err, result) => {
-        if (err) return reject(err);
-        if (!result) return reject(new Error("Upload result undefined"));
-        resolve(result);
-      }
-    );
-
-    // pastikan stream beneran nulis semua
-    const stream = streamifier.createReadStream(file.buffer);
-    stream.on("error", (err) => reject(err));
-    stream.pipe(uploadStream);
-  });
-};

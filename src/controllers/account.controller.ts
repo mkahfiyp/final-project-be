@@ -4,8 +4,8 @@ import AppError from "../errors/appError";
 import { sendResponse } from "../utils/sendResponse";
 import { dataRoleUserMap, publicProfileMap } from "../mappers/account.mappers";
 import { UploadApiResponse } from "cloudinary";
-import { cloudinaryUploadPdf } from "../config/coudinary";
 import { prisma } from "../config/prisma";
+import { cloudinaryUpload } from "../config/coudinary";
 
 class AccountController {
   private accountService = new AccountService();
@@ -35,7 +35,7 @@ class AccountController {
       const { id } = res.locals.decript;
       let upload: UploadApiResponse | undefined;
       if (req.file) {
-        upload = await cloudinaryUploadPdf(req.file);
+        upload = await cloudinaryUpload(req.file);
       }
       const user = await this.accountService.updateProfileRoleUser(id, {
         ...req.body,
@@ -132,22 +132,18 @@ class AccountController {
       next(error);
     }
   };
-  searchUsers = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  searchUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { q } = req.query;
-      if (!q || typeof q !== 'string') {
+      if (!q || typeof q !== "string") {
         throw new AppError("Search query 'q' is required", 400);
       }
       const users = await this.accountService.searchUsersByName(q);
-      const payload = users.map(user => ({
+      const payload = users.map((user) => ({
         username: user.username,
         name: user.name,
         profile_picture: user.profiles?.profile_picture || null,
-        role: user.role
+        role: user.role,
       }));
       sendResponse(res, "success", 200, payload);
     } catch (error) {
@@ -155,7 +151,11 @@ class AccountController {
     }
   };
 
-  getDataForCvGenerator = async (req: Request, res: Response, next: NextFunction) => {
+  getDataForCvGenerator = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const id = res.locals.decript.id;
       const result = await this.accountService.getDataForCvGenerator(id);
@@ -163,6 +163,6 @@ class AccountController {
     } catch (error) {
       next(error);
     }
-  }
+  };
 }
 export default AccountController;

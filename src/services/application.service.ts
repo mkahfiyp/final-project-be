@@ -45,34 +45,7 @@ class ApplicationService {
     }
 
     // Create application
-    const application = await prisma.applications.create({
-      data: {
-        user_id: data.user_id,
-        job_id: data.job_id,
-        expected_salary: data.expected_salary,
-        cv: data.cv,
-        status: Status.SUBMITTED,
-      },
-      include: {
-        Jobs: {
-          select: {
-            title: true,
-            company_id: true,
-            Companies: {
-              select: {
-                name: true,
-              },
-            },
-          },
-        },
-        Users: {
-          select: {
-            name: true,
-            email: true,
-          },
-        },
-      },
-    });
+    const application = await this.applicationRepository.createApplicant(data);
 
     return {
       application_id: application.application_id,
@@ -83,7 +56,6 @@ class ApplicationService {
       applied_at: application.createdAt,
     };
   };
-
   getUserApplications = async (
     user_id: number,
     limit: number,
