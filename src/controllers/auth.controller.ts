@@ -45,7 +45,7 @@ class AuthController {
       res.cookie("token", token, {
         httpOnly: true,
         secure: true,
-        sameSite: "lax", // cegah CSRF
+        sameSite: "none", // cegah CSRF
         path: "/",
         maxAge: remember
           ? 30 * 24 * 60 * 60 * 1000 // 30 hari
@@ -96,9 +96,8 @@ class AuthController {
       res.clearCookie("token", {
         httpOnly: true,
         secure: true,
-        sameSite: "lax",
+        sameSite: "none",
         path: "/",
-        expires: new Date(0)
       });
       sendResponse(res, "log out success", 200);
     } catch (error) {
