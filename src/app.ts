@@ -41,6 +41,7 @@ class App {
   }
 
   private configure(): void {
+    this.app.set('trust proxy', 1);
     this.app.use(
       cors({
         origin: process.env.FE_URL, // frontend
