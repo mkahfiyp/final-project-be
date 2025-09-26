@@ -92,7 +92,11 @@ class AuthController {
   };
   logOut = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      res.clearCookie("token");
+      res.clearCookie("token", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+      });
       sendResponse(res, "log out success", 200);
     } catch (error) {
       next(error);
