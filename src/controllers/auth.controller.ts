@@ -161,7 +161,6 @@ class AuthController {
       if (!result) {
         throw new AppError("user not register", 400);
       }
-      console.log(result.companies?.profile_picture);
       const token = createToken(
         {
           id: result.user_id,

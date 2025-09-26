@@ -1,6 +1,6 @@
 import { JobType } from "../../prisma/generated/client";
 import AnalyticRepository from "../repositories/analytic.repositories";
-import { getAge } from "../utils/getAge";
+import { getAge, getAgeAtApply } from "../utils/getAge";
 import { filterTimeRange } from "../utils/filterTimeRange";
 
 class AnalyticService {
@@ -26,8 +26,7 @@ class AnalyticService {
       ) {
         return false;
       }
-      filterTimeRange(range, u.createdAt);
-      return true;
+      return filterTimeRange(range, u.createdAt);
     });
 
     // bucket umur
@@ -46,7 +45,10 @@ class AnalyticService {
     allUsers.forEach((user) => {
       // hitung umur
       if (user.Users?.profiles?.birthDate) {
-        const age = getAge(user.Users.profiles.birthDate);
+        const age = getAgeAtApply(
+          user.Users.profiles.birthDate,
+          user.createdAt
+        );
         if (age < 18) ageBuckets["<18"]++;
         else if (age >= 18 && age <= 24) ageBuckets["18-24"]++;
         else if (age >= 25 && age <= 34) ageBuckets["25-34"]++;
@@ -118,13 +120,12 @@ class AnalyticService {
         filters.city &&
         filters.city !== "all" &&
         user.Jobs?.location?.split(",")[0].trim().toLowerCase() !==
-          filters.city.toLocaleLowerCase()
+          filters.city.toLowerCase()
       ) {
         return false;
       }
       // filter date
-      filterTimeRange(filters.range, user.createdAt);
-      return true;
+      return filterTimeRange(filters.range, user.createdAt);
     });
 
     // Bucket per category
@@ -169,8 +170,7 @@ class AnalyticService {
       jobTypeCounts[name] = 0;
     });
     allUser = allUser.filter((user) => {
-      filterTimeRange(filters.range, user.createdAt);
-      return true;
+      return filterTimeRange(filters.range, user.createdAt);
     });
     allUser.forEach((user) => {
       const jobTypeDB = user.Jobs?.job_type;

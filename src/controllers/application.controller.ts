@@ -146,14 +146,12 @@ class ApplicationController {
       };
       const limit = Number(req.query.limit);
       const offset = Number(req.query.offset);
-      console.log("query", filters, limit, offset);
       const data = await this.applicationService.getCompanyApplicant(
         req.params.slug,
         filters,
         limit,
         offset
       );
-      console.log("ini data", data);
       sendResponse(res, "success", 200, data);
     } catch (error) {
       next(error);

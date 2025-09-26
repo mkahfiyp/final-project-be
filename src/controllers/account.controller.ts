@@ -112,7 +112,7 @@ class AccountController {
       }
       sendResponse(res, "success", 200);
     } catch (error) {
-      console.log(error);
+      next(error);
     }
   };
   getProfileByUsername = async (

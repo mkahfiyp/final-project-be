@@ -3,14 +3,15 @@ import AppError from "../errors/appError";
 import { Status } from "../../prisma/generated/client";
 import { prisma } from "../config/prisma";
 import { FilterApplicant } from "../dto/application.dto";
-import { applicantListMap } from "../mappers/applicant.mappers";
+import {
+  applicantListMap,
+  getDetailApplicantMap,
+} from "../mappers/applicant.mappers";
 import { transport } from "../config/nodemailer";
 import { acceptTemplateMail } from "../templates/accept.template";
 import { rejectTemplateMail } from "../templates/reject.template";
-import { getAge } from "../utils/getAge";
 class ApplicationService {
   private applicationRepository = new ApplicationRepository();
-
   createApplication = async (data: {
     user_id: number;
     job_id: number;
@@ -30,8 +31,6 @@ class ApplicationService {
     if (existingApplication) {
       throw new AppError("You have already applied for this job", 400);
     }
-
-    // Check if job exists and is not expired
     const job = await prisma.jobs.findUnique({
       where: { job_id: data.job_id },
     });
@@ -44,7 +43,6 @@ class ApplicationService {
       throw new AppError("Job application deadline has passed", 400);
     }
 
-    // Create application
     const application = await this.applicationRepository.createApplicant(data);
 
     return {
@@ -168,98 +166,32 @@ class ApplicationService {
     };
   };
   getDetailApplication = async (application_id: number) => {
-    const user = await prisma.applications.findUnique({
-      where: { application_id },
-    });
+    const user = await this.applicationRepository.getApplicationByApplicantId(
+      application_id
+    );
     if (!user?.job_id || !user.user_id) {
       throw new AppError("cannot find user", 400);
     }
-    const selection = await this.applicationRepository.getSelectionId(
-      user.job_id
-    );
-    if (!selection) throw new AppError("cannot find selection", 400);
+    let userSelection;
+    if (user.Jobs?.selection?.selection_id)
+      userSelection = await this.applicationRepository.getUserSelection(
+        user.user_id,
+        user.Jobs.selection?.selection_id
+      );
     const detailApplicant =
       await this.applicationRepository.getDetailApplication(application_id);
     if (!detailApplicant) {
       throw new AppError("cannotn find detail applicant", 400);
     }
-    const userCertificate = await prisma.userAssessments.findMany({
-      where: { user_id: user.user_id },
-      include: {
-        assessment_certificates: {
-          select: {
-            certificate_code: true,
-          },
-        },
-      },
-    });
-    const userSelection = await this.applicationRepository.getUserSelection(
-      user.user_id,
-      selection?.selection_id
+    const userCertificate = await this.applicationRepository.getUserCertificate(
+      user.user_id
     );
-    const afterMap = {
-      name: detailApplicant.Users?.name,
-      email: detailApplicant.Users?.email,
-      profile_picture: detailApplicant.Users?.profiles?.profile_picture,
-      score: detailApplicant.Jobs?.preselection_test
-        ? userSelection?.score
-        : undefined,
-      appliedOn: detailApplicant.createdAt,
-      phone: detailApplicant.Users?.profiles?.phone,
-      address: detailApplicant.Users?.profiles?.address,
-      birthDate: detailApplicant.Users?.profiles?.birthDate,
-      jobTitle: detailApplicant.Jobs?.title,
-      JobType: detailApplicant.Jobs?.job_type,
-      jobCategory: detailApplicant.Jobs?.category,
-      interview: {
-        startDate: detailApplicant.interview?.startDate,
-        endDate: detailApplicant.interview?.endDate,
-        note: detailApplicant.interview?.note,
-        location: detailApplicant.interview?.location,
-      },
-      status: detailApplicant.status,
-      age: detailApplicant.Users?.profiles?.birthDate
-        ? getAge(detailApplicant.Users.profiles.birthDate)
-        : null,
-      gender: detailApplicant.Users?.profiles?.gender,
-      expectedSalary: detailApplicant.expected_salary,
-      cvUrl: detailApplicant.cv,
-      education: detailApplicant.Users?.education
-        .map((e) => ({
-          university: e.university,
-          degree: e.degree,
-          fieldOfStudy: e.fieldOfStudy,
-          startDate: e.startDate,
-          endDate: e.endDate,
-          description: e.description,
-        }))
-        .sort(
-          (a, b) =>
-            new Date(b.endDate ?? b.startDate).getTime() -
-            new Date(a.endDate ?? a.startDate).getTime()
-        ),
-      experience: detailApplicant.Users?.experience
-        .map((e) => ({
-          name: e.name,
-          position: e.position,
-          description: e.description,
-          startDate: e.startDate,
-          endDate: e.endDate,
-        }))
-        .sort(
-          (a, b) =>
-            new Date(b.endDate ?? b.startDate).getTime() -
-            new Date(a.endDate ?? a.startDate).getTime()
-        ),
-      CertificatesCode:
-        userCertificate
-          ?.map((c) =>
-            c.assessment_certificates
-              ? { code: c.assessment_certificates.certificate_code }
-              : null
-          )
-          .filter((cert): cert is { code: string } => cert !== null) ?? [],
-    };
+    const afterMap = getDetailApplicantMap(
+      detailApplicant,
+      userCertificate,
+      userSelection
+    );
+    console.log(user.Jobs?.selection?.selection_id, userSelection?.score);
     return afterMap;
   };
   updateStatus = async (
@@ -301,5 +233,4 @@ class ApplicationService {
     });
   };
 }
-
 export default ApplicationService;

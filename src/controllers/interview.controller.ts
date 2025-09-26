@@ -57,10 +57,7 @@ class InterviewController {
   scheduleReminder = async () => {
     try {
       await this.interviewService.ScheduleReminder();
-      console.log("cron running");
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 }
 

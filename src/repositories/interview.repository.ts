@@ -26,6 +26,18 @@ class InterviewRepository {
   createInterview = async (data: InterviewInput) => {
     return await prisma.interviews.create({
       data: { ...data },
+      include: {
+        application: {
+          include: {
+            Users: true,
+            Jobs: {
+              include: {
+                Companies: true,
+              },
+            },
+          },
+        },
+      },
     });
   };
   updateStatus = async (application_id: number) => {

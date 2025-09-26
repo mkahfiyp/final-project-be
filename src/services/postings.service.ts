@@ -36,7 +36,9 @@ class PostingsService {
       category,
       company.company_id,
       page,
-      limit
+      limit,
+      onlyPreselection,
+      notExpired
     );
     const totalPage = Math.ceil(result.totalJobs / limit);
     const categories = await this.postingsRepository.getJobCategories(
@@ -46,15 +48,8 @@ class PostingsService {
       ...job,
       requirements: parseRequirements(job.description, 3),
     }));
-    const afterFilter = dataWithReq.filter((d) => {
-      const isPreselectionOk =
-        !onlyPreselection || d.preselection_test === true;
-      const isNotExpiredOk = !notExpired || d.expiredAt >= new Date();
-
-      return isPreselectionOk && isNotExpiredOk;
-    });
     return {
-      data: afterFilter,
+      data: dataWithReq,
       totalJobs: result.totalJobs,
       totalPage,
       categories,

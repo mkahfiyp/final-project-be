@@ -84,7 +84,6 @@ class PreselectionController {
     next: NextFunction
   ) => {
     try {
-      console.log(req.params.slug);
       const result =
         await this.preselectionService.checkIfAlreadyHavePreselectionTest(
           req.params.slug

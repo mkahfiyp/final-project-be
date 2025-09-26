@@ -9,7 +9,6 @@ class CompanyService {
     if (!result) {
       throw new AppError("faild get data", 500);
     }
-    console.log(result);
     return result;
   };
   updateCompanyProfile = async (
@@ -51,13 +50,13 @@ class CompanyService {
 
   getCompanyByName = async (name: string) => {
     return await this.companyRepository.getCompanyByName(name);
-  }
+  };
 
   getTopCompanies = async (limit: number = 10) => {
     const companies = await this.companyRepository.getTopCompanies(limit);
 
     // Transform the data to include total application counts
-    const transformedCompanies = companies.map(company => {
+    const transformedCompanies = companies.map((company) => {
       const totalApplications = company.job.reduce((sum, job) => {
         return sum + job._count.applications;
       }, 0);
@@ -76,38 +75,42 @@ class CompanyService {
     });
 
     return transformedCompanies;
-  }
+  };
 
   getTopCompaniesWithStats = async (limit: number = 10) => {
-    const companies = await this.companyRepository.getTopCompaniesWithStats(limit);
+    const companies = await this.companyRepository.getTopCompaniesWithStats(
+      limit
+    );
 
-    const transformedCompanies = companies.map(company => {
+    const transformedCompanies = companies.map((company) => {
       const now = new Date();
 
       // Calculate job statistics
-      const activeJobs = company.job.filter(job =>
-        !job.deletedAt && job.expiredAt > now
+      const activeJobs = company.job.filter(
+        (job) => !job.deletedAt && job.expiredAt > now
       );
 
       // Calculate application statistics
-      const totalApplications = company.job.reduce((sum, job) =>
-        sum + job._count.applications, 0
+      const totalApplications = company.job.reduce(
+        (sum, job) => sum + job._count.applications,
+        0
       );
 
       // Calculate application status distribution
       const applicationsByStatus = company.job.reduce((acc, job) => {
-        job.applications.forEach(app => {
+        job.applications.forEach((app) => {
           acc[app.status] = (acc[app.status] || 0) + 1;
         });
         return acc;
       }, {} as Record<string, number>);
 
       // Calculate success rate (accepted + interview applications / total applications)
-      const acceptedApplications = applicationsByStatus['ACCEPTED'] || 0;
-      const interviewApplications = applicationsByStatus['INTERVIEW'] || 0;
-      const successRate = totalApplications > 0
-        ? (acceptedApplications + interviewApplications) / totalApplications
-        : 0;
+      const acceptedApplications = applicationsByStatus["ACCEPTED"] || 0;
+      const interviewApplications = applicationsByStatus["INTERVIEW"] || 0;
+      const successRate =
+        totalApplications > 0
+          ? (acceptedApplications + interviewApplications) / totalApplications
+          : 0;
 
       // Calculate review statistics
       // Get all user_companies for this company
@@ -115,8 +118,8 @@ class CompanyService {
 
       // Count reviews from Reviews table based on user_company_id
       const reviews = userCompanies
-        .filter(uc => uc.reviews !== null)
-        .map(uc => uc.reviews);
+        .filter((uc) => uc.reviews !== null)
+        .map((uc) => uc.reviews);
 
       const totalReviews = reviews.length;
       let averageRating = 0;
@@ -124,8 +127,13 @@ class CompanyService {
       if (totalReviews > 0) {
         const totalRatingSum = reviews.reduce((sum, review) => {
           if (review) {
-            return sum + review.rating_culture + review.rating_work_life_balance +
-              review.rating_facilities + review.rating_career;
+            return (
+              sum +
+              review.rating_culture +
+              review.rating_work_life_balance +
+              review.rating_facilities +
+              review.rating_career
+            );
           }
           return sum;
         }, 0);
@@ -158,7 +166,7 @@ class CompanyService {
     });
 
     return transformedCompanies;
-  }
+  };
 
   getFindCompany = async (filters: {
     page: number;
@@ -167,7 +175,7 @@ class CompanyService {
     location: string;
   }) => {
     return await this.companyRepository.getFindCompany(filters);
-  }
+  };
 }
 
 export default CompanyService;
