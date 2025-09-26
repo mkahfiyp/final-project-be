@@ -62,4 +62,5 @@ export const filterTimeRange = (
   const createdAt = new Date(createdAtDate);
   if (startDate && createdAt < startDate) return false;
   if (endDate && createdAt > endDate) return false;
+  return true;
 };

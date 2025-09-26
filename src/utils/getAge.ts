@@ -8,3 +8,15 @@ export const getAge = (birthDate: Date) => {
   }
   return age;
 };
+
+export const getAgeAtApply = (birthDate: Date, createdAtApplicant: Date) => {
+  let age = createdAtApplicant.getFullYear() - birthDate.getFullYear();
+  const m = createdAtApplicant.getMonth() - birthDate.getMonth();
+  if (
+    m < 0 ||
+    (m === 0 && createdAtApplicant.getDate() < birthDate.getDate())
+  ) {
+    age--;
+  }
+  return age;
+};

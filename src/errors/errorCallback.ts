@@ -15,7 +15,6 @@ export const erorrCallback = (
   }
 
   const message = error instanceof Error ? error.message : "unknown error";
-  console.log(error);
   return res.status(500).json({
     success: false,
     message,

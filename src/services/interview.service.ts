@@ -2,6 +2,7 @@ import { transport } from "../config/nodemailer";
 import AppError from "../errors/appError";
 import { InterviewInput } from "../middleware/validation/interview.validation";
 import InterviewRepository from "../repositories/interview.repository";
+import { interviewScheduleTemplate } from "../templates/interviewSchedule.template";
 import { scheduleReminderMail } from "../templates/scheduleReminder.template";
 
 class InterviewService {
@@ -23,6 +24,21 @@ class InterviewService {
     if (!result) {
       throw new AppError("faild create interview", 500);
     }
+    const htmlPelamar = interviewScheduleTemplate(
+      result.application.Users?.name || "",
+      `${process.env.FE_URL}/images/logo.png`,
+      result.application.Jobs?.title || "",
+      result.location || "",
+      result.startDate,
+      result.endDate,
+      result.note
+    );
+    await transport.sendMail({
+      from: process.env.MAILSENDER,
+      to: result.application.Users?.email,
+      subject: `Schedule Interview, ${result.application.Users?.name}`,
+      html: htmlPelamar,
+    });
     return result;
   };
   getInterviewShedule = async (application_id: number, user_id: number) => {
@@ -54,7 +70,6 @@ class InterviewService {
     const result = await this.interviewRepository.getAllInterviewSchedule();
     if (result.length === 0) return;
     for (const interview of result) {
-      console.log(`sending email running ${interview.interview_id}`);
       //to pelamar
       const htmlPelamar = scheduleReminderMail(
         interview.application.Users?.name || "",

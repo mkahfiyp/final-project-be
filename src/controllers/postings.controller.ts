@@ -102,7 +102,6 @@ class PostingsController {
       const result = await this.postingsService.getDetailJobPostingForEdit(
         req.params.slug
       );
-      console.log(result);
       sendResponse(res, "success", 200, result);
     } catch (error) {
       next(error);
@@ -188,7 +187,7 @@ class PostingsController {
       });
       sendResponse(res, "success", 200, data);
     } catch (error) {
-      console.log(error);
+      next(error);
     }
   };
 }

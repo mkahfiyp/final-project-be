@@ -113,69 +113,74 @@ export const applicantListMap = (
     });
 };
 
-// export const applicantDetailMap = (
-//   detailApplicant: any,
-//   userCertificate: any
-// ) => {
-//   return {
-//     name: detailApplicant.Users?.name,
-//     email: detailApplicant.Users?.email,
-//     profile_picture: detailApplicant.Users?.profiles?.profile_picture,
-//     score: detailApplicant.Users?.user_selection?.[0]?.score ?? null,
-//     appliedOn: detailApplicant.createdAt,
-//     phone: detailApplicant.Users?.profiles?.phone,
-//     address: detailApplicant.Users?.profiles?.address,
-//     birthDate: detailApplicant.Users?.profiles?.birthDate,
-//     jobTitle: detailApplicant.Jobs?.title,
-//     JobType: detailApplicant.Jobs?.job_type,
-//     jobCategory: detailApplicant.Jobs?.category,
-//     interview: {
-//       startDate: detailApplicant.interview?.startDate,
-//       endDate: detailApplicant.interview?.endDate,
-//       note: detailApplicant.interview?.note,
-//       location: detailApplicant.interview?.location,
-//     },
-//     status: detailApplicant.status,
-//     age: detailApplicant.Users?.profiles?.birthDate
-//       ? getAge(detailApplicant.Users.profiles.birthDate)
-//       : null,
-//     gender: detailApplicant.Users?.profiles?.gender,
-//     expectedSalary: detailApplicant.expected_salary,
-//     cvUrl: detailApplicant.cv,
-//     education: detailApplicant.Users?.education
-//       .map((e) => ({
-//         university: e.university,
-//         degree: e.degree,
-//         fieldOfStudy: e.fieldOfStudy,
-//         startDate: e.startDate,
-//         endDate: e.endDate,
-//         description: e.description,
-//       }))
-//       .sort(
-//         (a, b) =>
-//           new Date(b.endDate ?? b.startDate).getTime() -
-//           new Date(a.endDate ?? a.startDate).getTime()
-//       ),
-//     experience: detailApplicant.Users?.experience
-//       .map((e) => ({
-//         name: e.name,
-//         position: e.position,
-//         description: e.description,
-//         startDate: e.startDate,
-//         endDate: e.endDate,
-//       }))
-//       .sort(
-//         (a, b) =>
-//           new Date(b.endDate ?? b.startDate).getTime() -
-//           new Date(a.endDate ?? a.startDate).getTime()
-//       ),
-//     CertificatesCode:
-//       userCertificate
-//         ?.map((c) =>
-//           c.assessment_certificates
-//             ? { code: c.assessment_certificates.certificate_code }
-//             : null
-//         )
-//         .filter((cert): cert is { code: string } => cert !== null) ?? [],
-//   };
-// };
+export const getDetailApplicantMap = (
+  detailApplicant: any,
+  userCertificate: any,
+  userSelection?: any
+) => {
+  return {
+    name: detailApplicant.Users?.name,
+    email: detailApplicant.Users?.email,
+    profile_picture: detailApplicant.Users?.profiles?.profile_picture,
+    score: detailApplicant.Jobs?.preselection_test
+      ? userSelection?.score
+      : undefined,
+    appliedOn: detailApplicant.createdAt,
+    phone: detailApplicant.Users?.profiles?.phone,
+    address: detailApplicant.Users?.profiles?.address,
+    birthDate: detailApplicant.Users?.profiles?.birthDate,
+    jobTitle: detailApplicant.Jobs?.title,
+    JobType: detailApplicant.Jobs?.job_type,
+    jobCategory: detailApplicant.Jobs?.category,
+    interview: {
+      startDate: detailApplicant.interview?.startDate,
+      endDate: detailApplicant.interview?.endDate,
+      note: detailApplicant.interview?.note,
+      location: detailApplicant.interview?.location,
+    },
+    status: detailApplicant.status,
+    age: detailApplicant.Users?.profiles?.birthDate
+      ? getAge(detailApplicant.Users.profiles.birthDate)
+      : null,
+    gender: detailApplicant.Users?.profiles?.gender,
+    expectedSalary: detailApplicant.expected_salary,
+    cvUrl: detailApplicant.cv,
+    education: detailApplicant.Users?.education
+      .map((e: any) => ({
+        university: e.university,
+        degree: e.degree,
+        fieldOfStudy: e.fieldOfStudy,
+        startDate: e.startDate,
+        endDate: e.endDate,
+        description: e.description,
+      }))
+      .sort(
+        (a: any, b: any) =>
+          new Date(b.endDate ?? b.startDate).getTime() -
+          new Date(a.endDate ?? a.startDate).getTime()
+      ),
+    experience: detailApplicant.Users?.experience
+      .map((e: any) => ({
+        name: e.name,
+        position: e.position,
+        description: e.description,
+        startDate: e.startDate,
+        endDate: e.endDate,
+      }))
+      .sort(
+        (a: any, b: any) =>
+          new Date(b.endDate ?? b.startDate).getTime() -
+          new Date(a.endDate ?? a.startDate).getTime()
+      ),
+    CertificatesCode:
+      userCertificate && userCertificate.length > 0
+        ? userCertificate
+            .map((c: any) =>
+              c.assessment_certificates
+                ? { code: c.assessment_certificates.certificate_code }
+                : null
+            )
+            .filter((cert: any): cert is { code: string } => cert !== null)
+        : [],
+  };
+};

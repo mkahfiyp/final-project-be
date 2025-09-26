@@ -53,21 +53,32 @@ class PostingsRepository {
     category: any,
     company_id: number,
     page: number = 1,
-    limit: number = 6
+    limit: number = 6,
+    onlyPreselection?: string,
+    notExpired?: string
   ) => {
     const skip = (page - 1) * limit;
     const categoryFilter: Category | undefined =
       category && category.toLowerCase() !== "all"
         ? (category.toUpperCase() as Category)
         : undefined;
+    const whereFilter: any = {
+      company_id,
+      title: { contains: search, mode: "insensitive" },
+      category: categoryFilter,
+      deletedAt: null,
+      ...(onlyPreselection === "true" && {
+        preselection_test: true,
+      }),
+      ...(notExpired === "true" && {
+        expiredAt: {
+          gte: new Date(),
+        },
+      }),
+    };
 
     const data = await prisma.jobs.findMany({
-      where: {
-        company_id,
-        title: { contains: search, mode: "insensitive" },
-        category: categoryFilter,
-        deletedAt: null,
-      },
+      where: whereFilter,
       orderBy: sort === "asc" ? { createdAt: "asc" } : { createdAt: "desc" },
       skip,
       take: limit,
@@ -76,12 +87,7 @@ class PostingsRepository {
       },
     });
     const totalJobs = await prisma.jobs.count({
-      where: {
-        company_id,
-        title: { contains: search, mode: "insensitive" },
-        category: categoryFilter,
-        deletedAt: null,
-      },
+      where: whereFilter,
     });
     return { data, totalJobs };
   };

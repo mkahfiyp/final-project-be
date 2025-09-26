@@ -28,7 +28,6 @@ class ApplicationRepository {
       },
     });
   };
-
   getApplicationLlistByJobIdWithoutSelectionTes = async (job_id: number) => {
     return await prisma.applications.findMany({
       where: { job_id },
@@ -53,7 +52,6 @@ class ApplicationRepository {
       },
     });
   };
-
   getSelectionId = async (job_id: number) => {
     return await prisma.selections.findUnique({
       where: { job_id },
@@ -165,6 +163,30 @@ class ApplicationRepository {
           select: {
             name: true,
             email: true,
+          },
+        },
+      },
+    });
+  };
+  getUserCertificate = async (user_id: number) => {
+    return await prisma.userAssessments.findMany({
+      where: { user_id },
+      include: {
+        assessment_certificates: {
+          select: {
+            certificate_code: true,
+          },
+        },
+      },
+    });
+  };
+  getApplicationByApplicantId = async (application_id: number) => {
+    return await prisma.applications.findUnique({
+      where: { application_id },
+      include: {
+        Jobs: {
+          include: {
+            selection: true,
           },
         },
       },

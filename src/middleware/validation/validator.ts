@@ -5,7 +5,6 @@ import AppError from "../../errors/appError";
 export const validator =
   (schema: ZodObject) => (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log(req.body);
       const result = schema.safeParse(req.body);
       if (!result.success) {
         // ambil semua error messages

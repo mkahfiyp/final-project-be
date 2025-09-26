@@ -19,6 +19,5 @@ export const getDataFromGoogle = async (access_token: string) => {
       headers: { Authorization: `Bearer ${access_token}` },
     }
   );
-  console.log(data);
   return data;
 };
