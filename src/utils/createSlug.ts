@@ -1,4 +1,3 @@
-import slug from "slug";
 import { prisma } from "../config/prisma";
 
 export const createSlug = async (
@@ -8,6 +7,7 @@ export const createSlug = async (
   username: string
 ) => {
   // gabungkan title + category + jobType
+  const { default: slug } = await import("slug");
   let slugBase = slug(`${title} ${category} ${jobType} ${username}`, {
     lower: true,
   });
