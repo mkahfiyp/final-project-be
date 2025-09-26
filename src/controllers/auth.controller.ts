@@ -98,6 +98,7 @@ class AuthController {
         secure: true,
         sameSite: "lax",
         path: "/",
+        expires: new Date(0)
       });
       sendResponse(res, "log out success", 200);
     } catch (error) {
