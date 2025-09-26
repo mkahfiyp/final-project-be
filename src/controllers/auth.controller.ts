@@ -45,7 +45,7 @@ class AuthController {
       res.cookie("token", token, {
         httpOnly: true,
         secure: true,
-        sameSite: "strict", // cegah CSRF
+        sameSite: "none", // cegah CSRF
         maxAge: remember
           ? 30 * 24 * 60 * 60 * 1000 // 30 hari
           : 24 * 60 * 60 * 1000, // 1 hari
