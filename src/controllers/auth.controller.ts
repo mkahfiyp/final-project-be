@@ -46,6 +46,7 @@ class AuthController {
         httpOnly: true,
         secure: true,
         sameSite: "none", // cegah CSRF
+        path: "/",
         maxAge: remember
           ? 30 * 24 * 60 * 60 * 1000 // 30 hari
           : 24 * 60 * 60 * 1000, // 1 hari
@@ -96,6 +97,7 @@ class AuthController {
         httpOnly: true,
         secure: true,
         sameSite: "none",
+        path: "/",
       });
       sendResponse(res, "log out success", 200);
     } catch (error) {
