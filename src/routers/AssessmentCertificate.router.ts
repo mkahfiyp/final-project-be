@@ -13,9 +13,9 @@ class AssessmentCertificateRouter {
     }
 
     private initializeRoutes(): void {
+        this.router.get("/:id", this.assessmentCertificateController.getAssessmentCertificate);
         this.router.use(verifyToken);
         this.router.post("/", this.assessmentCertificateController.createAssessmentCertificate);
-        this.router.get("/:id", this.assessmentCertificateController.getAssessmentCertificate);
         this.router.get("/getAllCertificate/byUserId", this.assessmentCertificateController.getAllAssessmentCertificateByUserId);
         this.router.get("/getAllCertificate/byUserId/:id", this.assessmentCertificateController.getAllAssessmentCertificateByUserId);
     }
