@@ -148,8 +148,8 @@ class AuthController {
       res.cookie("token", token, {
         httpOnly: true,
         secure: true,
-        sameSite: "strict", // cegah CSRF
-        maxAge: 24 * 60 * 60 * 1000, // 1 hari
+        sameSite: "none", // cegah CSRF
+        path: "/",
       });
       sendResponse(res, `Hello ${result.username}`, 200, SignInMap(result));
     } catch (error) {
@@ -180,7 +180,8 @@ class AuthController {
       res.cookie("token", token, {
         httpOnly: true,
         secure: true,
-        sameSite: "strict", // cegah CSRF
+        sameSite: "none", // cegah CSRF
+        path: "/",
         maxAge: remember
           ? 30 * 24 * 60 * 60 * 1000 // 30 hari
           : 24 * 60 * 60 * 1000, // 1 hari

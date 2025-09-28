@@ -191,7 +191,6 @@ class ApplicationService {
       userCertificate,
       userSelection
     );
-    console.log(user.Jobs?.selection?.selection_id, userSelection?.score);
     return afterMap;
   };
   updateStatus = async (
