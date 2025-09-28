@@ -9,7 +9,10 @@
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "/src/index.ts"
+            "dest": "/src/index.ts",
+            "headers": {
+                "Cache-Control": "no-cache, no-store, must-revalidate"
+            }
         }
     ]
 }

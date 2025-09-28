@@ -46,6 +46,7 @@ class AuthController {
         httpOnly: true,
         secure: true,
         sameSite: "none", // cegah CSRF
+        path: "/",
         maxAge: remember
           ? 30 * 24 * 60 * 60 * 1000 // 30 hari
           : 24 * 60 * 60 * 1000, // 1 hari
@@ -92,7 +93,12 @@ class AuthController {
   };
   logOut = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      res.clearCookie("token");
+      res.clearCookie("token", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        path: "/",
+      });
       sendResponse(res, "log out success", 200);
     } catch (error) {
       next(error);
