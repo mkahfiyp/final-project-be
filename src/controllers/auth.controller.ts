@@ -85,6 +85,7 @@ class AuthController {
             ? user.companies?.profile_picture
             : user.profiles?.profile_picture,
         isVerified: user.isVerfied,
+        username: user.username,
       };
       sendResponse(res, "keep login", 200, payload);
     } catch (error) {
