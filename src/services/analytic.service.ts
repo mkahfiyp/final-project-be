@@ -78,7 +78,6 @@ class AnalyticService {
         count,
       })
     );
-    console.log(ageData);
     return {
       total: allUsers.length,
       ageData,
@@ -152,8 +151,6 @@ class AnalyticService {
         avgSalary: total / count,
       })
     );
-
-    console.log("after filter", { result, cities });
     return { result, cities }; // array of { category, avgSalary }
   };
 
