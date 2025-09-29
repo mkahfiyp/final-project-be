@@ -126,6 +126,14 @@ class PostingsRepository {
             name: true,
           },
         },
+        Companies: {
+          select: {
+            company_id: true,
+            name: true,
+            profile_picture: true,
+            website: true,
+          },
+        },
       },
     });
   };
