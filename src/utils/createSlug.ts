@@ -1,4 +1,5 @@
 import { prisma } from "../config/prisma";
+import slugify from "slugify";
 
 export const createSlug = async (
   title: string,
@@ -6,11 +7,13 @@ export const createSlug = async (
   jobType: string,
   username: string
 ) => {
-  // gabungkan title + category + jobType
-  const { default: slug } = await import("slug");
-  let slugBase = slug(`${title} ${category} ${jobType} ${username}`, {
+  // gabungkan title + category + jobType + username
+  let slugBase = slugify(`${title} ${category} ${jobType} ${username}`, {
     lower: true,
+    strict: true, // hapus karakter aneh
+    trim: true,
   });
+
   let uniqueSlug = slugBase;
   let counter = 1;
 
