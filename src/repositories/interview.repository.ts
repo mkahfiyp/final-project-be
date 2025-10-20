@@ -21,6 +21,9 @@ class InterviewRepository {
           },
         },
       },
+      orderBy: {
+        createAt: "desc",
+      },
     });
   };
   createInterview = async (data: InterviewInput) => {
@@ -85,6 +88,9 @@ class InterviewRepository {
             },
           },
         },
+      },
+      orderBy: {
+        createAt: "desc",
       },
     });
   };

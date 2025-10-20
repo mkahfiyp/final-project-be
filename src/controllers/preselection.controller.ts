@@ -13,12 +13,14 @@ class PreselectionController {
   ) => {
     try {
       const slug = req.params.slug as string;
+      const user_id = res.locals.decript.id;
       if (!slug) {
         throw new AppError("slug required", 400);
       }
       await this.preselectionService.createPreseelctionTest(
         res.locals.data,
-        slug
+        slug,
+        user_id
       );
       sendResponse(res, "success", 200);
     } catch (error) {
@@ -50,6 +52,7 @@ class PreselectionController {
   ) => {
     try {
       const selection_id = Number(req.params.selection_id);
+      const user_id = res.locals.decript.id;
       if (isNaN(selection_id)) {
         throw new AppError(
           "selection id required or selection id not a number",
@@ -58,7 +61,8 @@ class PreselectionController {
       }
       await this.preselectionService.updatePreselectionTest(
         selection_id,
-        res.locals.data
+        res.locals.data,
+        user_id
       );
       sendResponse(res, "success update preselection test", 200);
     } catch (error) {
@@ -72,7 +76,8 @@ class PreselectionController {
   ) => {
     try {
       const slug = req.params.slug;
-      await this.preselectionService.deactivePreselectionTest(slug);
+      const user_id = res.locals.decript.id;
+      await this.preselectionService.deactivePreselectionTest(slug, user_id);
       sendResponse(res, "success", 200);
     } catch (error) {
       next(error);

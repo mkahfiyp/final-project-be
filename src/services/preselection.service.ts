@@ -2,11 +2,21 @@ import { prisma } from "../config/prisma";
 import { SubmitPreselectionTest } from "../dto/application.dto";
 import AppError from "../errors/appError";
 import { PreselectionInput } from "../middleware/validation/preselection.validation";
+import PostingsRepository from "../repositories/postings.route";
 import PreselectionTestRepository from "../repositories/preselection.repository";
 
 class PreselectionService {
   private preselectionTestRepository = new PreselectionTestRepository();
-  createPreseelctionTest = async (data: PreselectionInput, slug: string) => {
+  private postingsRepository = new PostingsRepository();
+  createPreseelctionTest = async (
+    data: PreselectionInput,
+    slug: string,
+    user_id: number
+  ) => {
+    const company = this.postingsRepository.getCompanyId(user_id);
+    if (!company) {
+      throw new AppError("you cannot create this preselection test", 403);
+    }
     const result = await this.preselectionTestRepository.createPreSelectionTest(
       data,
       slug
@@ -32,8 +42,13 @@ class PreselectionService {
   };
   updatePreselectionTest = async (
     selection_id: number,
-    data: PreselectionInput
+    data: PreselectionInput,
+    user_id: number
   ) => {
+    const company = this.postingsRepository.getCompanyId(user_id);
+    if (!company) {
+      throw new AppError("you cannot edit this preselection test", 403);
+    }
     const result = await this.preselectionTestRepository.updatePreselectionTest(
       selection_id,
       data
@@ -43,7 +58,11 @@ class PreselectionService {
     }
     return result;
   };
-  deactivePreselectionTest = async (slug: string) => {
+  deactivePreselectionTest = async (slug: string, user_id: number) => {
+    const company = this.postingsRepository.getCompanyId(user_id);
+    if (!company) {
+      throw new AppError("you cannot edit this preselection test", 403);
+    }
     if (!slug) {
       throw new AppError("slug required", 400);
     }

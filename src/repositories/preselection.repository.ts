@@ -45,6 +45,7 @@ class PreselectionTestRepository {
   getDetailPreselectionTest = async (selection_id: number) => {
     return await prisma.selectionQuestions.findMany({
       where: { selection_id },
+      orderBy: { createAt: "desc" },
     });
   };
   updatePreselectionTest = async (
