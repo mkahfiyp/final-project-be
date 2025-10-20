@@ -11,6 +11,9 @@ class AnalyticRepository {
         },
         Jobs: true,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
   };
 }

@@ -77,9 +77,9 @@ class AccountRepository {
         user_assessment: {
           include: {
             assessment: true,
-            assessment_certificates: true
-          }
-        }
+            assessment_certificates: true,
+          },
+        },
       },
     });
   };
@@ -90,29 +90,32 @@ class AccountRepository {
           {
             username: {
               contains: searchTerm,
-              mode: 'insensitive'
-            }
+              mode: "insensitive",
+            },
           },
           {
             name: {
               contains: searchTerm,
-              mode: 'insensitive'
-            }
+              mode: "insensitive",
+            },
           },
           {
             profiles: {
               name: {
                 contains: searchTerm,
-                mode: 'insensitive'
-              }
-            }
-          }
-        ]
+                mode: "insensitive",
+              },
+            },
+          },
+        ],
+      },
+      orderBy: {
+        createdAt: "desc",
       },
       include: {
         profiles: true,
       },
-      take: 10 // Limit results to 10 users
+      take: 10, // Limit results to 10 users
     });
   };
 
@@ -127,26 +130,26 @@ class AccountRepository {
         experience: true,
         userSkills: {
           include: {
-            skill: true
-          }
+            skill: true,
+          },
         },
         user_assessment: {
           where: {
             assessment_certificates: {
-              isNot: null
-            }
+              isNot: null,
+            },
           },
           include: {
             assessment_certificates: true,
-          }
+          },
         },
         user_Company: {
           include: {
             company: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
-  }
+  };
 }
 export default AccountRepository;

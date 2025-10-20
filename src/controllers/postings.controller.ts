@@ -115,10 +115,11 @@ class PostingsController {
     try {
       const slug = req.params.slug;
       const data = res.locals.data;
+      const user_id = res.locals.decript.id;
       if (!slug) {
         throw new AppError("slug required", 400);
       }
-      await this.postingsService.updateJobPostring(slug, data);
+      await this.postingsService.updateJobPostring(slug, data, user_id);
       sendResponse(res, "success update job", 200);
     } catch (error) {
       next(error);
@@ -131,10 +132,11 @@ class PostingsController {
   ) => {
     try {
       const slug = req.params.slug;
+      const user_id = res.locals.decript.id;
       if (!slug) {
         throw new AppError("slug required", 400);
       }
-      await this.postingsService.deleteJobPostring(slug);
+      await this.postingsService.deleteJobPostring(slug, user_id);
       sendResponse(res, "success delete job", 200);
     } catch (error) {
       next(error);

@@ -62,14 +62,26 @@ class PostingsService {
     }
     return result;
   };
-  updateJobPostring = async (slug: string, data: SchemaJobsInput) => {
+  updateJobPostring = async (
+    slug: string,
+    data: SchemaJobsInput,
+    user_id: number
+  ) => {
+    const findCompanyId = this.postingsRepository.getCompanyId(user_id);
+    if (!findCompanyId) {
+      throw new AppError("cannott edit this postings", 403);
+    }
     const result = await this.postingsRepository.updateJobPosting(slug, data);
     if (!result) {
       throw new AppError("faild update job", 500);
     }
     return result;
   };
-  deleteJobPostring = async (slug: string) => {
+  deleteJobPostring = async (slug: string, user_id: number) => {
+    const findCompanyId = this.postingsRepository.getCompanyId(user_id);
+    if (!findCompanyId) {
+      throw new AppError("cannott delete this postings", 403);
+    }
     const result = await this.postingsRepository.deleteJobPosting(slug);
     if (!result) {
       throw new AppError("faild delete job posting", 300);

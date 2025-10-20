@@ -26,6 +26,9 @@ class ApplicationRepository {
           },
         },
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
   };
   getApplicationLlistByJobIdWithoutSelectionTes = async (job_id: number) => {
@@ -49,6 +52,9 @@ class ApplicationRepository {
             },
           },
         },
+      },
+      orderBy: {
+        createdAt: "desc",
       },
     });
   };

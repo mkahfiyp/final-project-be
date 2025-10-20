@@ -70,17 +70,17 @@ export const SignInService = async (data: SignInDTO) => {
   const { email, password } = data;
   const user = await FinWithGetDataUser(email);
   if (!user?.isVerfied || !user) {
-    throw new AppError("account not register", 402);
+    throw new AppError("account not register", 409);
   }
   if (!user?.email) {
-    throw new AppError("email or password wrong", 402);
+    throw new AppError("email or password wrong", 401);
   }
   if (!user.password) {
     throw new AppError("your account register with google", 400);
   }
   const comparePassword = await compare(password, user.password);
   if (!comparePassword) {
-    throw new AppError("email or password wrong", 402);
+    throw new AppError("email or password wrong", 401);
   }
   return user;
 };
